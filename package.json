@@ -1,0 +1,29 @@
+{
+  "name": "mycommunityportal",
+  "version": "1.0.0",
+  "description": "```\r my-nextjs-app/\r │\r ├── public/                 # Static assets served directly by Next.js\r │   ├── images/             # Static image files (logos, backgrounds, etc.)\r │   ├── icons/              # SVG or icon files\r │   └── fonts/              # Custom font files\r │\r ├── src/\r │   ├── app/                # Next.js App Router main directory\r │   │   ├── (routes)/       # Grouped routes for logical organization\r │   │   │   ├── dashboard/  # Dashboard-specific routes\r │   │   │   │   ├── page.js     # Dashboard main page component\r │   │   │   │   └── layout.js   # Dashboard-specific layout  \r │   │   │   │                   # Not necessary unless you need a separate layout\r │   │   │   ├── profile/    # Profile-related routes\r │   │   │   │   ├── page.js     # Profile page component\r │   │   │   │   └── layout.js   # Profile page layout  \r │   │   │   │                   # Not necessary unless you need a separate layout\r │   │   │   └── page.js     # Root/home page\r │   │   │\r │   │   ├── actions/        # Server actions for handling backend logic\r │   │   │   ├── auth.js     # Authentication actions (sign in, sign out)\r │   │   │   ├── user.js     # User-related actions\r │   │   │   └── data.js     # Database actions (fetch, create, update, delete)\r │   │   │\r │   │   └── layout.js       # Root application layout  \r │   │                       # This is usually enough to layout everything in (routes/)\r │   │\r │   ├── components/         # Reusable React components\r │   │   ├── common/         # Basic, generic UI components\r │   │   │   ├── Button.js   # Reusable button component\r │   │   │   ├── Input.js    # Generic input field component\r │   │   │   └── Card.js     # Flexible card/container component\r │   │   │\r │   │   ├── layout/         # Page structure components\r │   │   │   ├── Header.js   # Site-wide header\r │   │   │   ├── Footer.js   # Site-wide footer\r │   │   │   └── Sidebar.js  # Navigation sidebar\r │   │   │\r │   │   └── features/       # Complex, feature-specific components\r │   │       ├── dashboard/  # Dashboard-specific components\r │   │       └── profile/    # Profile page-specific components\r │   │\r │   ├── lib/                # Utility functions and services\r │   │   ├── utils.js        # General utility functions\r │   │   ├── hooks/          # Custom React hooks\r │   │   │   ├── useAuth.js      # Authentication-related hook (integrates with BaaS)\r │   │   │   ├── useDatabase.js  # Hook for interacting with the database\r │   │   │   └── useStorage.js   # Hook for handling file storage\r │   │   │\r │   │   └── services/       # External service integrations\r │   │       ├── appwrite.js  # Appwrite setup & API calls\r │   │       ├── api.js      # Generic API call helpers/configurations\r │   │       └── auth.js     # Authentication service (if using NextAuth)\r │   │\r │   ├── state/              # Global state management (contexts & stores)\r │   │   ├── AuthContext.js  # Authentication state management\r │   │   ├── ThemeContext.js # Theme/appearance state management\r │   │   ├── useStore.js     # Zustand store for global state\r │   │   └── store.js        # Redux store (if using Redux)\r │   │\r │   ├── styles/             # Styling resources\r │   │   ├── globals.css     # Global CSS styles\r │   │   └── custom.css      # Additional custom styles\r │   │\r ├── .env.local              # Local environment variables (BaaS API keys)\r ├── .gitignore              # Git ignore configuration\r ├── next.config.js          # Next.js configuration\r ├── tailwind.config.js      # Tailwind CSS configuration\r ├── postcss.config.js       # PostCSS configuration for Tailwind\r └── package.json            # Project dependencies and scripts\r ```",
+  "main": "next.config.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JLforce/MyCommunityPortal.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JLforce/MyCommunityPortal/issues"
+  },
+  "homepage": "https://github.com/JLforce/MyCommunityPortal#readme"
+,
+  "dependencies": {
+    "next": "^14.2.7",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
