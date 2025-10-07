@@ -1,5 +1,4 @@
 # MyCommunityPortal
-FILE STRUCTURE OF NEXT.JS APP ROUTER
 
 my-nextjs-app/
 │
