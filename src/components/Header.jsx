@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Header(){
   return (
     <header className="navbar">
@@ -12,7 +14,7 @@ export default function Header(){
           <a href="#community">Community</a>
         </nav>
         <div className="nav-cta">
-          <a className="btn" href="#signin">Sign In</a>
+          <Link className="btn" href="/signin">Sign In</Link>
           <a className="btn btn-primary" href="#get-started">Get Started</a>
         </div>
       </div>
