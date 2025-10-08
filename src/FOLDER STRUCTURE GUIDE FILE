@@ -1,8 +1,4 @@
-# MyCommunityPortal
-# FILE STRUCTURE FOR NEXT.JS APP ROUTER
-
-```
-my-nextjs-app/
+MyCommunityPortal/
 │
 ├── public/                 # Static assets served directly by Next.js
 │   ├── images/             # Static image files (logos, backgrounds, etc.)
@@ -14,21 +10,19 @@ my-nextjs-app/
 │   │   ├── (routes)/       # Grouped routes for logical organization
 │   │   │   ├── dashboard/  # Dashboard-specific routes
 │   │   │   │   ├── page.js     # Dashboard main page component
-│   │   │   │   └── layout.js   # Dashboard-specific layout  
-│   │   │   │                   # Not necessary unless you need a separate layout
+│   │   │   │   └── layout.js   # Dashboard-specific layout   !!!THIS IS NOT NECESSARY UNLESS NAA JUD KAY SARILI NA LAYOUT
 │   │   │   ├── profile/    # Profile-related routes
 │   │   │   │   ├── page.js     # Profile page component
-│   │   │   │   └── layout.js   # Profile page layout  
-│   │   │   │                   # Not necessary unless you need a separate layout
+│   │   │   │   └── layout.js   # Profile page layout       !!!THIS IS NOT NECESSARY UNLESS NAA JUD KAY SARILI NA LAYOUT
 │   │   │   └── page.js     # Root/home page
 │   │   │
-│   │   ├── actions/        # Server actions for handling backend logic
-│   │   │   ├── auth.js     # Authentication actions (sign in, sign out)
-│   │   │   ├── user.js     # User-related actions
-│   │   │   └── data.js     # Database actions (fetch, create, update, delete)
+│   │   ├── api/            # API route handlers
+│   │   │   ├── auth/       # Authentication-related API routes
+│   │   │   │   └── [...nextauth]/route.js  # Catch-all route for authentication
+│   │   │   └── users/      # User-related API endpoints
+│   │   │       └── route.js
 │   │   │
-│   │   └── layout.js       # Root application layout  
-│   │                       # This is usually enough to layout everything in (routes/)
+│   │   └── layout.js       # Root application layout       !!!THIS LAYOUT FILE IS ENOUGH FOR MOST CASES KAY I LAYOUT NIYA TANAN NGA NAA SA (routes)/ na folder
 │   │
 │   ├── components/         # Reusable React components
 │   │   ├── common/         # Basic, generic UI components
@@ -48,31 +42,24 @@ my-nextjs-app/
 │   ├── lib/                # Utility functions and services
 │   │   ├── utils.js        # General utility functions
 │   │   ├── hooks/          # Custom React hooks
-│   │   │   ├── useAuth.js      # Authentication-related hook (integrates with BaaS)
-│   │   │   ├── useDatabase.js  # Hook for interacting with the database
-│   │   │   └── useStorage.js   # Hook for handling file storage
+│   │   │   ├── useAuth.js      # Authentication-related hook
+│   │   │   └── useForm.js      # Form handling hook
 │   │   │
 │   │   └── services/       # External service integrations
-│   │       ├── appwrite.js  # Appwrite setup & API calls
-│   │       ├── api.js      # Generic API call helpers/configurations
-│   │       └── auth.js     # Authentication service (if using NextAuth)
-│   │
-│   ├── state/              # Global state management (contexts & stores)
-│   │   ├── AuthContext.js  # Authentication state management
-│   │   ├── ThemeContext.js # Theme/appearance state management
-│   │   ├── useStore.js     # Zustand store for global state
-│   │   └── store.js        # Redux store (if using Redux)
+│   │       ├── api.js      # API call helpers/configurations
+│   │       └── auth.js     # Authentication service
 │   │
 │   ├── styles/             # Styling resources
 │   │   ├── globals.css     # Global CSS styles
 │   │   └── custom.css      # Additional custom styles
 │   │
-├── .env.local              # Local environment variables (BaaS API keys)
+│   └── contexts/           # React context providers
+│       ├── AuthContext.js  # Authentication state management
+│       └── ThemeContext.js # Theme/appearance state management
+│
+├── .env.local              # Local environment variables
 ├── .gitignore              # Git ignore configuration
 ├── next.config.js          # Next.js configuration
 ├── tailwind.config.js      # Tailwind CSS configuration
 ├── postcss.config.js       # PostCSS configuration for Tailwind
 └── package.json            # Project dependencies and scripts
-```
-
-
