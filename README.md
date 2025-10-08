@@ -74,3 +74,5 @@ my-nextjs-app/
 ├── postcss.config.js       # PostCSS configuration for Tailwind
 └── package.json            # Project dependencies and scripts
 ```
+
+
