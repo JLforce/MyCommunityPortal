@@ -15,7 +15,7 @@ export default function Header(){
         </nav>
         <div className="nav-cta">
           <Link className="btn" href="/signin">Sign In</Link>
-          <a className="btn btn-primary" href="#get-started">Get Started</a>
+          <Link className="btn btn-primary" href="/signup">Get Started</Link>
         </div>
       </div>
     </header>

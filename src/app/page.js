@@ -1,22 +1,45 @@
+"use client";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
-export default function HomePage(){
+
+export default function HomePage() {
+  const router = useRouter();
+  const [fadeOut, setFadeOut] = useState(false);
+  const [rippleBtn, setRippleBtn] = useState(null);
+
+  const handleTransition = (href) => (e) => {
+    e.preventDefault();
+    // Add ripple effect
+    const btn = e.currentTarget;
+    setRippleBtn(btn);
+    btn.classList.add('ripple');
+    setTimeout(() => {
+      btn.classList.remove('ripple');
+      setRippleBtn(null);
+      setFadeOut(true);
+      setTimeout(() => {
+        router.push(href);
+      }, 500); // match animation duration
+    }, 350); // ripple duration
+  };
+
   return (
     <>
       <Header />
-
-      <main>
+      <main className={`page-fade-in${fadeOut ? ' page-fade-out' : ''}`}>
         {/* Hero */}
-        <section className="hero">
+        <section className="hero slide-up">
           <div className="container" style={{textAlign:'center'}}>
             <span className="badge">🌿 Connecting Communities</span>
             <h1>Waste & Issue<br/>Management System</h1>
             <p className="lead">A centralized platform connecting residents and local authorities for better waste collection, community issue reporting, and transparent governance.</p>
             <div className="hero-actions">
-              <a className="btn btn-primary" href="#get-started">Join Your Community →</a>
-              <a className="btn" href="#learn">Learn More</a>
+              <a className="btn btn-primary" href="/signup" onClick={handleTransition('/signup')}>Join Your Community →</a>
+              <a className="btn" href="/signup" onClick={handleTransition('/signup')}>Get Started Today</a>
             </div>
           </div>
         </section>

@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Footer(){
   return (
     <footer className="footer">
@@ -7,8 +9,8 @@ export default function Footer(){
             <h2 style={{margin:'0 0 8px'}}>Ready to Transform Your Community?</h2>
             <p className="small" style={{color:'#e7f7ea'}}>Join thousands of residents and local authorities.</p>
             <div className="cta-actions">
-              <a className="btn btn-light" href="#get-started">Get Started Today</a>
-              <a className="btn" href="#contact">Contact Sales</a>
+              <Link className="btn btn-light" href="/signup">Get Started Today</Link>
+              <Link className="btn" href="/contact-sales">Contact Sales</Link>
             </div>
           </div>
         </div>
@@ -34,7 +36,7 @@ export default function Footer(){
             <p className="small">Privacy Policy<br/>Terms of Service<br/>Cookie Policy<br/>Accessibility</p>
           </div>
         </div>
-        <p className="small" style={{marginTop:18,textAlign:'center'}}>© 2024 MyCommunityPortal. All rights reserved.</p>
+        <p className="small" style={{marginTop:18,textAlign:'center'}}>© 2025 MyCommunityPortal. All rights reserved.</p>
       </div>
     </footer>
   );
