@@ -9,7 +9,7 @@ This is a Next.js project bootstrapped with create-next-app.
 - npm (comes with Node.js)
 ```
 # Installation Steps
-```
+
 1. Clone the repository
 ```bash
 git clone <repository-url>
@@ -44,19 +44,7 @@ Or for production:
 ```bash
 npm start
 ```
-```
-# Getting Started
 
-First, run the development server:
-```
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
 Open http://localhost:3000 with your browser to see the result.
 
