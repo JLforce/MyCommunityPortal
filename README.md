@@ -1,5 +1,50 @@
+# MyCommunityPortal
+
 This is a Next.js project bootstrapped with create-next-app.
 
+# Prerequisites
+```
+- Node.js 16.x or later
+- Git
+- npm (comes with Node.js)
+```
+# Installation Steps
+```
+1. Clone the repository
+```bash
+git clone <repository-url>
+cd MyCommunityPortal
+```
+ 
+2. Install dependencies
+```bash
+npm install
+```
+#IGNORE STEP 3 FOR NOW!!!
+3. Set up environment variables
+- Create a `.env.local` file in the root directory
+- Add your environment variables:
+```env
+# Example environment variables
+NEXT_PUBLIC_API_URL=your_api_url
+NEXT_PUBLIC_APPWRITE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_APPWRITE_ENDPOINT=your_endpoint
+```
+ 
+4. Build the project
+```bash
+npm run build
+```
+ 
+5. Start the development server
+```bash
+npm run dev
+```
+Or for production:
+```bash
+npm start
+```
+```
 # Getting Started
 
 First, run the development server:
