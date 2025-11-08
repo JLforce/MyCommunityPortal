@@ -1,0 +1,149 @@
+"use client";
+import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+
+const BellIcon = ({width=18,height=18}) => (
+  <svg width={width} height={height} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5" stroke="#374151" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M13.73 21a2 2 0 01-3.46 0" stroke="#374151" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const CogIcon = ({width=18,height=18}) => (
+  <svg width={width} height={height} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <path d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7z" stroke="#374151" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06A2 2 0 015.28 17.9l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82L4.4 6.6A2 2 0 017.23 3.77l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09c.12.7.7 1.24 1.4 1.39h.24a1.65 1.65 0 001.82-.33l.06-.06A2 2 0 0120.72 6.1l-.06.06a1.65 1.65 0 00-.33 1.82v.24c.15.7.69 1.28 1.39 1.4H21a2 2 0 010 4h-.09c-.7.12-1.24.7-1.39 1.4v.24z" stroke="#374151" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const UserIcon = ({width=18,height=18}) => (
+  <svg width={width} height={height} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#374151" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="12" cy="7" r="4" stroke="#374151" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const LogoutIcon = ({width=18,height=18}) => (
+  <svg width={width} height={height} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <path d="M16 17l5-5-5-5" stroke="#ef4444" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M21 12H9" stroke="#ef4444" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M9 19H5a2 2 0 01-2-2V7a2 2 0 012-2h4" stroke="#ef4444" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+export default function HeaderButtons(){
+  const [open, setOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [hovered, setHovered] = useState(null);
+  const ref = useRef();
+
+  useEffect(()=>{
+    function onResize(){
+      setIsMobile(window.innerWidth < 720);
+    }
+    onResize();
+    window.addEventListener('resize', onResize);
+    return ()=> window.removeEventListener('resize', onResize);
+  },[]);
+
+  useEffect(()=>{
+    function onDoc(e){
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener('click', onDoc);
+    return ()=> document.removeEventListener('click', onDoc);
+  },[]);
+
+  return (
+    <div ref={ref} style={{display:'flex',alignItems:'center',gap:12}}>
+      {!isMobile ? (
+        <>
+          <div style={{position:'relative'}}>
+            <Link
+              href="/notifications"
+              title="Notifications"
+              aria-label="Notifications"
+              onMouseEnter={()=>setHovered('notifications')}
+              onMouseLeave={()=>setHovered(null)}
+              style={{display:'inline-flex',background: hovered==='notifications' ? 'rgba(0,0,0,0.04)' : 'transparent',border:'none',padding:8,borderRadius:10,alignItems:'center',justifyContent:'center',cursor:'pointer',transition:'background .15s, transform .08s'}}
+            >
+              <BellIcon />
+            </Link>
+            <span aria-hidden style={{position:'absolute',right:3,top:3,width:8,height:8,background:'#ef4444',borderRadius:999,border:'2px solid var(--green-50)'}}></span>
+          </div>
+
+          <Link
+            href="/settings"
+            title="Settings"
+            aria-label="Settings"
+            onMouseEnter={()=>setHovered('settings')}
+            onMouseLeave={()=>setHovered(null)}
+            style={{display:'inline-flex',background: hovered==='settings' ? 'rgba(0,0,0,0.04)' : 'transparent',border:'none',padding:8,borderRadius:10,alignItems:'center',justifyContent:'center',cursor:'pointer',transition:'background .15s'}}
+          >
+            <CogIcon />
+          </Link>
+
+          <div style={{position:'relative'}}>
+            <Link
+              href="/profile"
+              title="Profile"
+              aria-label="Profile"
+              onMouseEnter={()=>setHovered('profile')}
+              onMouseLeave={()=>setHovered(null)}
+              style={{display:'inline-flex',background: hovered==='profile' ? '#fff' : '#fff',border:'1px solid var(--border)',padding:6,borderRadius:999,alignItems:'center',justifyContent:'center',width:40,height:40,cursor:'pointer',boxShadow: hovered==='profile' ? '0 6px 18px rgba(0,0,0,0.06)' : 'none',transition:'box-shadow .12s, transform .08s'}}
+            >
+              <span style={{display:'inline-block',width:30,height:30,background:'#f3f4f6',borderRadius:999,border:'4px solid #fff'}}></span>
+            </Link>
+            <span aria-hidden style={{position:'absolute',right:2,top:2,transform:'translate(30%, -30%)',width:8,height:8,background:'#ef4444',borderRadius:999,border:'2px solid var(--green-50)'}}></span>
+          </div>
+
+          <Link
+            href="/logout"
+            title="Log out"
+            aria-label="Log out"
+            onMouseEnter={()=>setHovered('logout')}
+            onMouseLeave={()=>setHovered(null)}
+            style={{display:'inline-flex',alignItems:'center',justifyContent:'center',padding:8,borderRadius:10,cursor:'pointer',transition:'background .12s'}}
+          >
+            <LogoutIcon />
+          </Link>
+        </>
+      ) : (
+        <div style={{position:'relative'}}>
+          <button onClick={()=> setOpen(v=>!v)} aria-haspopup="true" aria-expanded={open} title="More" style={{background:'transparent',border:'1px solid var(--border)',padding:'6px 8px',borderRadius:8,display:'inline-flex',alignItems:'center',justifyContent:'center'}}>
+            {/* three dots */}
+            <svg width="18" height="6" viewBox="0 0 18 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+              <circle cx="3" cy="3" r="2" fill="#374151" />
+              <circle cx="9" cy="3" r="2" fill="#374151" />
+              <circle cx="15" cy="3" r="2" fill="#374151" />
+            </svg>
+          </button>
+
+          {open && (
+            <div role="menu" aria-label="Header actions" style={{position:'absolute',right:0,top:'calc(100% + 8px)',background:'#fff',boxShadow:'0 6px 20px rgba(15,23,42,0.08)',borderRadius:8,padding:8,minWidth:180,zIndex:40}}>
+              <Link href="/notifications" role="menuitem" onClick={()=>setOpen(false)} style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'var(--text-900)'}}>
+                <BellIcon />
+                <span>Notifications</span>
+              </Link>
+
+              <Link href="/settings" role="menuitem" onClick={()=>setOpen(false)} style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'var(--text-900)'}}>
+                <CogIcon />
+                <span>Settings</span>
+              </Link>
+
+              <Link href="/profile" role="menuitem" onClick={()=>setOpen(false)} style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'var(--text-900)'}}>
+                <UserIcon />
+                <span>Profile</span>
+              </Link>
+
+              <Link href="/logout" role="menuitem" onClick={()=>setOpen(false)} style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'#ef4444'}}>
+                <LogoutIcon />
+                <span>Logout</span>
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
