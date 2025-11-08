@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import NotificationsModal from './NotificationsModal';
 
 const BellIcon = ({width=18,height=18}) => (
   <svg width={width} height={height} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
@@ -35,6 +36,7 @@ export default function HeaderButtons(){
   const [open, setOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [hovered, setHovered] = useState(null);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const ref = useRef();
 
   useEffect(()=>{
@@ -55,22 +57,23 @@ export default function HeaderButtons(){
   },[]);
 
   return (
-    <div ref={ref} style={{display:'flex',alignItems:'center',gap:12}}>
-      {!isMobile ? (
-        <>
-          <div style={{position:'relative'}}>
-            <Link
-              href="/notifications"
-              title="Notifications"
-              aria-label="Notifications"
-              onMouseEnter={()=>setHovered('notifications')}
-              onMouseLeave={()=>setHovered(null)}
-              style={{display:'inline-flex',background: hovered==='notifications' ? 'rgba(0,0,0,0.04)' : 'transparent',border:'none',padding:8,borderRadius:10,alignItems:'center',justifyContent:'center',cursor:'pointer',transition:'background .15s, transform .08s'}}
-            >
-              <BellIcon />
-            </Link>
-            <span aria-hidden style={{position:'absolute',right:3,top:3,width:8,height:8,background:'#ef4444',borderRadius:999,border:'2px solid var(--green-50)'}}></span>
-          </div>
+    <>
+      <div ref={ref} style={{display:'flex',alignItems:'center',gap:12}}>
+        {!isMobile ? (
+          <>
+            <div style={{position:'relative'}}>
+              <button
+                onClick={() => setNotificationsOpen(true)}
+                title="Notifications"
+                aria-label="Notifications"
+                onMouseEnter={()=>setHovered('notifications')}
+                onMouseLeave={()=>setHovered(null)}
+                style={{display:'inline-flex',background: hovered==='notifications' ? 'rgba(0,0,0,0.04)' : 'transparent',border:'none',padding:8,borderRadius:10,alignItems:'center',justifyContent:'center',cursor:'pointer',transition:'background .15s, transform .08s'}}
+              >
+                <BellIcon />
+              </button>
+              <span aria-hidden style={{position:'absolute',right:3,top:3,width:8,height:8,background:'#ef4444',borderRadius:999,border:'2px solid var(--green-50)'}}></span>
+            </div>
 
           <Link
             href="/settings"
@@ -121,10 +124,19 @@ export default function HeaderButtons(){
 
           {open && (
             <div role="menu" aria-label="Header actions" style={{position:'absolute',right:0,top:'calc(100% + 8px)',background:'#fff',boxShadow:'0 6px 20px rgba(15,23,42,0.08)',borderRadius:8,padding:8,minWidth:180,zIndex:40}}>
-              <Link href="/notifications" role="menuitem" onClick={()=>setOpen(false)} style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'var(--text-900)'}}>
+              <button 
+                role="menuitem" 
+                onClick={() => {
+                  setOpen(false);
+                  setNotificationsOpen(true);
+                }} 
+                onMouseEnter={(e) => e.target.style.background = '#F3F4F6'}
+                onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'var(--text-900)',background:'transparent',border:'none',width:'100%',textAlign:'left',cursor:'pointer',transition:'background 0.2s'}}
+              >
                 <BellIcon />
                 <span>Notifications</span>
-              </Link>
+              </button>
 
               <Link href="/settings" role="menuitem" onClick={()=>setOpen(false)} style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'var(--text-900)'}}>
                 <CogIcon />
@@ -144,6 +156,13 @@ export default function HeaderButtons(){
           )}
         </div>
       )}
-    </div>
+      </div>
+      
+      {/* Notifications Modal */}
+      <NotificationsModal 
+        isOpen={notificationsOpen} 
+        onClose={() => setNotificationsOpen(false)} 
+      />
+    </>
   );
 }

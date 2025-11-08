@@ -231,8 +231,16 @@ export default function DashboardPage(){
                 <p className="muted">Your scheduled waste collection dates</p>
 
                 <div style={{marginTop:12}}>
-                  <div style={{padding:18,borderRadius:12,background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                    <p className="muted" style={{margin:0}}>No scheduled pickups yet — user's scheduled pickups will appear here.</p>
+                  <div style={{padding:48, textAlign:'center', borderRadius:12, background:'#F9FAFB', border:'1px dashed #E5E7EB'}}>
+                    <div style={{marginBottom:16, display:'flex', justifyContent:'center'}}>
+                      <div style={{width:64, height:64, borderRadius:50, background:'#ECFDF5', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                        <RecycleIcon width={32} height={32} />
+                      </div>
+                    </div>
+                    <h3 style={{margin:'0 0 8px', fontSize:18, color:'var(--text-900)', fontWeight:700}}>No Scheduled Pickups Yet</h3>
+                    <p className="muted" style={{margin:0, fontSize:14, maxWidth:400, marginLeft:'auto', marginRight:'auto'}}>
+                      No scheduled pickups yet — user's scheduled pickups will appear here.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -250,8 +258,16 @@ export default function DashboardPage(){
                 <p className="muted">Issues you've reported to the community</p>
 
                 <div style={{marginTop:12}}>
-                  <div style={{padding:18,borderRadius:12,background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                    <p className="muted" style={{margin:0}}>No reports yet — user-submitted reports will appear here.</p>
+                  <div style={{padding:48, textAlign:'center', borderRadius:12, background:'#F9FAFB', border:'1px dashed #E5E7EB'}}>
+                    <div style={{marginBottom:16, display:'flex', justifyContent:'center'}}>
+                      <div style={{width:64, height:64, borderRadius:50, background:'#FFF7ED', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                        <WarningIcon width={32} height={32} />
+                      </div>
+                    </div>
+                    <h3 style={{margin:'0 0 8px', fontSize:18, color:'var(--text-900)', fontWeight:700}}>No Reports Yet</h3>
+                    <p className="muted" style={{margin:0, fontSize:14, maxWidth:400, marginLeft:'auto', marginRight:'auto'}}>
+                      No reports yet — user-submitted reports will appear here.
+                    </p>
                   </div>
                 </div>
               </div>
