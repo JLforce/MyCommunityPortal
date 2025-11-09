@@ -1,4 +1,5 @@
 import HeaderButtons from '../../components/HeaderButtons';
+import SettingsForm from '../../components/SettingsForm';
 
 export default function SettingsPage(){
   return (
@@ -17,19 +18,33 @@ export default function SettingsPage(){
       </header>
 
       <main className="container" style={{padding:'28px 0'}}>
-        <h1>Settings</h1>
-        <p className="muted">Manage your account settings and preferences. The header controls remain responsive on all screen sizes.</p>
+        <h1 style={{marginBottom:6}}>Settings</h1>
+        <p className="muted">Manage your account, privacy, and preferences. Changes apply to your profile across MyCommunityPortal.</p>
 
-        <div style={{marginTop:18,display:'grid',gap:12}}>
-          <div className="card">
-            <h4>Account</h4>
-            <p className="small muted">Change your display name, email, and notification preferences.</p>
-          </div>
+        <div className="settings-grid" style={{marginTop:20}}>
+          <section className="settings-main">
+            <SettingsForm />
+          </section>
 
-          <div className="card">
-            <h4>Notifications</h4>
-            <p className="small muted">Choose which notifications you want to receive.</p>
-          </div>
+          <aside className="settings-side">
+            <div className="card" style={{marginBottom:12}}>
+              <h4>Quick actions</h4>
+              <p className="small muted">Useful account utilities.</p>
+              <div style={{display:'flex',flexDirection:'column',gap:8,marginTop:12}}>
+                <button className="btn">Download account data</button>
+                <button className="btn btn-light">Manage connected apps</button>
+                <a className="muted small" href="/help-center">Learn about privacy</a>
+              </div>
+            </div>
+
+            <div className="card" style={{background:'var(--green-50)'}}>
+              <h4>Support</h4>
+              <p className="small muted">Need help? Contact our support team for account issues.</p>
+              <div style={{marginTop:12}}>
+                <a className="btn" href="/contact-support">Contact support</a>
+              </div>
+            </div>
+          </aside>
         </div>
       </main>
     </div>
