@@ -35,7 +35,7 @@ export default function HomePage() {
         <section className="hero slide-up">
           <div className="container" style={{textAlign:'center'}}>
             <span className="badge">🌿 Connecting Communities</span>
-            <h1>Waste & Issue<br/>Management System</h1>
+            <h1>Waste & Issue<br/>Management Made Simple</h1>
             <p className="lead">A centralized platform connecting residents and local authorities for better waste collection, community issue reporting, and transparent governance.</p>
             <div className="hero-actions">
               <a className="btn btn-primary" href="/signup" onClick={handleTransition('/signup')}>Join Your Community →</a>

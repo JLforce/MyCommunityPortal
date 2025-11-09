@@ -67,7 +67,7 @@
 	--green-100: #EAF7ED;
 	--green-50: #F1FAF5;
 	--sidebar-width: 320px;
-	--text-900: #0B1220;
+	--text-900: #d5d7dc;
 	--text-700: #1F2937;
 	--text-600: #475569;
 	--text-500: #6B7280;
@@ -269,24 +269,24 @@ cursor: pointer;
 }
 
 .footer {
-	background: #166534 !important;
-	border-top: 1px solid var(--green-400);
+	background: #219b52 !important;
+	border-top: 2px solid var(--green-400);
 	padding: 32px 0 0 0;
-	color: #fff !important;
+	color: #ffffff !important;
 	opacity: 1 !important;
 	filter: none !important;
 }
 .footer, .footer * {
-	color: #fff !important;
+	color: #ffffff !important;
 	opacity: 1 !important;
 	filter: none !important;
 }
 .footer a, .footer a:visited {
-	color: #fff !important;
+	color: #bc7435 !important;
 	text-decoration: underline;
 }
 .footer a:hover {
-	color: #4ade80 !important;
+	color: #232524 !important;
 }
 
 .support-card {
@@ -373,7 +373,7 @@ cursor: pointer;
 	text-decoration: underline;
 }
 .footer a:hover {
-	color: #4ade80;
+	color: #339455;
 }
 .footer .muted,
 .footer .small.muted {
@@ -431,7 +431,7 @@ cursor: pointer;
 
 	.footer {
 		background: linear-gradient(90deg, #22c55e 0%, #166534 100%);
-		border-top: 1px solid var(--green-400);
+		border-top: 2px solid var(--green-400);
 		padding: 28px 0;
 		color: #fff;
 	}
@@ -563,7 +563,7 @@ img{max-width:100%;height:auto;border:0}
 .cta-actions{display:flex;gap:12px;justify-content:center;margin-top:16px}
 
 /* Footer */
-.footer{background:#F6FBF7;border-top:1px solid var(--border);padding:28px 0}
+.footer{background:#c1e7c9;border-top:1px solid var(--border);padding:28px 0}
 .footer-grid{display:grid;gap:20px;grid-template-columns:1fr}
 @media(min-width:900px){.footer-grid{grid-template-columns:2fr 1fr 1fr 1fr}}
 .footer h5{margin:0 0 8px}
@@ -908,12 +908,12 @@ input[type="range"].volume-slider::-moz-range-track {
 }
 
 input[type="range"]::-moz-range-thumb {
-	background: #10B981;
+	background: #a1d5c4;
 	height: 20px;
 	width: 20px;
 	border-radius: 50%;
 	border: 3px solid #fff;
-	box-shadow: 0 2px 8px rgba(16,185,129,0.3);
+	box-shadow: 0 2px 8px rgba(25, 149, 108, 0.3);
 	cursor: pointer;
 	transition: all 0.2s ease;
 }
@@ -981,6 +981,31 @@ input[type="date"].date-input-custom::-moz-calendar-picker-indicator {
 .date-input-custom::-webkit-datetime-edit-year-field {
 	color: inherit;
 }
+
+/* Footer CTA — ensure button labels are visible and follow the landing design */
+.footer .cta {
+	background: linear-gradient(90deg,#166534 0%, #195b34 100%);
+	color: #fff;
+	padding: 36px 0;
+	border-radius: 12px;
+}
+
+/* Primary white CTA (left) — white background, dark text */
+.footer .cta .btn.btn-light {
+	background: #ffffff;
+	color: var(--text-900) !important;
+	border-color: rgba(0,0,0,0.06);
+	box-shadow: none;
+}
+
+/* Secondary CTA (right) — white background with accent text to match design */
+.footer .cta .btn {
+	background: #ffffff;
+	color: #b45309 !important; /* warm accent (orange-brown) for Contact Sales */
+	border-color: rgba(0,0,0,0.06);
+	box-shadow: none;
+}
+
 
 
 
