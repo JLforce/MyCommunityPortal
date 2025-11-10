@@ -1,0 +1,144 @@
+"use client";
+import { useState, useEffect, useRef } from 'react';
+
+export default function SettingsForm(){
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({
+    displayName: 'John Doe',
+    email: 'johndoe@example.com',
+    emailNotifications: true,
+    inAppNotifications: true,
+    language: 'en',
+    timezone: 'Asia/Manila',
+    twoFactor: false
+  });
+  const [avatar, setAvatar] = useState(null);
+  const fileRef = useRef();
+  const [status, setStatus] = useState(null);
+
+  function updateField(key, value){
+    setForm(prev => ({ ...prev, [key]: value }));
+  }
+
+  useEffect(()=>{
+    try{
+      const stored = localStorage.getItem('mcp_avatar');
+      if (stored) setAvatar(stored);
+    }catch(e){/* ignore */}
+  },[]);
+
+  function onSelectAvatar(file){
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      const data = ev.target.result;
+      setAvatar(data);
+      try{ localStorage.setItem('mcp_avatar', data); }catch(e){}
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function handleSave(e){
+    e?.preventDefault();
+    setSaving(true);
+    setStatus(null);
+    try{
+      // simulate API call
+      await new Promise(r=>setTimeout(r,700));
+      setSaving(false);
+      setStatus({ ok: true, message: 'Settings saved' });
+      setTimeout(()=>setStatus(null), 3000);
+    }catch(err){
+      setSaving(false);
+      setStatus({ ok: false, message: 'Failed to save settings' });
+    }
+  }
+
+  return (
+    <form onSubmit={handleSave} className="settings-form" style={{display:'flex',flexDirection:'column',gap:16}}>
+      <section className="card" aria-labelledby="account-heading">
+        <h3 id="account-heading">Account</h3>
+        <p className="muted small">Change your display name and manage your email address.</p>
+
+        <div style={{display:'grid',gap:10,marginTop:12}}>
+          <label className="input-label">Display name</label>
+          <div className="input-field">
+            <input value={form.displayName} onChange={e=>updateField('displayName', e.target.value)} />
+          </div>
+
+          <label className="input-label">Email</label>
+          <div className="input-field" style={{background:'#F9FAFB'}}>
+            <input value={form.email} readOnly />
+          </div>
+
+          <div style={{display:'flex',gap:10,marginTop:8,alignItems:'center'}}>
+            <button type="button" className="btn btn-light" onClick={()=>alert('Change password flow not implemented')}>Change password</button>
+            <button type="button" className="btn" onClick={()=>fileRef.current && fileRef.current.click()}>Update avatar</button>
+            <input ref={fileRef} type="file" accept="image/*" style={{display:'none'}} onChange={e=> onSelectAvatar(e.target.files && e.target.files[0])} />
+            {avatar && (
+              <div style={{marginLeft:8}}>
+                <img src={avatar} alt="Avatar preview" style={{width:40,height:40,borderRadius:999,objectFit:'cover',border:'2px solid #fff'}} />
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className="card" aria-labelledby="notifications-heading">
+        <h3 id="notifications-heading">Notifications</h3>
+        <p className="muted small">Choose which notifications you receive.</p>
+
+        <div style={{display:'grid',gap:12,marginTop:12}}>
+          <label className="checkbox"><input type="checkbox" checked={form.emailNotifications} onChange={e=>updateField('emailNotifications', e.target.checked)} /> <span style={{marginLeft:8}}>Email notifications</span></label>
+          <label className="checkbox"><input type="checkbox" checked={form.inAppNotifications} onChange={e=>updateField('inAppNotifications', e.target.checked)} /> <span style={{marginLeft:8}}>In-app notifications</span></label>
+        </div>
+      </section>
+
+      <section className="card" aria-labelledby="preferences-heading">
+        <h3 id="preferences-heading">Preferences</h3>
+        <p className="muted small">Language, timezone and display preferences.</p>
+
+        <div style={{display:'grid',gap:10,marginTop:12}}>
+          <label className="input-label">Language</label>
+          <div className="input-field">
+            <select value={form.language} onChange={e=>updateField('language', e.target.value)}>
+              <option value="en">English</option>
+              <option value="es">Español</option>
+              <option value="tl">Filipino</option>
+            </select>
+          </div>
+
+          <label className="input-label">Timezone</label>
+          <div className="input-field">
+            <select value={form.timezone} onChange={e=>updateField('timezone', e.target.value)}>
+              <option value="Asia/Manila">Asia/Manila</option>
+              <option value="UTC">UTC</option>
+              <option value="America/New_York">America/New_York</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section className="card" aria-labelledby="security-heading">
+        <h3 id="security-heading">Security</h3>
+        <p className="muted small">Manage two-factor authentication and active sessions.</p>
+
+        <div style={{display:'grid',gap:12,marginTop:12}}>
+          <label className="checkbox"><input type="checkbox" checked={form.twoFactor} onChange={e=>updateField('twoFactor', e.target.checked)} /> <span style={{marginLeft:8}}>Enable two-factor authentication</span></label>
+          <div style={{display:'flex',gap:8}}>
+            <button type="button" className="btn btn-light" onClick={()=>alert('Manage sessions not implemented')}>View active sessions</button>
+            <button type="button" className="btn" onClick={()=>alert('Request account export not implemented')}>Request account export</button>
+          </div>
+        </div>
+      </section>
+
+      <div style={{display:'flex',gap:12,justifyContent:'flex-end',alignItems:'center'}}>
+        {status && (
+          <div style={{color: status.ok ? 'var(--green-800)' : '#c2410c', fontWeight:700}}>{status.message}</div>
+        )}
+        <button type="button" className="btn muted" onClick={()=>window.location.reload()}>Cancel</button>
+        <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving…' : 'Save changes'}</button>
+      </div>
+    </form>
+  );
+}

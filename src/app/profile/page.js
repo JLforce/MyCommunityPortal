@@ -1,4 +1,5 @@
 import HeaderButtons from '../../components/HeaderButtons';
+import ProfileCard from '../../components/ProfileCard';
 
 export default function ProfilePage(){
   return (
@@ -17,17 +18,32 @@ export default function ProfilePage(){
       </header>
 
       <main className="container" style={{padding:'28px 0'}}>
-        <h1>Profile</h1>
+        <h1 style={{marginBottom:6}}>Profile</h1>
         <p className="muted">View and edit your profile information. This page demonstrates a responsive layout that adapts to different screen sizes.</p>
 
-        <div style={{marginTop:18,display:'grid',gap:12}}>
-          <div className="card" style={{display:'flex',gap:12,alignItems:'center'}}>
-            <div style={{width:72,height:72,borderRadius:12,background:'#f3f4f6'}} aria-hidden></div>
-            <div>
-              <strong>John Doe</strong>
-              <div className="small muted">johndoe@example.com</div>
+        <div className="profile-grid" style={{marginTop:20}}>
+          <section className="profile-main">
+            <ProfileCard />
+          </section>
+
+          <aside className="profile-side">
+            <div className="card" style={{marginBottom:12}}>
+              <h4>Contact & Support</h4>
+              <p className="small muted">If you need help updating your profile or account, contact support.</p>
+              <div style={{marginTop:12}}>
+                <a className="btn" href="/contact-support">Contact support</a>
+                <a className="muted small" style={{display:'block',marginTop:8}} href="/help-center">Help center</a>
+              </div>
             </div>
-          </div>
+
+            <div className="card" style={{background:'var(--green-50)'}}>
+              <h4>Privacy</h4>
+              <p className="small muted">Manage what information is visible to other users in Settings.</p>
+              <div style={{marginTop:12}}>
+                <a className="btn btn-light" href="/settings">Profile privacy</a>
+              </div>
+            </div>
+          </aside>
         </div>
       </main>
     </div>

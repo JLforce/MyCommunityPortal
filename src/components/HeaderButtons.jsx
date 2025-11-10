@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import NotificationsModal from './NotificationsModal';
+import LogoutConfirmModal from './LogoutConfirmModal';
 
 const BellIcon = ({width=18,height=18}) => (
   <svg width={width} height={height} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
@@ -37,6 +38,8 @@ export default function HeaderButtons(){
   const [isMobile, setIsMobile] = useState(false);
   const [hovered, setHovered] = useState(null);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
+  const [avatar, setAvatar] = useState(null);
   const ref = useRef();
 
   useEffect(()=>{
@@ -46,6 +49,13 @@ export default function HeaderButtons(){
     onResize();
     window.addEventListener('resize', onResize);
     return ()=> window.removeEventListener('resize', onResize);
+  },[]);
+
+  useEffect(()=>{
+    try{
+      const stored = localStorage.getItem('mcp_avatar');
+      if (stored) setAvatar(stored);
+    }catch(e){ /* ignore in non-browser or privacy mode */ }
   },[]);
 
   useEffect(()=>{
@@ -93,23 +103,27 @@ export default function HeaderButtons(){
               aria-label="Profile"
               onMouseEnter={()=>setHovered('profile')}
               onMouseLeave={()=>setHovered(null)}
-              style={{display:'inline-flex',background: hovered==='profile' ? '#fff' : '#fff',border:'1px solid var(--border)',padding:6,borderRadius:999,alignItems:'center',justifyContent:'center',width:40,height:40,cursor:'pointer',boxShadow: hovered==='profile' ? '0 6px 18px rgba(0,0,0,0.06)' : 'none',transition:'box-shadow .12s, transform .08s'}}
+              style={{display:'inline-flex',background: '#fff',border:'1px solid var(--border)',padding:6,borderRadius:999,alignItems:'center',justifyContent:'center',width:40,height:40,cursor:'pointer',boxShadow: hovered==='profile' ? '0 6px 18px rgba(0,0,0,0.06)' : 'none',transition:'box-shadow .12s, transform .08s'}}
             >
-              <span style={{display:'inline-block',width:30,height:30,background:'#f3f4f6',borderRadius:999,border:'4px solid #fff'}}></span>
+              {avatar ? (
+                <img src={avatar} alt="Profile avatar" style={{display:'inline-block',width:30,height:30,objectFit:'cover',borderRadius:999,border:'3px solid #fff'}} />
+              ) : (
+                <img src="/avatar-default.svg" alt="Default avatar" style={{display:'inline-block',width:30,height:30,objectFit:'cover',borderRadius:999,border:'3px solid #fff'}} />
+              )}
             </Link>
             <span aria-hidden style={{position:'absolute',right:2,top:2,transform:'translate(30%, -30%)',width:8,height:8,background:'#ef4444',borderRadius:999,border:'2px solid var(--green-50)'}}></span>
           </div>
 
-          <Link
-            href="/logout"
+          <button
             title="Log out"
             aria-label="Log out"
             onMouseEnter={()=>setHovered('logout')}
             onMouseLeave={()=>setHovered(null)}
-            style={{display:'inline-flex',alignItems:'center',justifyContent:'center',padding:8,borderRadius:10,cursor:'pointer',transition:'background .12s'}}
+            onClick={()=>setLogoutOpen(true)}
+            style={{display:'inline-flex',alignItems:'center',justifyContent:'center',padding:8,borderRadius:10,cursor:'pointer',background:'transparent',border:'none',transition:'background .12s'}}
           >
             <LogoutIcon />
-          </Link>
+          </button>
         </>
       ) : (
         <div style={{position:'relative'}}>
@@ -148,10 +162,10 @@ export default function HeaderButtons(){
                 <span>Profile</span>
               </Link>
 
-              <Link href="/logout" role="menuitem" onClick={()=>setOpen(false)} style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'#ef4444'}}>
+              <button role="menuitem" onClick={()=>{ setOpen(false); setLogoutOpen(true); }} style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'#ef4444',background:'transparent',border:'none',width:'100%',textAlign:'left',cursor:'pointer'}}>
                 <LogoutIcon />
                 <span>Logout</span>
-              </Link>
+              </button>
             </div>
           )}
         </div>
@@ -163,6 +177,8 @@ export default function HeaderButtons(){
         isOpen={notificationsOpen} 
         onClose={() => setNotificationsOpen(false)} 
       />
+      {/* Logout confirmation */}
+      <LogoutConfirmModal isOpen={logoutOpen} onClose={() => setLogoutOpen(false)} />
     </>
   );
 }
