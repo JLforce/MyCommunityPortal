@@ -113,7 +113,7 @@ function Sidebar() {
           <span>Reports</span>
         </Link>
 
-        <Link href="/help-center" className="nav-link">
+  <Link href="/guide" className="nav-link">
           <span className="icon-box" aria-hidden>
             <CheckIcon width={16} height={16} />
           </span>
@@ -461,7 +461,7 @@ export default function PickupPage(){
               <ul>
                 <li><Link href="/pickup" className="glow-link">Schedule Pickup</Link></li>
                 <li><Link href="/reports" className="glow-link">Report Issue</Link></li>
-                <li><Link href="/help-center" className="glow-link">Waste Guide</Link></li>
+                <li><Link href="/guide" className="glow-link">Waste Guide</Link></li>
                 <li><Link href="/chatbot" className="glow-link">AI Assistant</Link></li>
               </ul>
             </div>
@@ -482,7 +482,7 @@ export default function PickupPage(){
 
           <div className="bottom-row">
             <div className="muted">© {new Date().getFullYear()} MyCommunityPortal — All rights reserved.</div>
-            <div className="muted">Built with care · <Link href="/help-center">Help Center</Link></div>
+            <div className="muted">Built with care · <Link href="/guide">Waste Guide</Link></div>
           </div>
         </div>
       </footer>
