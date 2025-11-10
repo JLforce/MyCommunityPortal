@@ -201,6 +201,29 @@ cursor: pointer;
 	box-shadow: 0 4px 12px rgba(16,185,129,0.06);
 }
 
+/* Stronger header export CTA variant for Analytics page */
+.header-export-cta {
+	background: var(--gradient-green);
+	color: #fff; /* high contrast on gradient */
+	border: 1px solid var(--green-900);
+	box-shadow: 0 10px 28px rgba(16,185,129,0.12);
+	padding: 12px 18px;
+	font-weight: 900;
+}
+.header-export-cta:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 16px 40px rgba(16,185,129,0.14);
+	background: linear-gradient(90deg, var(--green-900) 0%, var(--green-600) 100%);
+}
+.header-export-cta:focus {
+	outline: 3px solid rgba(34,197,94,0.18);
+	outline-offset: 4px;
+}
+
+@media (max-width: 700px) {
+	.header-export-cta { padding: 10px 14px; font-size: 15px; }
+}
+
 /* Color variants to make CTA pills more visible */
 .cta-pill.blue {
 	background: linear-gradient(180deg, rgba(37,99,235,0.06), #fff);
@@ -797,12 +820,109 @@ a:hover{color:var(--green-800);text-decoration:underline}
 .cta-pill .robot-icon { margin-right: 8px; }
 
 @keyframes antenna-wiggle {
-	0% { transform: rotate(0deg); }
-	20% { transform: rotate(-14deg); }
-	50% { transform: rotate(0deg); }
-	80% { transform: rotate(10deg); }
-	100% { transform: rotate(0deg); }
+    0% { transform: rotate(0deg); }
+    20% { transform: rotate(-14deg); }
+    50% { transform: rotate(0deg); }
+    80% { transform: rotate(10deg); }
+    100% { transform: rotate(0deg); }
 }
+
+/* Analytics page styles */
+.analytics-root { display: grid; gap: 18px; }
+.analytics-metrics { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.metric-card { background: var(--green-50); border: 1px solid #DDEFE3; border-radius: 12px; padding: 18px; box-shadow: 0 2px 8px rgba(34,197,94,0.04); }
+.metric-title { color: var(--text-700); font-weight:700; margin-bottom:8px; }
+.metric-value { font-size:24px; font-weight:900; color:var(--text-900); }
+.metric-sub { color:var(--text-600); margin-top:6px; }
+
+/* Animation utilities for staggered entrances (used on Analytics) */
+.stagger-child { animation-fill-mode: both; animation-duration: 520ms; animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1); animation-delay: var(--delay, 0ms); }
+.fade-in.stagger-child { animation-name: fadeInUp; }
+.slide-up.stagger-child, .slide-up.stagger-child * { animation-name: slideUp; }
+
+/* Chart shimmer for placeholders */
+.chart-placeholder { position: relative; overflow: hidden; border-radius: 10px; padding: 14px; background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(246,252,246,0.6)); }
+.chart-placeholder::after {
+	content: '';
+	position: absolute;
+	left: -40%;
+	top: 0;
+	height: 100%;
+	width: 40%;
+	pointer-events: none;
+	background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.55), rgba(255,255,255,0));
+	transform: skewX(-12deg);
+	animation: shimmer 1500ms linear infinite;
+}
+@keyframes shimmer { 0% { left: -40%; } 100% { left: 140%; } }
+
+/* small pop for metric values when they appear */
+.metric-value { transition: transform 320ms cubic-bezier(.2,.9,.2,1), opacity 320ms; }
+.metric-card.fade-in.stagger-child { will-change: transform, opacity; }
+
+/* soft entrance for activity rows */
+.activity-row { transform-origin: left center; }
+.activity-row.slide-in { animation-name: slideIn; animation-duration: 480ms; animation-timing-function: cubic-bezier(0.23,1,0.32,1); animation-fill-mode: both; }
+
+
+/* Recent activity styles */
+.recent-activity-card {
+	background: var(--green-50);
+	border: 1px solid #DDEFE3;
+	border-radius: 12px;
+	padding: 18px;
+}
+.activity-row {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	padding: 14px;
+	background: rgba(255,255,255,0.6);
+	border-radius: 10px;
+	border: 1px solid rgba(0,0,0,0.02);
+}
+.activity-row .activity-icon {
+	flex: 0 0 44px;
+	height: 44px;
+	border-radius: 8px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 700;
+}
+
+@media (max-width: 700px) {
+	.activity-row { padding: 12px; }
+	.activity-row .activity-icon { width:40px; height:40px; }
+}
+
+.analytics-main { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.chart-card { background: var(--green-50); border: 1px solid #DDEFE3; border-radius: 12px; padding: 18px; min-height:120px; }
+.chart-large { min-height:220px; display:flex;flex-direction:column; }
+.chart-placeholder{ display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--text-600); }
+.chart-note{ margin-top:10px; }
+.composition-list{ list-style:none;padding:0;margin-top:12px;display:flex;flex-direction:column;gap:10px }
+.composition-row{ display:flex;justify-content:space-between;align-items:center;padding:6px 0 }
+.swatch{ width:14px;height:14px;border-radius:4px;display:inline-block }
+
+.analytics-summary { display:grid; grid-template-columns: 1fr; gap:12px; }
+.stat-card { min-height:120px }
+.card-heading{ margin:0 0 6px; color:var(--green-900); font-weight:800 }
+
+@media (min-width: 760px) {
+  .analytics-metrics { grid-template-columns: repeat(4, 1fr); }
+  .analytics-main { grid-template-columns: 2fr 1fr; }
+  .analytics-summary { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 1100px) {
+  .metric-value{ font-size:28px }
+  .chart-large{ min-height:300px }
+}
+
+/* Ensure contrast for key actions */
+.btn { color: var(--text-900); }
+.btn-primary { color: #fff; }
 
 @keyframes robot-blink {
 	0%, 92% { transform: scaleY(1); }
