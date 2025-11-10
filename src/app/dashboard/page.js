@@ -132,7 +132,7 @@ function Sidebar() {
           <span>Analytics</span>
         </Link>
 
-        <Link href="/chatbot" className="nav-link">
+  <Link href="/ai-assistant" className="nav-link">
           <span className="icon-box" aria-hidden>
             <UserIcon width={16} height={16} />
           </span>
@@ -208,7 +208,7 @@ export default function DashboardPage(){
                   <span>Waste Guide</span>
                 </Link>
 
-                <Link href="/chatbot" className="cta-pill indigo">
+                <Link href="/ai-assistant" className="cta-pill indigo">
                   <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:28,height:28,borderRadius:8,background:'rgba(55,65,81,0.06)',color:'var(--text-700)'}} aria-hidden>
                     <AnimatedRobotIcon width={16} height={16} />
                   </span>
@@ -302,7 +302,7 @@ export default function DashboardPage(){
                 <li><Link href="/pickup" className="glow-link">Schedule Pickup</Link></li>
                 <li><Link href="/reports" className="glow-link">Report Issue</Link></li>
                 <li><Link href="/guide" className="glow-link">Waste Guide</Link></li>
-                <li><Link href="/chatbot" className="glow-link">AI Assistant</Link></li>
+                <li><Link href="/ai-assistant" className="glow-link">AI Assistant</Link></li>
               </ul>
             </div>
 
