@@ -1,0 +1,74 @@
+# Supabase Database Schema for MyCommunityPortal
+
+This file documents the tables created in Supabase for the MyCommunityPortal project.
+
+## Tables
+
+### 1. profiles
+Purpose: Stores user profile information linked to Supabase Auth users.
+
+Columns:
+- id (UUID, Primary Key, References auth.users(id)): Unique identifier matching the auth user.
+- first_name (TEXT): User's first name.
+- last_name (TEXT): User's last name.
+- email (TEXT): User's email address.
+- phone (TEXT): User's phone number.
+- street_address (TEXT): User's street address.
+- city (TEXT): User's city.
+- zip_code (TEXT): User's ZIP code.
+- role (TEXT): User's role (e.g., Resident, Collector, City Official).
+
+SQL to create the table:
+```sql
+CREATE TABLE profiles (
+  id UUID REFERENCES auth.users(id) PRIMARY KEY,
+  first_name TEXT,
+  last_name TEXT,
+  email TEXT,
+  phone TEXT,
+  street_address TEXT,
+  city TEXT,
+  zip_code TEXT,
+  role TEXT
+);
+```
+
+Enable Row Level Security:
+```sql
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+```
+
+Create Policies (copy and paste each one separately into the SQL Editor):
+
+```sql
+CREATE POLICY "Users can view own profile" ON profiles
+FOR SELECT USING (auth.uid() = id);
+```
+
+```sql
+CREATE POLICY "Users can insert own profile" ON profiles
+FOR INSERT WITH CHECK (auth.uid() = id);
+```
+
+```sql
+CREATE POLICY "Users can update own profile" ON profiles
+FOR UPDATE USING (auth.uid() = id);
+```
+
+Note: These policies ensure that users can only access and modify their own profile data, providing security and privacy.
+
+-- Function to create a public.profiles entry
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, email)
+  VALUES (new.id, new.email);
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger the function every time a user is created
+CREATE OR REPLACE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.handle_new_user();

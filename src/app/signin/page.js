@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { signIn } from '../actions/auth';
 
 export const metadata = {
   title: 'Sign in – MyCommunityPortal',
@@ -30,7 +31,7 @@ export default function SignInPage(){
               <p className="small muted" style={{margin:0}}>Enter your credentials to access your MyCommunityPortal account</p>
             </div>
 
-            <form className="auth-form">
+            <form className="auth-form" action={signIn}>
               <label className="input-label" htmlFor="email">Email Address</label>
               <div className="input-field">
                 <img className="input-icon" src="/icons/mail.svg" alt="" />

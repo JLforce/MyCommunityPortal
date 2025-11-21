@@ -20,7 +20,7 @@ cd MyCommunityPortal
 ```bash
 npm install
 ```
-#IGNORE STEP 3 FOR NOW!!!
+
 3. Set up environment variables
 - Create a `.env.local` file in the root directory
 - Add your environment variables:
@@ -35,7 +35,12 @@ NEXT_PUBLIC_APPWRITE_ENDPOINT=your_endpoint
 ```bash
 npm run build
 ```
- 
+ if Module not found: Can't resolve '@supabase/ssr'
+```bash
+npm install @supabase/ssr
+```
+then run number 4 again 
+
 5. Start the development server
 ```bash
 npm run dev
