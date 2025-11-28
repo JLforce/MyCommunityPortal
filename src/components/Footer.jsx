@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Brand from './Brand';
 
 export default function Footer(){
   return (
@@ -17,9 +18,8 @@ export default function Footer(){
 
         <div className="footer-grid" style={{marginTop:24}}>
           <div>
-            <div className="brand" style={{marginBottom:8}}>
-              <span style={{display:'inline-flex',width:26,height:26,alignItems:'center',justifyContent:'center',borderRadius:8,background:'#15803d',color:'#fff',fontWeight:700}}>🌿</span>
-              <span>MyCommunityPortal</span>
+            <div style={{marginBottom:8}}>
+              <Brand />
             </div>
             <p className="small">Connecting communities for better waste management and civic engagement.</p>
           </div>

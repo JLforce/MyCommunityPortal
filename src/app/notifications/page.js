@@ -1,5 +1,6 @@
 import HeaderButtons from '../../components/HeaderButtons';
 import Link from 'next/link';
+import Brand from '../../components/Brand';
 
 export default function NotificationsPage(){
   return (
@@ -7,8 +8,7 @@ export default function NotificationsPage(){
       <header style={{background:'var(--green-50)',borderBottom:'1px solid var(--border)'}}>
         <div className="container" style={{display:'flex',alignItems:'center',justifyContent:'space-between',height:64}}>
           <div style={{display:'flex',alignItems:'center',gap:12}}>
-            <div style={{display:'inline-flex',width:32,height:32,alignItems:'center',justifyContent:'center',borderRadius:8,background:'var(--green-900)',color:'#fff',fontWeight:700}}>MC</div>
-            <div style={{fontWeight:700}}>MyCommunityPortal</div>
+            <Brand />
           </div>
 
           <div style={{display:'flex',alignItems:'center',gap:14}}>
