@@ -1086,6 +1086,26 @@ img{max-width:100%;height:auto;border:0}
 .settings-form .btn-primary:hover, .settings-main .btn-primary:hover {
 	background: linear-gradient(180deg,#c8f7db 0%,#6fcf8a 100%);
 }
+/* Profile page: soften the Save Changes button to match Settings/signup tone */
+.profile-main .btn-primary, .profile-grid .btn-primary {
+	background: linear-gradient(180deg, #e6fbef 0%, #8fd9a0 100%);
+	color: #07221a;
+	border-color: rgba(16,185,129,0.12);
+	box-shadow: 0 8px 24px rgba(16,185,129,0.08);
+}
+.profile-main .btn-primary:hover, .profile-grid .btn-primary:hover {
+	background: linear-gradient(180deg,#c8f7db 0%,#6fcf8a 100%);
+}
+/* Logout modal: soften the Sign out button so it's not so dark-green */
+.signout-btn {
+	background: linear-gradient(180deg, #e6fbef 0%, #8fd9a0 100%) !important;
+	color: #07221a !important;
+	border-color: rgba(16,185,129,0.12) !important;
+	box-shadow: 0 8px 24px rgba(16,185,129,0.08) !important;
+}
+.signout-btn:hover {
+	background: linear-gradient(180deg,#c8f7db 0%,#6fcf8a 100%) !important;
+}
 .btn-light{background:#fff;border-color:#d1d5db;color:var(--text-700)}
 .badge{display:inline-flex;align-items:center;gap:8px;background:var(--green-50);color:var(--green-800);border:1px solid #cfead5;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:600}
 

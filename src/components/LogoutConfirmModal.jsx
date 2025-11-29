@@ -51,7 +51,7 @@ export default function LogoutConfirmModal({ isOpen, onClose, onConfirm }){
 
 				<div style={{padding:20,display:'flex',gap:12,justifyContent:'flex-end'}}>
 					<button className="btn muted" onClick={onClose} style={{padding:'10px 14px'}}>Cancel</button>
-					<button className="btn btn-primary" onClick={handleConfirm} style={{padding:'10px 14px'}}>Sign out</button>
+					<button className="btn btn-primary signout-btn" onClick={handleConfirm} style={{padding:'10px 14px'}}>Sign out</button>
 				</div>
 			</div>
 		</div>
