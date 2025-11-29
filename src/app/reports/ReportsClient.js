@@ -1,7 +1,18 @@
+// top-level imports
 "use client";
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase/supabase';
 import Link from 'next/link';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
+import L from 'leaflet';
+
+// Fix default Leaflet marker icons
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
 
 // Reports page: render only the right-side content (do NOT change header/footer/sidebar)
 export default function ReportsClient({ user }) {
@@ -10,6 +21,10 @@ export default function ReportsClient({ user }) {
   const [location, setLocation] = useState('');
   const [description, setDescription] = useState('');
   const [files, setFiles] = useState([]);
+  const [coords, setCoords] = useState(null); // Track map pin (lat/lng)
+  const [userLocation, setUserLocation] = useState(null); // User's current location
+  const [locationPermission, setLocationPermission] = useState('prompt'); // 'prompt', 'granted', 'denied'
+  const [mapCenter, setMapCenter] = useState([10.3157, 123.8854]); // Default to Cebu City
 
   const [recent, setRecent] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -22,6 +37,44 @@ export default function ReportsClient({ user }) {
     console.log('User Email:', user?.email);
     console.log('==========================================');
   }, [user]);
+
+  // Request user's location permission
+  const requestLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser.');
+      setLocationPermission('denied');
+      return;
+    }
+
+    setLocationPermission('prompt');
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        const userCoords = { lat: latitude, lng: longitude };
+        setUserLocation(userCoords);
+        setMapCenter([latitude, longitude]);
+        setLocationPermission('granted');
+        // Optionally auto-set the pin to user's location
+        setCoords(userCoords);
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+        setLocationPermission('denied');
+        if (error.code === error.PERMISSION_DENIED) {
+          alert('Location permission denied. You can still manually pin a location on the map.');
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          alert('Location information unavailable. You can still manually pin a location on the map.');
+        } else {
+          alert('Error getting location. You can still manually pin a location on the map.');
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  };
 
   // Fetch reports from Supabase on mount
   useEffect(() => {
@@ -105,7 +158,11 @@ export default function ReportsClient({ user }) {
     setLoading(true);
     
     try {
-      // First, insert report to get ID
+      // Combine typed location and pinned coords for storage
+      const locationString = coords
+        ? (location ? `${location} (lat: ${coords.lat}, lng: ${coords.lng})` : `lat: ${coords.lat}, lng: ${coords.lng}`)
+        : location;
+  
       const { data: reportData, error: reportError } = await supabase
         .from('reports')
         .insert([
@@ -113,13 +170,13 @@ export default function ReportsClient({ user }) {
             user_id: user.id,
             issue_type: issueType,
             priority,
-            location,
+            location: locationString,
             description,
             files: [],
           }
         ])
         .select('id');
-      
+  
       if (reportError) {
         alert('Error submitting report: ' + reportError.message);
         console.error(reportError);
@@ -145,8 +202,15 @@ export default function ReportsClient({ user }) {
         console.error('Error updating report with photos:', updateError);
       }
 
+      // inside handleSubmit (after successful submission and resets)
       alert('Report submitted successfully!');
-      setIssueType(''); setPriority(''); setLocation(''); setDescription(''); setFiles([]);
+      setIssueType(''); setPriority(''); setLocation(''); setDescription(''); setFiles([]); setCoords(null);
+      // Reset map center to default if needed
+      if (userLocation) {
+        setMapCenter([userLocation.lat, userLocation.lng]);
+      } else {
+        setMapCenter([10.3157, 123.8854]); // Cebu City fallback
+      }
       
       // Refetch reports for the current user
       const { data: newReports } = await supabase
@@ -216,9 +280,81 @@ export default function ReportsClient({ user }) {
               </div>
             </div>
 
-            <div style={{ marginBottom: 12 }}>
+           {/* <div style={{ marginBottom: 12 }}>
               <label style={{ display: 'block', marginBottom: 6, fontWeight: 700 }}>Location</label>
-              <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Street address or landmark" style={{ width: '100%', padding: 12, borderRadius: 8, border: '1px solid #E5E7EB' }} />
+              <input
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="Street address or landmark"
+                style={{ width: '100%', padding: 12, borderRadius: 8, border: '1px solid #E5E7EB' }}
+              />
+            </div>*/}
+
+            {/* Map: click to place a pin */}
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <label style={{ display: 'block', fontWeight: 700, margin: 0 }}>Pin Location on Map</label>
+                <button
+                  type="button"
+                  onClick={requestLocation}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: 6,
+                    border: '1px solid #059669',
+                    background: locationPermission === 'granted' ? '#ECFDF5' : '#fff',
+                    color: '#059669',
+                    fontWeight: 600,
+                    fontSize: 13,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
+                  </svg>
+                  {locationPermission === 'granted' ? 'Location Found' : 'Use My Location'}
+                </button>
+              </div>
+              <div style={{ width: '100%', height: 300, borderRadius: 8, overflow: 'hidden', border: '1px solid #E5E7EB', position: 'relative' }}>
+                <MapContainer
+                    center={mapCenter}
+                    zoom={13}
+                    style={{ height: '100%', width: '100%' }}
+                    scrollWheelZoom={true}
+                    key={`${mapCenter[0]}-${mapCenter[1]}`} // Force re-render when center changes
+                >
+                    <TileLayer
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution="&copy; OpenStreetMap contributors"
+                    />
+                    <MapCenter center={mapCenter} />
+                    <LocationPicker onPick={setCoords} />
+                    {(coords || userLocation) && (
+                        <Marker
+                            position={[
+                                (coords ? coords : userLocation).lat,
+                                (coords ? coords : userLocation).lng
+                            ]}
+                        >
+                            <Popup>
+                                {coords
+                                    ? <>Selected location<br />({coords.lat.toFixed(6)}, {coords.lng.toFixed(6)})</>
+                                    : 'Your current location'}
+                            </Popup>
+                        </Marker>
+                    )}
+                </MapContainer>
+              </div>
+              <div className="muted" style={{ fontSize: 13, marginTop: 6 }}>
+                Click "Use My Location" to center the map on your device, or click anywhere on the map to drop a pin.
+              </div>
+              {coords && (
+                <div style={{ marginTop: 6, fontSize: 14, fontWeight: 600, color: '#059669' }}>
+                  Selected: {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
+                </div>
+              )}
             </div>
 
             <div style={{ marginBottom: 12 }}>
@@ -255,7 +391,26 @@ export default function ReportsClient({ user }) {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginTop: 12 }}>
               <button type="submit" disabled={loading} style={{ flex: 1, background: loading ? '#ccc' : '#0b6b2c', color: '#fff', padding: 12, borderRadius: 8, border: 'none', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer' }}>{loading ? 'Submitting...' : 'Submit Report'}</button>
-              <button type="button" onClick={() => { setIssueType(''); setPriority(''); setLocation(''); setDescription(''); setFiles([]); }} style={{ padding: 12, borderRadius: 8, border: '1px solid #E5E7EB', background: '#fff' }}>Cancel</button>
+              <button
+                type="button"
+                onClick={() => { 
+                  setIssueType(''); 
+                  setPriority(''); 
+                  setLocation(''); 
+                  setDescription(''); 
+                  setFiles([]); 
+                  setCoords(null);
+                  // Reset map center
+                  if (userLocation) {
+                    setMapCenter([userLocation.lat, userLocation.lng]);
+                  } else {
+                    setMapCenter([14.5995, 120.9842]);
+                  }
+                }}
+                style={{ padding: 12, borderRadius: 8, border: '1px solid #E5E7EB', background: '#fff' }}
+              >
+                Cancel
+              </button>
             </div>
           </form>
         </div>
@@ -309,4 +464,26 @@ export default function ReportsClient({ user }) {
     </main>
   );
 }
+
+// Component to center map when center prop changes
+function MapCenter({ center }) {
+  const map = useMap();
+  useEffect(() => {
+    if (center) {
+      map.setView(center, map.getZoom());
+    }
+  }, [center, map]);
+  return null;
+}
+
+// Capture clicks on the map to set pin
+function LocationPicker({ onPick }) {
+  useMapEvents({
+    click(e) {
+      onPick({ lat: e.latlng.lat, lng: e.latlng.lng });
+    },
+  });
+  return null;
+}
+
 

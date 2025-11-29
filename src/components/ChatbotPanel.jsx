@@ -33,16 +33,28 @@ const ChatbotPanel = forwardRef(function ChatbotPanel(props, ref){
     clear: () => setMessages(initialMessages)
   }));
 
-  function mockAssistantReply(userText){
-    // simple simulated reply logic for demo purposes
-    setTimeout(()=>{
-      let reply = 'Sorry, I did not understand. Try: "How do I report an issue?"';
-      if(/pickup|next pickup|when/i.test(userText)) reply = 'Your next pickup is on Monday at 7:00 AM for your route.';
-      if(/report|issue|illegal/i.test(userText)) reply = 'You can report issues using the Report form — we typically resolve within 48 hours.';
-      if(/recycl/i.test(userText)) reply = 'Recyclable items include plastics #1-2, paper, cardboard, and glass bottles.';
-      pushMessage('assistant', reply);
+  async function callGemini(userText) {
+    try {
+      const res = await fetch('/api/gemini', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages, userText })
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        const errorMsg = err?.message || err?.error || `HTTP ${res.status}`;
+        console.error('API Error:', err);
+        pushMessage('assistant', `Error: ${errorMsg}`);
+        return;
+      }
+      const data = await res.json();
+      pushMessage('assistant', data.reply || 'No response.');
+    } catch (e) {
+      console.error('Fetch Error:', e);
+      pushMessage('assistant', `Sorry, I encountered an error: ${e.message || 'Network error'}. Please check your connection and try again.`);
+    } finally {
       setIsSending(false);
-    }, 700 + Math.random()*600);
+    }
   }
 
   function handleSend(e){
@@ -52,16 +64,15 @@ const ChatbotPanel = forwardRef(function ChatbotPanel(props, ref){
     pushMessage('user', text);
     setInput('');
     setIsSending(true);
-    mockAssistantReply(text);
+    callGemini(text);
   }
 
   function handleSuggestion(text){
     setInput(text);
-    // immediately send suggestion for a smoother demo
     setTimeout(()=>{
       pushMessage('user', text);
       setIsSending(true);
-      mockAssistantReply(text);
+      callGemini(text);
     }, 180);
   }
 

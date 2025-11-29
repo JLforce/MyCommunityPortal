@@ -1,10 +1,11 @@
 "use client";
 import React, { useRef } from 'react';
 import HeaderButtons from '../../components/HeaderButtons';
+import ChatbotPanel from '../../components/ChatbotPanel.jsx';
 import ChatbotPanel from '../../components/ChatbotPanel';
 import Brand from '../../components/Brand';
 
-export default function AIAssistantPage(){
+export default function AIAssistantPage() {
   const chatRef = useRef(null);
 
   return (
@@ -29,7 +30,9 @@ export default function AIAssistantPage(){
             </div>
           </div>
           <div style={{marginTop:12}}>
-            <ChatbotPanel ref={chatRef} />
+            <main style={{ padding: 16 }}>
+              <ChatbotPanel ref={chatRef} />
+            </main>
           </div>
         </div>
       </main>
