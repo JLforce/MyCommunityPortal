@@ -2,6 +2,7 @@
 import React from 'react';
 import HeaderButtons from '../../components/HeaderButtons';
 import AnalyticsPanel, { getAnalyticsMockData } from '../../components/AnalyticsPanel';
+import Brand from '../../components/Brand';
 
 export default function AnalyticsPage(){
   function exportReport(){
@@ -48,8 +49,7 @@ export default function AnalyticsPage(){
       <header className="dashboard-header">
         <div className="container">
           <div style={{display:'flex',alignItems:'center',gap:12}}>
-            <div className="brand-logo small">MC</div>
-            <div className="brand-text">Analytics Dashboard</div>
+            <Brand />
           </div>
 
           <div className="header-actions">
