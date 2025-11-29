@@ -57,6 +57,7 @@
 	to { opacity: 1; transform: none; }
 }
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;700&display=swap');
 
 :root {
 	--green-900: #166534;
@@ -1579,7 +1580,7 @@ input[type="date"].date-input-custom::-moz-calendar-picker-indicator {
 .guide-search input { min-width:220px; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:#fff; }
 
 /* Cards */
-.guide-cards { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:18px; margin-top: 12px; }
+.guide-cards { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:18px; margin-top: 36px; }
 .guide-card { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:10px; padding:20px; border-radius:12px; transition: transform .28s cubic-bezier(.2,.9,.2,1), box-shadow .28s ease, background .18s ease; }
 .guide-card .card-icon { width:48px; height:48px; display:inline-flex; align-items:center; justify-content:center; border-radius:10px; background: rgba(16,185,129,0.06); color: var(--green-800); font-size:20px; }
 .guide-card h3 { margin:6px 0 2px; color:var(--green-800); font-size:18px; }
@@ -1622,11 +1623,120 @@ input[type="date"].date-input-custom::-moz-calendar-picker-indicator {
 	.guide-detail-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* Local Collection Rules styles */
-.local-rules { background: rgba(236,253,245,0.95); border: 1px solid rgba(34,197,94,0.06); }
-.local-rules { background: rgba(236,253,245,0.95); border: 1px solid rgba(34,197,94,0.06); padding: 20px; border-radius: 12px; }
-.local-rules h3 { color: var(--green-800); font-size: 26px; margin: 0 0 6px 0; line-height: 1.02; font-weight: 900; }
-.local-rules p { margin: 0 0 12px 0; color: var(--text-600); font-size: 15px; }
+/* Enhanced contrast for guide cards (higher background contrast, stronger border/shadow) */
+.guide-card {
+	/* cleaner, brighter surface with subtle green tint for warmth */
+	background: linear-gradient(180deg, #ffffff 0%, #f6fff8 100%);
+	border: 1px solid rgba(34,197,94,0.08);
+	box-shadow: 0 10px 32px rgba(16,24,16,0.045);
+	color: var(--text-700);
+}
+.guide-card .card-icon {
+	background: linear-gradient(180deg, rgba(34,197,94,0.12), rgba(34,197,94,0.04));
+	box-shadow: inset 0 -2px 10px rgba(16,185,129,0.03);
+}
+.guide-card h3 { color: var(--green-900); }
+.guide-card p { color: var(--text-700); }
+
+.guide-card:hover {
+	background: linear-gradient(180deg, #f8fff9 0%, #e8fff0 100%);
+	box-shadow: 0 22px 64px rgba(8,18,12,0.08);
+}
+
+@media (max-width: 700px) {
+	.guide-card { padding: 16px; }
+}
+
+/* Remove underline on hover/focus for guide-card anchors */
+.guide-card,
+.guide-card:hover,
+.guide-card:focus {
+	text-decoration: none !important;
+}
+.guide-card h3,
+.guide-card p {
+	text-decoration: none;
+}
+
+
+/* Typography for guide cards: Montserrat for headings, Inter for body */
+.guide-card {
+	font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+.guide-card h3 {
+	font-family: 'Montserrat', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+	font-weight: 700;
+	font-size: 20px;
+	letter-spacing: -0.2px;
+}
+.guide-card p {
+	font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+	font-size: 15px;
+	color: var(--text-700);
+}
+
+@media (max-width: 900px) {
+	.guide-card h3 { font-size: 18px; }
+	.guide-card p { font-size: 14px; }
+}
+
+
+
+/* Local Collection Rules styles — improved layout, type and visual polish */
+.local-rules {
+	background: linear-gradient(180deg, rgba(250,255,250,0.96) 0%, rgba(236,253,245,0.98) 100%);
+	border: 1px solid rgba(34,197,94,0.08);
+	padding: 28px 28px;
+	border-radius: 14px;
+	box-shadow: 0 12px 36px rgba(16,24,16,0.04);
+	position: relative;
+	overflow: hidden;
+}
+
+.local-rules::before {
+	/* subtle left accent bar */
+	content: '';
+	position: absolute;
+	left: 12px;
+	top: 12px;
+	bottom: 12px;
+	width: 6px;
+	border-radius: 6px;
+	background: linear-gradient(180deg, rgba(34,197,94,0.9), rgba(16,122,64,0.9));
+	opacity: 0.08;
+}
+
+.local-rules h3 {
+	color: var(--green-900);
+	font-size: 28px;
+	margin: 0 0 8px 0;
+	line-height: 1.04;
+	font-weight: 800;
+}
+.local-rules p { margin: 0 0 14px 0; color: var(--text-600); font-size: 15px; }
+
+.local-rules .local-rules-grid { gap: 22px; align-items: start; }
+.local-rules .collection-schedule h4, .local-rules .important-reminders h4 { font-size: 18px; color: var(--text-700); margin-bottom: 8px; font-weight: 400; }
+.local-rules .collection-schedule > h4 { font-weight: 700; }
+.local-rules .important-reminders > h4 { font-weight: 700; }
+.local-rules .schedule-grid { gap: 10px 18px; }
+
+.local-rules .panel-tip {
+	background: linear-gradient(180deg, #fff7ed, #fff4e8);
+	border-color: rgba(245,158,11,0.10);
+}
+
+.local-rules .panel-important {
+	background: linear-gradient(180deg, #fff5f5, #fff3f3);
+	border-color: rgba(239,68,68,0.08);
+}
+
+@media (max-width: 900px) {
+	.local-rules { padding: 18px; }
+	.local-rules h3 { font-size: 22px; }
+	.local-rules .local-rules-grid { grid-template-columns: 1fr; }
+	.local-rules::before { left: 10px; top: 10px; bottom: 10px; }
+}
 .local-rules-grid { display: grid; gap: 18px; }
 @media(min-width:900px) {
 	.local-rules-grid { grid-template-columns: 1fr 1fr; align-items: start; }
@@ -1635,6 +1745,9 @@ input[type="date"].date-input-custom::-moz-calendar-picker-indicator {
 .collection-schedule div { color: var(--text-700); }
 .schedule-grid { display: grid; grid-template-columns: 1fr auto; gap: 10px 24px; align-items: center; }
 .schedule-grid > div:first-child { font-weight: 600; }
+
+/* Override: keep schedule labels inside the Local Rules card at normal weight */
+.local-rules .schedule-grid > div:first-child { font-weight: 400; color: var(--text-700); }
 .schedule-grid > div:nth-child(2n) { text-align: right; color: var(--text-700); }
 .important-reminders ul { margin: 0; padding-left: 20px; color: var(--text-700); font-size: 15px; }
 .important-reminders ul li { margin-bottom: 8px; }
@@ -1781,6 +1894,18 @@ html { scroll-behavior: smooth; }
 	.profile-side{ order: 2; }
 	.profile-main{ order: 1; }
 }
+
+/* Guide page intro spacing: move intro slightly lower so it doesn't sit at the very top */
+.guide-intro {
+	margin-top: 34px;
+}
+
+@media (max-width: 900px) {
+	.guide-intro {
+		margin-top: 12px;
+	}
+}
+
 
 
 

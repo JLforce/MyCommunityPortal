@@ -32,7 +32,7 @@ export default function GuidePage() {
 	return (
 		<main className="container guide-page">
 			<div className="guide-header slide-in header-row">
-				<div>
+				<div className="guide-intro">
 					<h1>Waste Segregation Guide</h1>
 					<p className="muted">Learn how to properly sort and dispose of different types of waste</p>
 				</div>
@@ -40,7 +40,6 @@ export default function GuidePage() {
 				{/* client-side search component (debounced + jump-to) */}
 				<div className="search-box">
 					<div className="search-box-inner">
-						<label className="search-label">Search waste items</label>
 						<GuideSearch items={searchItems} />
 					</div>
 				</div>
