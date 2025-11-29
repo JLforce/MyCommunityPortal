@@ -1,8 +1,8 @@
 "use client";
 import React, { useRef } from 'react';
 import HeaderButtons from '../../components/HeaderButtons';
-//import ChatbotPanel from '../../components/ChatbotPanel.jsx';
-import ChatbotPanel from '../../components/ChatbotPanel';
+import ChatbotPanel from '../../components/ChatbotPanel.jsx';
+
 import Brand from '../../components/Brand';
 
 export default function AIAssistantPage() {

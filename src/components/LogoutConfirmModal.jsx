@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 
 export default function LogoutConfirmModal({ isOpen, onClose, onConfirm }){
@@ -28,7 +29,7 @@ export default function LogoutConfirmModal({ isOpen, onClose, onConfirm }){
 		try{ router.push('/logout'); }catch(e){ window.location.href = '/logout'; }
 	}
 
-	return (
+	const modal = (
 		<div
 			role="dialog"
 			aria-modal="true"
@@ -50,9 +51,15 @@ export default function LogoutConfirmModal({ isOpen, onClose, onConfirm }){
 
 				<div style={{padding:20,display:'flex',gap:12,justifyContent:'flex-end'}}>
 					<button className="btn muted" onClick={onClose} style={{padding:'10px 14px'}}>Cancel</button>
-					<button className="btn btn-primary" onClick={handleConfirm} style={{padding:'10px 14px'}}>Sign out</button>
+					<button className="btn btn-primary signout-btn" onClick={handleConfirm} style={{padding:'10px 14px'}}>Sign out</button>
 				</div>
 			</div>
 		</div>
 	);
+
+	// Render via portal to ensure it's mounted at the document root and not affected by ancestor transforms/stacking contexts
+	if (typeof document !== 'undefined') {
+		return createPortal(modal, document.body);
+	}
+	return modal;
 }

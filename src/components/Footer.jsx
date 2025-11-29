@@ -17,11 +17,11 @@ export default function Footer(){
         </div>
 
         <div className="footer-grid" style={{marginTop:24}}>
-          <div>
-            <div style={{marginBottom:8}}>
-              <Brand />
+          <div className="footer-brand">
+            <div className="brand-row">
+              <Brand size="large" />
             </div>
-            <p className="small">Connecting communities for better waste management and civic engagement.</p>
+            <p className="small footer-tagline">Connecting communities for better waste management and civic engagement.</p>
           </div>
           <div>
             <h5>Features</h5>

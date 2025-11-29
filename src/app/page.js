@@ -39,7 +39,6 @@ export default function HomePage() {
             <p className="lead">A centralized platform connecting residents and local authorities for better waste collection, community issue reporting, and transparent governance.</p>
             <div className="hero-actions">
               <a className="btn btn-primary" href="/signup" onClick={handleTransition('/signup')}>Join Your Community →</a>
-              <a className="btn" href="/signup" onClick={handleTransition('/signup')}>Get Started Today</a>
             </div>
           </div>
         </section>
@@ -137,26 +136,30 @@ export default function HomePage() {
         {/* Impact */}
         <section id="community" className="section">
           <div className="container impact">
-            <div>
+            <div className="impact-header">
               <span className="badge">💚 Real Impact</span>
               <h2 style={{margin:'10px 0 6px'}}>Building Stronger, Cleaner Communities</h2>
               <p className="muted">MyCommunityPortal promotes transparency, improves communication, and ensures timely service delivery while fostering responsible community participation.</p>
+            </div>
+
+            <div className="impact-grid">
               <div className="impact-points" style={{marginTop:12}}>
                 <div className="point"><span className="tick">✅</span><div><strong>Improved Response Times</strong><p className="small muted">Faster resolution through direct communication channels</p></div></div>
                 <div className="point"><span className="tick">✅</span><div><strong>Data‑Driven Decisions</strong><p className="small muted">Analytics help optimize resource allocation</p></div></div>
                 <div className="point"><span className="tick">✅</span><div><strong>Increased Transparency</strong><p className="small muted">Real‑time tracking builds trust</p></div></div>
                 <div className="point"><span className="tick">✅</span><div><strong>Environmental Impact</strong><p className="small muted">Better segregation improves recycling rates</p></div></div>
               </div>
-            </div>
-            <div>
-              <Image
-                className="impact-img"
-                src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80"
-                alt="Neighbors volunteering in a community cleanup at a local park"
-                width={1600}
-                height={1067}
-                priority
-              />
+
+              <div>
+                <Image
+                  className="impact-img"
+                  src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80"
+                  alt="Neighbors volunteering in a community cleanup at a local park"
+                  width={1600}
+                  height={1067}
+                  priority
+                />
+              </div>
             </div>
           </div>
         </section>
