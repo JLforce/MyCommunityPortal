@@ -1,11 +1,12 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
+import { supabase } from '../lib/supabase/supabase';
 
 export default function SettingsForm(){
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
-    displayName: 'John Doe',
-    email: 'johndoe@example.com',
+    displayName: '',
+    email: '',
     emailNotifications: true,
     inAppNotifications: true,
     language: 'en',
@@ -15,6 +16,7 @@ export default function SettingsForm(){
   const [avatar, setAvatar] = useState(null);
   const fileRef = useRef();
   const [status, setStatus] = useState(null);
+  const [userId, setUserId] = useState(null);
 
   function updateField(key, value){
     setForm(prev => ({ ...prev, [key]: value }));
@@ -24,7 +26,63 @@ export default function SettingsForm(){
     try{
       const stored = localStorage.getItem('mcp_avatar');
       if (stored) setAvatar(stored);
-    }catch(e){/* ignore */}
+    }catch(e){}
+  },[]);
+
+  useEffect(()=>{
+    let mounted = true;
+    async function load(){
+      try{
+        const { data: { session } } = await supabase.auth.getSession();
+        const user = session?.user || null;
+        if (!mounted) return;
+        if (!user){
+          setStatus({ ok: false, message: 'Please sign in to view settings' });
+          return;
+        }
+        setUserId(user.id);
+
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError){
+          setStatus({ ok: false, message: 'Failed to load profile' });
+        }
+
+        const displayName = profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || (user.email?.split('@')[0] || '') : (user.email?.split('@')[0] || '');
+        const email = profile?.email || user.email || '';
+
+        let prefs = null;
+        try{
+          const { data: settingsRow, error: settingsError } = await supabase
+            .from('user_settings')
+            .select('*')
+            .eq('user_id', user.id)
+            .single();
+          if (!settingsError){
+            prefs = settingsRow || null;
+          }
+        }catch(_e){}
+
+        setForm(prev=>({
+          ...prev,
+          displayName,
+          email,
+          emailNotifications: prefs?.email_notifications ?? prev.emailNotifications,
+          inAppNotifications: prefs?.in_app_notifications ?? prev.inAppNotifications,
+          language: prefs?.language ?? prev.language,
+          timezone: prefs?.timezone ?? prev.timezone,
+          twoFactor: prefs?.two_factor ?? prev.twoFactor,
+        }));
+      }catch(e){
+        setStatus({ ok: false, message: 'Unable to load settings' });
+      }
+    }
+    load();
+    return ()=>{ mounted = false; };
   },[]);
 
   function onSelectAvatar(file){
@@ -43,8 +101,40 @@ export default function SettingsForm(){
     setSaving(true);
     setStatus(null);
     try{
-      // simulate API call
-      await new Promise(r=>setTimeout(r,700));
+      if (!userId){
+        setSaving(false);
+        setStatus({ ok: false, message: 'Not signed in' });
+        return;
+      }
+
+      const parts = (form.displayName || '').trim().split(' ');
+      const first_name = parts[0] || '';
+      const last_name = parts.slice(1).join(' ') || '';
+
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ first_name, last_name })
+        .eq('id', userId);
+
+      if (profileError){
+        throw new Error(profileError.message || 'Profile update failed');
+      }
+
+      const { error: settingsError } = await supabase
+        .from('user_settings')
+        .upsert({
+          user_id: userId,
+          email_notifications: !!form.emailNotifications,
+          in_app_notifications: !!form.inAppNotifications,
+          language: form.language,
+          timezone: form.timezone,
+          two_factor: !!form.twoFactor,
+        }, { onConflict: 'user_id' });
+
+      if (settingsError){
+        throw new Error(settingsError.message || 'Settings update failed');
+      }
+
       setSaving(false);
       setStatus({ ok: true, message: 'Settings saved' });
       setTimeout(()=>setStatus(null), 3000);

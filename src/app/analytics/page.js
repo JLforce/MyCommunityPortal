@@ -1,10 +1,54 @@
 "use client";
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import HeaderButtons from '../../components/HeaderButtons';
 import AnalyticsPanel, { getAnalyticsMockData } from '../../components/AnalyticsPanel';
 import Brand from '../../components/Brand';
+import { supabase } from '../../lib/supabase/supabase';
+import { useRouter } from 'next/navigation';
 
 export default function AnalyticsPage(){
+  const router = useRouter();
+  const [accessChecked, setAccessChecked] = useState(false);
+  const [allowed, setAllowed] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    async function checkAccess(){
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
+      if (!userId){
+        router.replace('/signin');
+        if (mounted){ setAllowed(false); setAccessChecked(true); }
+        return;
+      }
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .maybeSingle();
+      const isResident = (profile?.role || '').toLowerCase() === 'resident';
+      if (isResident){
+        router.replace('/dashboard');
+        if (mounted){ setAllowed(false); setAccessChecked(true); }
+        return;
+      }
+      if (mounted){ setAllowed(true); setAccessChecked(true); }
+    }
+    checkAccess();
+    return ()=> { mounted = false; };
+  }, [router]);
+
+  if (!accessChecked){
+    return (
+      <div className="container" style={{padding:'28px 0'}}>
+        <p className="muted">Checking access…</p>
+      </div>
+    );
+  }
+
+  if (!allowed){
+    return null;
+  }
   function exportReport(){
     const data = getAnalyticsMockData();
     // Build a simple CSV with key sections

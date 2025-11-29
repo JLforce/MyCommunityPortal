@@ -31,7 +31,7 @@ export default function AIAssistantPage() {
           </div>
           <div style={{marginTop:12}}>
             <main style={{ padding: 16 }}>
-              <ChatbotPanel ref={chatRef} />
+              <ChatbotPanel />
             </main>
           </div>
         </div>

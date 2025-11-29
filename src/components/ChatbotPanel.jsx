@@ -42,16 +42,12 @@ const ChatbotPanel = forwardRef(function ChatbotPanel(props, ref){
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        const errorMsg = err?.message || err?.error || `HTTP ${res.status}`;
-        console.error('API Error:', err);
-        pushMessage('assistant', `Error: ${errorMsg}`);
-        return;
+        throw new Error(err?.error || `HTTP ${res.status}`);
       }
       const data = await res.json();
       pushMessage('assistant', data.reply || 'No response.');
     } catch (e) {
-      console.error('Fetch Error:', e);
-      pushMessage('assistant', `Sorry, I encountered an error: ${e.message || 'Network error'}. Please check your connection and try again.`);
+      pushMessage('assistant', 'Sorry, I encountered an error. Please try again.');
     } finally {
       setIsSending(false);
     }
