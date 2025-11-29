@@ -69,11 +69,11 @@ const ChatbotPanel = forwardRef(function ChatbotPanel(props, ref){
     <>
     <div className="chat-layout" style={{display:'grid',gridTemplateColumns:'1fr 320px',gap:18}}>
       <div className="chat-root">
-        <div className="chat-header">
-          <div style={{display:'flex',alignItems:'center',gap:12}}>
-            <div className="brand-logo small">AI</div>
-            <div>
-              <div style={{fontWeight:800}}>Chat with AI Assistant</div>
+        <div className="chat-header" style={{padding:'18px', marginBottom:12}}>
+          <div style={{display:'flex',alignItems:'center',gap:16}}>
+            <div className="ai-logo" aria-hidden>AI</div>
+            <div style={{marginLeft:6}}>
+              <div style={{fontWeight:800, fontSize:28, lineHeight:1.05, marginBottom:4}}>Chat with AI Assistant</div>
               <div className="muted small">Ask questions about waste collection, reporting issues, or community guidelines</div>
             </div>
           </div>
@@ -99,7 +99,7 @@ const ChatbotPanel = forwardRef(function ChatbotPanel(props, ref){
 
           <form className="chat-input" onSubmit={handleSend} aria-label="Send message">
             <input aria-label="Message input" placeholder="Type your message..." value={input} onChange={e=>setInput(e.target.value)} />
-            <button type="submit" className="btn" style={{background:'var(--green-900)',color:'#fff',border:'none',padding:'10px 16px',borderRadius:8}} disabled={isSending} aria-disabled={isSending}>{isSending ? 'Sending...' : 'Send'}</button>
+            <button type="submit" className="btn chat-send-btn" disabled={isSending} aria-disabled={isSending}>{isSending ? 'Sending...' : 'Send'}</button>
           </form>
         </div>
       </div>
