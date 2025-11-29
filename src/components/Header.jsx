@@ -13,7 +13,6 @@ export default function Header(){
         </nav>
         <div className="nav-cta">
           <Link className="btn" href="/signin">Sign In</Link>
-          <Link className="btn btn-primary" href="/signup">Get Started</Link>
         </div>
       </div>
     </header>
