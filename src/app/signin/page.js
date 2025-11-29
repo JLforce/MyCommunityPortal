@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Brand from '../../components/Brand';
 import { signIn } from '../actions/auth';
 
 export const metadata = {
@@ -10,10 +11,7 @@ export default function SignInPage(){
     <main>
       <div className="auth-topbar">
         <div className="container auth-topbar-inner">
-          <div className="brand">
-            <span style={{display:'inline-flex',width:24,height:24,alignItems:'center',justifyContent:'center',borderRadius:6,background:'#15803d',color:'#fff',fontWeight:700}}>🌿</span>
-            <span>MyCommunityPortal</span>
-          </div>
+          <Brand />
           <div className="small">Don't have an account? <Link href="/signup">Sign up</Link></div>
         </div>
       </div>

@@ -47,10 +47,16 @@ export function useAuth() {
       try {
         const profileData = JSON.parse(decodeURIComponent(cookieValue))
 
-        // Insert profile data
-        const { error } = await supabase
+        // DEBUG: Log the profile data coming from the cookie
+        console.log('--- handlePendingProfile: profileData from cookie ---', profileData)
+
+        // Insert profile data and log response for debugging
+        const { data: insertedProfile, error } = await supabase
           .from('profiles')
           .insert(profileData)
+          .select()
+
+        console.log('--- handlePendingProfile: insert response ---', { insertedProfile, error })
 
         if (!error) {
           // Clear the cookie

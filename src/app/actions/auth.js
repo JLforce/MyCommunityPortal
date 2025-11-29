@@ -6,16 +6,24 @@ import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 
 export async function signUp(formData) {
-  const email = formData.get('email')
+  // --- DEBUG: Log all form data received ---
+  console.log('--- Received form data ---');
+  formData.forEach((value, key) => console.log(`${key}: ${value}`));
+
+  const email = formData.get('email')?.trim()
   const password = formData.get('password')
   const confirm = formData.get('confirm')
-  const firstName = formData.get('first_name')
-  const lastName = formData.get('last_name')
-  const phone = formData.get('phone')
-  const street = formData.get('street_address')
-  const city = formData.get('city')
-  const zip = formData.get('zip_code')
-  const role = formData.get('role')
+  const firstName = formData.get('first_name')?.trim()
+  const lastName = formData.get('last_name')?.trim()
+  const phone = formData.get('phone')?.trim()
+  const street = formData.get('street_address')?.trim()
+  const city = formData.get('city')?.trim()
+  const zip = formData.get('zip_code')?.trim()
+  const role = formData.get('role')?.trim()
+
+  if (!email || !password || !confirm || !firstName || !lastName || !phone || !street || !city || !zip || !role) {
+    return { error: 'Please fill in all required fields.' }
+  }
 
   if (password !== confirm) {
     return { error: 'Passwords do not match' }
@@ -33,11 +41,17 @@ export async function signUp(formData) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
+    /*options: {
+      emailRedirectTo: `${new URL(process.env.NEXT_PUBLIC_SITE_URL).origin}/auth/callback`,
+    }*/
   })
 
   if (error) {
     return { error: error.message }
   }
+
+  // --- DEBUG: Log the user object from Supabase Auth ---
+  console.log('--- Supabase auth user created ---', data.user);
 
   const profileData = {
     id: data.user.id,
@@ -51,10 +65,28 @@ export async function signUp(formData) {
     role,
   }
 
-  // Insert profile data immediately using upsert to handle existing rows from trigger
-  const { error: insertError } = await supabase
+  // Extra validation: log and abort if any required profile field is null/empty
+  const requiredProfileFields = ['id', 'first_name', 'last_name', 'email', 'phone', 'street_address', 'city', 'zip_code', 'role']
+  const missingFields = requiredProfileFields.filter(key => profileData[key] === undefined || profileData[key] === null || (typeof profileData[key] === 'string' && profileData[key].trim() === ''))
+  if (missingFields.length > 0) {
+    console.error('Aborting profile insert - missing/empty fields:', missingFields)
+    console.error('Profile data snapshot:', profileData)
+    return { error: `Missing required profile fields: ${missingFields.join(', ')}` }
+  }
+
+  // --- DEBUG: Log the profile data object before insertion ---
+  console.log('--- Profile data to be inserted ---', profileData);
+
+  // Insert profile data immediately.
+  // Insert profile data immediately and log the response for debugging
+  const { data: insertedProfile, error: insertError } = await supabase
     .from('profiles')
-    .upsert(profileData)
+    .insert(profileData)
+    .select()
+
+  // Log result of insert for debugging
+  console.log('--- Profile insert result ---', { insertedProfile, insertError })
+
   if (insertError) {
     console.error('Failed to insert profile:', insertError.message)
     return { error: 'Account created but profile insertion failed. Please contact support.' }
@@ -99,9 +131,8 @@ export async function signIn(formData) {
     return { error: 'Please confirm your email before signing in.' }
   }
 
-  // Insert pending profile data if exists (from signup)
-  const { insertPendingProfile } = await import('./profile')
-  await insertPendingProfile()
+  // DEBUG: Log successful signin
+  console.log('--- User signed in successfully ---', data.user.id);
 
   revalidatePath('/', 'layout')
   redirect('/dashboard')

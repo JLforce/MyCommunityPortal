@@ -18,6 +18,9 @@ export async function getData(tableName) {
 
 // Example function to insert data into a table
 export async function insertData(tableName, data) {
+  // DEBUG: if writing to profiles, log payload
+  if (tableName === 'profiles') console.log('insertData: profiles payload', data)
+
   const { data: insertedData, error } = await supabase
     .from(tableName)
     .insert(data)

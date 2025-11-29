@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link';
+import Brand from '../../components/Brand';
 import { signUp } from '../actions/auth';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -23,10 +24,7 @@ export default function SignUpPage(){
     <main>
       <div className="auth-topbar">
         <div className="container auth-topbar-inner">
-          <div className="brand">
-            <span style={{display:'inline-flex',width:24,height:24,alignItems:'center',justifyContent:'center',borderRadius:6,background:'#15803d',color:'#fff',fontWeight:700}}>🌿</span>
-            <span>MyCommunityPortal</span>
-          </div>
+          <Brand />
           <div className="small">Already have an account? <Link href="/signin">Sign in</Link></div>
         </div>
       </div>
