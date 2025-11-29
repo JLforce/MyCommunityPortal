@@ -77,10 +77,7 @@ function Sidebar({ user }) {
   return (
     <aside className="sidebar" role="navigation" aria-label="Primary">
       <div className="sidebar-brand">
-        <div className="brand-logo small" aria-hidden>
-          <LeafIcon width={18} height={18} />
-        </div>
-        <strong>MyCommunityPortal</strong>
+        <Brand size="small" />
       </div>
 
       <nav>
