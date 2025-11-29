@@ -21,9 +21,12 @@
   },
   "homepage": "https://github.com/JLforce/MyCommunityPortal#readme",
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@supabase/ssr": "^0.7.0",
+    "leaflet": "^1.9.4",
     "next": "^14.2.7",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-leaflet": "^4.2.1"
   }
 }
