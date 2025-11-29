@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '../../lib/supabase/supabase';
 import HeaderButtons from '../../components/HeaderButtons';
+import Brand from '../../components/Brand';
 import LiveStatus from '../../components/LiveStatus';
 
 const LeafIcon = ({width=20,height=20}) => (
@@ -83,12 +84,9 @@ const CheckmarkIcon = ({width=24,height=24}) => (
 function Sidebar() {
   return (
     <aside className="sidebar" role="navigation" aria-label="Primary">
-      <div className="sidebar-brand">
-        <div className="brand-logo small" aria-hidden>
-          <LeafIcon width={18} height={18} />
+        <div className="sidebar-brand">
+          <Brand />
         </div>
-        <strong>MyCommunityPortal</strong>
-      </div>
 
       <nav>
         <Link href="/dashboard" className="nav-link">
@@ -144,10 +142,7 @@ function DashboardHeader(){
     <header className="dashboard-header">
       <div className="container">
         <div className="brand">
-          <div className="brand-logo large" aria-hidden>
-            <LeafIcon width={18} height={18} />
-          </div>
-          <div className="brand-text">MyCommunityPortal</div>
+          <Brand />
         </div>
         
         <div className="header-actions">
