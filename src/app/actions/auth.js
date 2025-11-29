@@ -22,7 +22,13 @@ export async function signUp(formData) {
   }
 
   const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
+  let supabase
+  try {
+    supabase = createClient(cookieStore)
+  } catch (err) {
+    console.error('Supabase client error:', err.message)
+    return { error: 'Supabase not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.' }
+  }
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -63,7 +69,13 @@ export async function signIn(formData) {
   const password = formData.get('password')
 
   const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
+  let supabase
+  try {
+    supabase = createClient(cookieStore)
+  } catch (err) {
+    console.error('Supabase client error:', err.message)
+    return { error: 'Supabase not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.' }
+  }
 
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
@@ -97,7 +109,13 @@ export async function signIn(formData) {
 
 export async function signOut() {
   const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
+  let supabase
+  try {
+    supabase = createClient(cookieStore)
+  } catch (err) {
+    console.error('Supabase client error:', err.message)
+    return { error: 'Supabase not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.' }
+  }
 
   const { error } = await supabase.auth.signOut()
 
