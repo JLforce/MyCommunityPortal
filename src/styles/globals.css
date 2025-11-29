@@ -193,6 +193,19 @@ cursor: pointer;
 }
 .cta-pill:active { transform: translateY(-2px) scale(0.99); }
 
+/* Prevent global anchor underline-on-hover from underlining CTA pill text
+   Scoped to the dashboard CTA pills so other links keep their hover styles */
+.cta-pill,
+.cta-pill * {
+	text-decoration: none !important;
+	-webkit-text-decoration: none !important;
+	text-decoration-color: transparent !important;
+}
+.cta-pill:hover,
+.cta-pill:hover * {
+	text-decoration: none !important;
+}
+
 /* smaller variant for header/card CTAs */
 .cta-pill.small {
 	padding: 8px 12px;
