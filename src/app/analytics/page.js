@@ -56,7 +56,7 @@ export default function AnalyticsPage(){
             <div style={{display:'flex',gap:10,alignItems:'center'}}>
               <div className="muted small">This Month</div>
               <button
-                className="cta-pill small header-export-cta"
+                className="cta-pill small header-export-cta export-btn"
                 onClick={exportReport}
                 aria-label="Export analytics report"
                 title="Export analytics report as CSV"

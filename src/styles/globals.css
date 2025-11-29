@@ -1106,6 +1106,18 @@ img{max-width:100%;height:auto;border:0}
 .signout-btn:hover {
 	background: linear-gradient(180deg,#c8f7db 0%,#6fcf8a 100%) !important;
 }
+/* Analytics: Export Report button should use softened medium-light green */
+.export-btn, .header-export-cta.export-btn {
+	background: linear-gradient(180deg, #e6fbef 0%, #f8fff8 100%);
+	color: #062918;
+	border: 1px solid rgba(16,185,129,0.10);
+	box-shadow: 0 8px 22px rgba(16,185,129,0.04);
+	font-weight:800;
+}
+.export-btn:hover, .header-export-cta.export-btn:hover {
+	background: linear-gradient(180deg,#e9f8ee 0%,#e0f5df 100%);
+	box-shadow: 0 12px 30px rgba(16,185,129,0.06);
+}
 .btn-light{background:#fff;border-color:#d1d5db;color:var(--text-700)}
 .badge{display:inline-flex;align-items:center;gap:8px;background:var(--green-50);color:var(--green-800);border:1px solid #cfead5;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:600}
 
