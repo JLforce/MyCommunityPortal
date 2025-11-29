@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 const CloseIcon = ({width=20,height=20}) => (
   <svg width={width} height={height} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
@@ -51,19 +52,16 @@ export default function NotificationsModal({ isOpen, onClose }) {
     }
   ];
 
-  return (
+  return createPortal(
     <div
       style={{
         position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
+        inset: 0,
         background: 'rgba(0, 0, 0, 0.5)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 1000,
+        zIndex: 2147483647,
         padding: '20px'
       }}
       onClick={onClose}
@@ -124,8 +122,8 @@ export default function NotificationsModal({ isOpen, onClose }) {
               transition: 'background 0.2s',
               marginLeft: 16
             }}
-            onMouseEnter={(e) => e.target.style.background = '#F3F4F6'}
-            onMouseLeave={(e) => e.target.style.background = 'transparent'}
+            onMouseEnter={(e) => { if (e && e.currentTarget) e.currentTarget.style.background = '#F3F4F6'; }}
+            onMouseLeave={(e) => { if (e && e.currentTarget) e.currentTarget.style.background = 'transparent'; }}
             aria-label="Close notifications"
           >
             <CloseIcon width={20} height={20} />
@@ -168,12 +166,16 @@ export default function NotificationsModal({ isOpen, onClose }) {
                     cursor: 'pointer'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = '#D1FAE5';
-                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)';
+                    if (e && e.currentTarget) {
+                      e.currentTarget.style.background = '#D1FAE5';
+                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)';
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = '#ECFDF5';
-                    e.currentTarget.style.boxShadow = 'none';
+                    if (e && e.currentTarget) {
+                      e.currentTarget.style.background = '#ECFDF5';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }
                   }}
                 >
                   <strong style={{
@@ -198,7 +200,8 @@ export default function NotificationsModal({ isOpen, onClose }) {
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
