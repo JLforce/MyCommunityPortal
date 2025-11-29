@@ -85,7 +85,7 @@ function Sidebar() {
   return (
     <aside className="sidebar" role="navigation" aria-label="Primary">
         <div className="sidebar-brand">
-          <Brand />
+          <Brand size="small" />
         </div>
 
       <nav>
