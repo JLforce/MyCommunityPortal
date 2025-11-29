@@ -25,11 +25,20 @@ npm install
 - Create a `.env.local` file in the root directory
 - Add your environment variables:
 ```env
-# Example environment variables
-NEXT_PUBLIC_API_URL=your_api_url
-NEXT_PUBLIC_APPWRITE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_APPWRITE_ENDPOINT=your_endpoint
+# Supabase Configuration (Required)
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Google Gemini API Key (Required)
+GOOGLE_API_KEY=your_google_api_key
+
+# Optional: Site URL for email redirects
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
+
+**How to get these values:**
+- **Supabase**: Go to [supabase.com](https://supabase.com) → Your Project → Settings → API
+- **Google API Key**: Go to [Google Cloud Console](https://console.cloud.google.com) → APIs & Services → Credentials → Create API Key
  
 4. Build the project
 ```bash
@@ -64,10 +73,30 @@ Next.js Documentation - learn about Next.js features and API.
 Learn Next.js - an interactive Next.js tutorial.
 You can check out the Next.js GitHub repository - your feedback and contributions are welcome!
 
-Deploy on Vercel
-The easiest way to deploy your Next.js app is to use the Vercel Platform from the creators of Next.js.
+## 🚀 Deployment
 
-Check out our Next.js deployment documentation for more details.
+**📖 For detailed deployment instructions, see [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)**
+
+### Quick Deploy Options:
+
+1. **Vercel (Recommended)** - Made by Next.js creators
+   - Push code to GitHub
+   - Import project on [vercel.com](https://vercel.com)
+   - Add environment variables in project settings
+   - Deploy automatically
+
+2. **Netlify** - Alternative platform
+   - Push code to GitHub
+   - Import project on [netlify.com](https://netlify.com)
+   - Add environment variables
+   - Deploy
+
+### Required Environment Variables for Deployment:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `GOOGLE_API_KEY`
+
+See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for step-by-step instructions.
 
 
 # FILE STRUCTURE FOR NEXT.JS APP ROUTER

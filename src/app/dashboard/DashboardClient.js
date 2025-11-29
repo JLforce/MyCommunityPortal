@@ -54,6 +54,24 @@ const AnimatedRobotIcon = ({width=18,height=18}) => (
 );
 
 function Sidebar({ user }) {
+  const [role, setRole] = useState(null);
+  const [roleLoading, setRoleLoading] = useState(true);
+  useEffect(() => {
+    let mounted = true;
+    async function loadRole(){
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = user?.id || session?.user?.id;
+      if (!userId){ if (mounted){ setRole(null); setRoleLoading(false); } return; }
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .maybeSingle();
+      if (mounted){ setRole(profile?.role || null); setRoleLoading(false); }
+    }
+    loadRole();
+    return ()=> { mounted = false; };
+  }, [user]);
   const handleReportsClick = async () => {
     console.log('=== Dashboard: Reports Link Clicked ===');
     console.log('User from server (passed as prop):', user);
@@ -112,12 +130,14 @@ function Sidebar({ user }) {
           <span>Guide</span>
         </Link>
 
-        <Link href="/analytics" className="nav-link">
-          <span className="icon-box" aria-hidden>
-            <svg width={16} height={16} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7z" stroke="#374151" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06A2 2 0 015.28 17.9l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82L4.4 6.6A2 2 0 017.23 3.77l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09c.12.7.7 1.24 1.4 1.39h.24a1.65 1.65 0 001.82-.33l.06-.06A2 2 0 0120.72 6.1l-.06.06a1.65 1.65 0 00-.33 1.82v.24c.15.7.69 1.28 1.39 1.4H21a2 2 0 010 4h-.09c-.7.12-1.24.7-1.39 1.4v.24z" stroke="#374151" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          </span>
-          <span>Analytics</span>
-        </Link>
+        {/*!roleLoading && role !== 'resident' && (
+          <Link href="/analytics" className="nav-link">
+            <span className="icon-box" aria-hidden>
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7z" stroke="#374151" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06A2 2 0 015.28 17.9l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82L4.4 6.6A2 2 0 017.23 3.77l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09c.12.7.7 1.24 1.4 1.39h.24a1.65 1.65 0 001.82-.33l.06-.06A2 2 0 0120.72 6.1l-.06.06a1.65 1.65 0 00-.33 1.82v.24c.15.7.69 1.28 1.39 1.4H21a2 2 0 010 4h-.09c-.7.12-1.24.7-1.39 1.4v.24z" stroke="#374151" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </span>
+            <span>Analytics</span>
+          </Link>
+        )*/}
 
         <Link href="/ai-assistant" className="nav-link">
           <span className="icon-box" aria-hidden>
