@@ -1064,6 +1064,17 @@ img{max-width:100%;height:auto;border:0}
 .btn:hover{transform:translateY(-1px)}
 .btn-primary{background:var(--green-900);border-color:var(--green-900);color:#fff}
 .btn-primary:hover{background:var(--green-800);border-color:var(--green-800)}
+
+/* Signup / auth card override: use a medium-light green (not too dark) */
+.auth-card .btn-primary, .auth-wrap .btn-primary {
+	background: linear-gradient(180deg, #e6fbef 0%, #8fd9a0 100%) !important;
+	color: #07221a !important;
+	border-color: rgba(16,185,129,0.12) !important;
+	box-shadow: 0 8px 24px rgba(16,185,129,0.08);
+}
+.auth-card .btn-primary:hover, .auth-wrap .btn-primary:hover {
+	background: linear-gradient(180deg,#c8f7db 0%,#6fcf8a 100%) !important;
+}
 .btn-light{background:#fff;border-color:#d1d5db;color:var(--text-700)}
 .badge{display:inline-flex;align-items:center;gap:8px;background:var(--green-50);color:var(--green-800);border:1px solid #cfead5;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:600}
 
