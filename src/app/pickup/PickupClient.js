@@ -119,12 +119,12 @@ function Sidebar() {
           <span>Guide</span>
         </Link>
 
-        <Link href="/analytics" className="nav-link">
+       {/*} <Link href="/analytics" className="nav-link">
           <span className="icon-box" aria-hidden>
             <CogIcon width={16} height={16} />
           </span>
           <span>Analytics</span>
-        </Link>
+        </Link>*/}
 
         <Link href="/ai-assistant" className="nav-link">
           <span className="icon-box" aria-hidden>
