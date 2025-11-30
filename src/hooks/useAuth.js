@@ -1,3 +1,5 @@
+// src/hooks/useAuth.js
+
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 
@@ -36,8 +38,33 @@ export function useAuth() {
     return () => subscription.unsubscribe()
   }, [])
 
+  // --- NEW: Authentication Methods ---
+
+  const signInWithProvider = async (provider) => {
+    // This is the function needed to fix the Google/Facebook login issue
+    return supabase.auth.signInWithOAuth({
+      provider: provider, // 'google' or 'facebook'
+      options: {
+        // NOTE: Ensure this redirect URL is correct for your App Router setup
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+  };
+
+  const signIn = async (email, password) => {
+    return supabase.auth.signInWithPassword({ email, password })
+  }
+
+  const signUp = async (email, password) => {
+    return supabase.auth.signUp({ email, password })
+  }
+
+  const signOut = async () => {
+    return supabase.auth.signOut()
+  }
+
+  // --- Existing Profile Handler ---
   const handlePendingProfile = async (userId) => {
-    // Check if there's a pending profile cookie
     const cookieValue = document.cookie
       .split('; ')
       .find(row => row.startsWith('pending_profile='))
@@ -47,16 +74,14 @@ export function useAuth() {
       try {
         const profileData = JSON.parse(decodeURIComponent(cookieValue))
 
-        // DEBUG: Log the profile data coming from the cookie
-        console.log('--- handlePendingProfile: profileData from cookie ---', profileData)
+        // Ensure user_id is set for the profile insertion (critical for foreign key)
+        profileData.user_id = userId; 
 
         // Insert profile data and log response for debugging
         const { data: insertedProfile, error } = await supabase
           .from('profiles')
           .insert(profileData)
           .select()
-
-        console.log('--- handlePendingProfile: insert response ---', { insertedProfile, error })
 
         if (!error) {
           // Clear the cookie
@@ -70,5 +95,13 @@ export function useAuth() {
     }
   }
 
-  return { user, loading }
+  // --- Final Return ---
+  return { 
+    user, 
+    loading, 
+    signIn, 
+    signUp, 
+    signOut,
+    signInWithProvider // EXPOSE THE OAUTH FUNCTION HERE
+  }
 }
