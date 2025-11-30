@@ -1,7 +1,8 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import HeaderButtons from '../../components/HeaderButtons';
-import AnalyticsPanel, { getAnalyticsMockData } from '../../components/AnalyticsPanel';
+import AnalyticsPanel from '../../components/AnalyticsPanel';
+import ExportReportButton from '../../components/ExportReportButton';
 import Brand from '../../components/Brand';
 import { supabase } from '../../lib/supabase/supabase';
 import { useRouter } from 'next/navigation';
@@ -97,16 +98,9 @@ export default function AnalyticsPage(){
           </div>
 
           <div className="header-actions">
-            <div style={{display:'flex',gap:10,alignItems:'center'}}>
+              <div style={{display:'flex',gap:10,alignItems:'center'}}>
               <div className="muted small">This Month</div>
-              <button
-                className="cta-pill small header-export-cta export-btn"
-                onClick={exportReport}
-                aria-label="Export analytics report"
-                title="Export analytics report as CSV"
-              >
-                Export Report
-              </button>
+              <ExportReportButton />
               <HeaderButtons />
             </div>
           </div>
