@@ -11,8 +11,9 @@ export default function Header(){
           <a href="#how">How It Works</a>
           <a href="#community">Community</a>
         </nav>
-        <div className="nav-cta">
-          <Link className="btn" href="/signin">Sign In</Link>
+        <div className="nav-cta" style={{display: 'flex', gap: 10}}>
+          <Link className="btn btn-outline" href="/signin?role=city_official">Sign In as City Official</Link>
+          <Link className="btn" href="/signin">Sign In as Resident</Link>
         </div>
       </div>
     </header>

@@ -53,6 +53,9 @@ export async function signUp(formData) {
   // --- DEBUG: Log the user object from Supabase Auth ---
   console.log('--- Supabase auth user created ---', data.user);
 
+  // normalize role for consistent storage (e.g. 'City Official' -> 'city_official')
+  const normalizedRole = role.toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_')
+
   const profileData = {
     id: data.user.id,
     first_name: firstName,
@@ -62,7 +65,7 @@ export async function signUp(formData) {
     street_address: street,
     city,
     zip_code: zip,
-    role,
+    role: normalizedRole,
   }
 
   // Extra validation: log and abort if any required profile field is null/empty
@@ -92,13 +95,43 @@ export async function signUp(formData) {
     return { error: 'Account created but profile insertion failed. Please contact support.' }
   }
 
+  // After creating profile, revalidate and handle post-signup redirect logic.
   revalidatePath('/', 'layout')
+
+  // If the user signed up as an admin/city official, attempt to sign them in
+  // automatically and redirect to the admin dashboard. If sign-in fails
+  // because email confirmation is required, fall back to the normal
+  // success message so the user can confirm and then sign in.
+  const adminRoles = ['city_official', 'city_authority', 'admin']
+  if (adminRoles.includes(normalizedRole) || normalizedRole.includes('official')) {
+    try {
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      if (!signInError) {
+        // verify session established
+        const { data: sessionData } = await supabase.auth.getSession()
+        if (sessionData?.session) {
+          revalidatePath('/', 'layout')
+          redirect('/dashboard-admin')
+        }
+      }
+    } catch (err) {
+      console.warn('Auto sign-in failed (non-blocking):', err?.message || err)
+    }
+    // If we reach here, auto sign-in didn't succeed (likely email confirmation required).
+    return { success: 'Account created successfully. Please confirm your email (if required) and sign in.' }
+  }
+
   return { success: 'Account created successfully. Please check your email for confirmation if required.' }
 }
 
 export async function signIn(formData) {
   const email = formData.get('email')
   const password = formData.get('password')
+  const roleHint = (formData.get('role_hint') || '')?.toString().toLowerCase();
 
   const cookieStore = cookies()
   let supabase
@@ -147,10 +180,18 @@ export async function signIn(formData) {
     }
 
     const role = (profileData?.role || '').toString().toLowerCase();
+    // normalize fetched role to a predictable form (underscores)
+    const normRole = role.replace(/\s+/g, '_').replace(/-/g, '_');
     revalidatePath('/', 'layout');
 
-    // If the user is a city authority/official, redirect to the admin dashboard
-    if (role === 'city official' || role === 'city authority' || role === 'city_authority' || role === 'admin') {
+    // If the request contained a role hint (click from 'Sign In as City Official'),
+    // prefer redirecting to the admin dashboard after successful sign-in.
+    if (roleHint === 'city_official' || roleHint.includes('official')) {
+      redirect('/dashboard-admin');
+    }
+
+    // If the user's stored role indicates admin/official, redirect to admin dashboard
+    if (normRole === 'city_official' || normRole === 'city_authority' || normRole === 'admin' || normRole.includes('official')) {
       redirect('/dashboard-admin');
     }
 

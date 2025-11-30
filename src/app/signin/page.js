@@ -6,7 +6,7 @@ export const metadata = {
   title: 'Sign in – MyCommunityPortal',
 };
 
-export default function SignInPage(){
+export default function SignInPage({ searchParams }){
   return (
     <main>
       <div className="auth-topbar">
@@ -30,6 +30,8 @@ export default function SignInPage(){
             </div>
 
             <form className="auth-form" action={signIn}>
+              {/* pass through role hint so server action can prefer dashboard redirect */}
+              <input type="hidden" name="role_hint" value={searchParams?.role || ''} />
               <label className="input-label" htmlFor="email">Email Address</label>
               <div className="input-field">
                 <img className="input-icon" src="/icons/mail.svg" alt="" />
