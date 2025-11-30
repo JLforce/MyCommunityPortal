@@ -16,10 +16,30 @@ export function createClient(cookieStore) {
     cookies: {
       get: (name) => cookieStore.get(name)?.value,
       set: (name, value, options) => {
-        cookieStore.set({ name, value, ...options })
+        try {
+          // Setting cookies via `next/headers().cookies.set` is only allowed
+          // inside Server Actions or Route Handlers. Wrap in try/catch so
+          // components or other server-render contexts don't crash when
+          // Supabase attempts to refresh a session during rendering.
+          if (cookieStore && typeof cookieStore.set === 'function') {
+            cookieStore.set({ name, value, ...options })
+          }
+        } catch (err) {
+          // Don't throw here — log and continue. Caller may be rendering
+          // where cookie mutation is not permitted.
+          // eslint-disable-next-line no-console
+          console.warn('Could not set cookie (safe to ignore outside actions/handlers):', err?.message || err)
+        }
       },
       remove: (name, options) => {
-        cookieStore.set({ name, value: '', ...options })
+        try {
+          if (cookieStore && typeof cookieStore.set === 'function') {
+            cookieStore.set({ name, value: '', ...options })
+          }
+        } catch (err) {
+          // eslint-disable-next-line no-console
+          console.warn('Could not remove cookie (safe to ignore outside actions/handlers):', err?.message || err)
+        }
       },
     },
   })

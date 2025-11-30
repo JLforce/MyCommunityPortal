@@ -134,8 +134,33 @@ export async function signIn(formData) {
   // DEBUG: Log successful signin
   console.log('--- User signed in successfully ---', data.user.id);
 
-  revalidatePath('/', 'layout')
-  redirect('/dashboard')
+  // After sign in, read the profile role and redirect appropriately
+  try {
+    const { data: profileData, error: profileError } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', data.user.id)
+      .maybeSingle();
+
+    if (profileError) {
+      console.error('Error fetching profile after sign in:', profileError.message || profileError);
+    }
+
+    const role = (profileData?.role || '').toString().toLowerCase();
+    revalidatePath('/', 'layout');
+
+    // If the user is a city authority/official, redirect to the admin dashboard
+    if (role === 'city official' || role === 'city authority' || role === 'city_authority' || role === 'admin') {
+      redirect('/dashboard-admin');
+    }
+
+    // Default redirect for normal users
+    redirect('/dashboard');
+  } catch (e) {
+    console.error('Error in post-signin redirect logic:', e);
+    revalidatePath('/', 'layout');
+    redirect('/dashboard');
+  }
 }
 
 export async function signOut() {

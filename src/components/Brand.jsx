@@ -4,7 +4,7 @@ export default function Brand({ className = '', size = 'large' }){
   const logoClass = size === 'small' ? 'brand-logo small' : 'brand-logo large';
 
   return (
-    <Link href="/dashboard" className={`brand ${className}`.trim()}>
+    <Link href="/dashboard-admin" className={`brand ${className}`.trim()}>
       <div className={logoClass} aria-hidden style={{display:'inline-flex',alignItems:'center',justifyContent:'center',background:'#15803d',color:'#fff',fontWeight:700}}>
         {/* use emoji as fallback icon */}
         <span style={{fontSize:16}}>🌿</span>
