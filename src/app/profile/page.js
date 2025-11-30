@@ -42,7 +42,7 @@ export default async function ProfilePage(){
 
       <main className="container" style={{padding:'28px 0'}}>
         <h1 style={{marginBottom:6}}>Profile</h1>
-        <p className="muted">View and edit your profile information. This page demonstrates a responsive layout that adapts to different screen sizes.</p>
+        <p className="muted">View and edit your profile information.</p>
 
         <div className="profile-grid" style={{marginTop:20}}>
           <section className="profile-main">
