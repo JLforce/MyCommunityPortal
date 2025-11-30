@@ -1,10 +1,11 @@
 // top-level imports
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase/supabase';
 import Link from 'next/link';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import imageCompression from 'browser-image-compression';
 
 // Fix default Leaflet marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -24,6 +25,8 @@ export default function ReportsClient({ user }) {
   const [coords, setCoords] = useState(null); // Track map pin (lat/lng)
   const [userLocation, setUserLocation] = useState(null); // User's current location
   const [locationPermission, setLocationPermission] = useState('prompt'); // 'prompt', 'granted', 'denied'
+  const [cameraPermission, setCameraPermission] = useState('prompt'); // 'prompt', 'granted', 'denied'
+  const [showCamera, setShowCamera] = useState(false);
   const [mapCenter, setMapCenter] = useState([10.3157, 123.8854]); // Default to Cebu City
 
   const [recent, setRecent] = useState([]);
@@ -76,6 +79,35 @@ export default function ReportsClient({ user }) {
     );
   };
 
+  // Request user's camera permission
+  const requestCameraPermission = async () => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert('Camera is not supported by your browser.');
+      setCameraPermission('denied');
+      return false;
+    }
+
+    try {
+      // Request video stream to trigger permission prompt
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      // We have permission, stop the stream immediately as we only need it for the prompt
+      stream.getTracks().forEach(track => track.stop());
+      setCameraPermission('granted');
+      console.log('Camera permission granted.');
+      return true;
+    } catch (err) {
+      console.error('Error accessing camera:', err);
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        alert('Camera permission denied. You can enable it in your browser settings to take a picture.');
+      } else {
+        alert('Could not access the camera. Please ensure it is not in use by another application.');
+      }
+      setCameraPermission('denied');
+      return false;
+    }
+  };
+
+
   // Fetch reports from Supabase on mount
   useEffect(() => {
     console.log('=== Reports Client: Fetch Reports Effect ===');
@@ -125,11 +157,32 @@ export default function ReportsClient({ user }) {
     return uploadedUrls;
   };
 
-  const handleFiles = (e) => {
-    const selected = Array.from(e.target.files || []);
-    const withPreview = selected.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
-    setFiles(prev => [...prev, ...withPreview]);
-  };
+  const handleFiles = async (e) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    if (selectedFiles.length === 0) return;
+
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+
+    const compressedFiles = await Promise.all(
+      selectedFiles.map(async (file) => {
+        try {
+          const compressedFile = await imageCompression(file, options);
+          console.log(`Compressed ${file.name} from ${file.size / 1024} KB to ${compressedFile.size / 1024} KB`);
+          return { file: compressedFile, preview: URL.createObjectURL(compressedFile) };
+        } catch (error) {
+          console.error('Error compressing image:', error);
+          // Fallback to original file if compression fails
+          return { file, preview: URL.createObjectURL(file) };
+        }
+      })
+    );
+
+    setFiles(prev => [...prev, ...compressedFiles]);
+  };  
 
   const removeFile = (idx) => {
     setFiles(prev => {
@@ -374,7 +427,62 @@ export default function ReportsClient({ user }) {
                   </svg>
                 </div>
                 <div style={{ marginBottom: 8 }}>Upload photos of the issue</div>
-                <input type="file" accept="image/*" multiple onChange={handleFiles} />
+                {/*<input type="file" accept="image/*" multiple onChange={handleFiles} />*/}
+                {/*<div style={{ marginBottom: 12 }}>Upload photos or take a picture</div>*/}
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 12 }}>
+  {/* Upload File */}
+  <label
+    className="btn"
+    style={{
+      background: '#fff',
+      border: '1px solid #E5E7EB',
+      padding: '8px 16px',
+      borderRadius: 8,
+      cursor: 'pointer'
+    }}
+  >
+    Upload Files
+    <input
+      type="file"
+      accept="image/*"
+      multiple
+      onChange={handleFiles}
+      style={{ display: 'none' }}
+    />
+  </label>
+
+  {/* Take Photo */}
+  <button
+    type="button"
+    className="btn btn-primary"
+    style={{
+      background: '#059669',
+      color: '#fff',
+      padding: '8px 16px',
+      borderRadius: 8,
+      cursor: 'pointer',
+      border: 'none',
+      fontSize: 'inherit',
+      fontFamily: 'inherit'
+    }}
+    onClick={async () => {
+      if (cameraPermission !== 'granted') {
+        const permissionGranted = await requestCameraPermission();
+        if (!permissionGranted) {
+          return; // Stop if permission is denied
+        }
+      }
+      // Open the custom camera modal
+      setShowCamera(true);
+    }}
+  >
+    Take a Picture
+  </button>
+</div>
+
+
+                {/* This input is now hidden and replaced by styled labels */}
+                {/* <input type="file" accept="image/*" multiple onChange={handleFiles} /> */}
 
                 {files.length > 0 && (
                   <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
@@ -389,6 +497,17 @@ export default function ReportsClient({ user }) {
               </div>
             </div>
 
+            {showCamera && (
+              <CameraModal
+                onClose={() => setShowCamera(false)}
+                onCapture={async (imageFile) => {
+                  // Reuse the handleFiles logic for compression and state update
+                  const event = { target: { files: [imageFile] } };
+                  await handleFiles(event);
+                  setShowCamera(false); // Close camera after capture
+                }}
+              />
+            )}
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginTop: 12 }}>
               <button type="submit" disabled={loading} style={{ flex: 1, background: loading ? '#ccc' : '#0b6b2c', color: '#fff', padding: 12, borderRadius: 8, border: 'none', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer' }}>{loading ? 'Submitting...' : 'Submit Report'}</button>
               <button
@@ -486,4 +605,101 @@ function LocationPicker({ onPick }) {
   return null;
 }
 
+// Custom Camera Modal Component
+function CameraModal({ onClose, onCapture }) {
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [stream, setStream] = useState(null);
+  const [capturedImage, setCapturedImage] = useState(null);
 
+  useEffect(() => {
+    // Start camera stream
+    let activeStream;
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+      .then(stream => {
+        activeStream = stream;
+        setStream(stream);
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      })
+      .catch(err => {
+        console.error("Error accessing camera:", err);
+        alert("Could not access the camera. Please ensure you have granted permission and it's not in use.");
+        onClose();
+      });
+
+    // Cleanup: stop stream when component unmounts
+    return () => {
+      if (activeStream) {
+        activeStream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [onClose]);
+
+  const handleCapture = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const context = canvas.getContext('2d');
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg');
+      setCapturedImage(dataUrl);
+      // Stop the video stream after capture
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    }
+  };
+
+  const handleRetake = () => {
+    setCapturedImage(null);
+    // Restart the stream
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+      .then(newStream => {
+        setStream(newStream);
+        if (videoRef.current) {
+          videoRef.current.srcObject = newStream;
+        }
+      });
+  };
+
+  const handleConfirm = () => {
+    if (canvasRef.current) {
+      canvasRef.current.toBlob(blob => {
+        const imageFile = new File([blob], `capture-${Date.now()}.jpg`, { type: 'image/jpeg' });
+        onCapture(imageFile);
+      }, 'image/jpeg', 0.9);
+    }
+  };
+
+  return (
+    <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+      <div style={{ background: '#111', padding: 16, borderRadius: 12, width: '100%', maxWidth: 600, textAlign: 'center' }}>
+        <div style={{ position: 'relative', width: '100%', marginBottom: 16 }}>
+          {capturedImage ? (
+            <img src={capturedImage} alt="Captured" style={{ maxWidth: '100%', borderRadius: 8 }} />
+          ) : (
+            <video ref={videoRef} autoPlay playsInline style={{ width: '100%', borderRadius: 8 }} />
+          )}
+          <canvas ref={canvasRef} style={{ display: 'none' }} />
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 16 }}>
+          {capturedImage ? (
+            <>
+              <button type="button" onClick={handleRetake} style={{ padding: '12px 20px', borderRadius: 8, border: '1px solid #fff', background: 'transparent', color: '#fff', cursor: 'pointer', fontSize: 16 }}>Retake</button>
+              <button type="button" onClick={handleConfirm} style={{ padding: '12px 20px', borderRadius: 8, border: 'none', background: '#059669', color: '#fff', cursor: 'pointer', fontSize: 16 }}>Use Photo</button>
+            </>
+          ) : (
+            <button type="button" onClick={handleCapture} style={{ padding: '12px 20px', borderRadius: 8, border: 'none', background: '#059669', color: '#fff', cursor: 'pointer', fontSize: 16 }}>Capture</button>
+          )}
+        </div>
+        <button type="button" onClick={onClose} style={{ position: 'absolute', top: 20, right: 20, background: 'rgba(0,0,0,0.5)', color: '#fff', border: 'none', borderRadius: '50%', width: 32, height: 32, cursor: 'pointer', fontSize: 18 }}>
+          &times;
+        </button>
+      </div>
+    </div>
+  );
+}
