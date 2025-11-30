@@ -58,18 +58,6 @@ export default function AdminDashboardPage(){
               Reports
             </a>
 
-            <a href="/pickup" className="nav-link" style={{display:'flex',alignItems:'center',gap:12,padding:'12px 20px',borderRadius:8,fontSize:17,fontWeight:600}}>
-              <div className="nav-icon nav-icon--pickup">
-                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                  <rect x="2" y="8" width="12" height="6" rx="1" fill="#1e3a8a" />
-                  <rect x="15" y="9" width="5" height="3" rx="0.8" fill="#1e3a8a" />
-                  <circle cx="8" cy="17" r="1.4" fill="#fff" />
-                  <circle cx="18" cy="17" r="1.4" fill="#fff" />
-                </svg>
-              </div>
-              Pickups
-            </a>
-
             <a href="/users" className="nav-link" style={{display:'flex',alignItems:'center',gap:12,padding:'12px 20px',borderRadius:8,fontSize:17,fontWeight:600}}>
               <div className="nav-icon nav-icon--users">
                 <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
