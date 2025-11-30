@@ -48,7 +48,7 @@ export default function AdminDashboardPage(){
               Analytics
             </a>
 
-            <a href="/reports" className="nav-link" style={{display:'flex',alignItems:'center',gap:12,padding:'12px 20px',borderRadius:8,fontSize:17,fontWeight:600}}>
+            <a href="/dashboard-admin/reports" className="nav-link" style={{display:'flex',alignItems:'center',gap:12,padding:'12px 20px',borderRadius:8,fontSize:17,fontWeight:600}}>
               <div className="nav-icon nav-icon--reports">
                 <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M7 3h7l4 4v11a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V3z" fill="#c2410c" />
