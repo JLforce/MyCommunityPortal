@@ -11,9 +11,9 @@ export default function Header(){
           <a href="#how">How It Works</a>
           <a href="#community">Community</a>
         </nav>
-        <div className="nav-cta" style={{display: 'flex', gap: 10}}>
-          <Link className="btn btn-outline" href="/signin?role=city_official">Sign In as City Official</Link>
-          <Link className="btn" href="/signin">Sign In as Resident</Link>
+        <div className="nav-cta" style={{display: 'flex', gap: 12, alignItems: 'center'}}>
+          <Link aria-label="Sign in as City Official" className="cta-pill green" href="/signin?role=city_official">Sign In as City Official</Link>
+          <Link aria-label="Sign in as Resident" className="cta-pill green" href="/signin">Sign In as Resident</Link>
         </div>
       </div>
     </header>

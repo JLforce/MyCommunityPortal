@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import NotificationsModal from './NotificationsModal';
 import LogoutConfirmModal from './LogoutConfirmModal';
@@ -34,6 +35,7 @@ const LogoutIcon = ({width=18,height=18}) => (
 );
 
 export default function HeaderButtons(){
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [hovered, setHovered] = useState(null);
@@ -73,7 +75,7 @@ export default function HeaderButtons(){
           <>
             <div style={{position:'relative'}}>
               <button
-                onClick={() => setNotificationsOpen(true)}
+                onClick={() => router.push('/dashboard-admin/notification')}
                 title="Notifications"
                 aria-label="Notifications"
                 onMouseEnter={()=>setHovered('notifications')}
@@ -86,7 +88,7 @@ export default function HeaderButtons(){
             </div>
 
           <Link
-            href="/settings"
+            href="/dashboard-admin/settings"
             title="Settings"
             aria-label="Settings"
             onMouseEnter={()=>setHovered('settings')}
@@ -98,7 +100,7 @@ export default function HeaderButtons(){
 
           <div style={{position:'relative'}}>
             <Link
-              href="/profile"
+              href="/dashboard-admin/profile"
               title="Profile"
               aria-label="Profile"
               onMouseEnter={()=>setHovered('profile')}
@@ -142,7 +144,7 @@ export default function HeaderButtons(){
                 role="menuitem" 
                 onClick={() => {
                   setOpen(false);
-                  setNotificationsOpen(true);
+                  router.push('/dashboard-admin/notification');
                 }} 
                 onMouseEnter={(e) => e.target.style.background = '#F3F4F6'}
                 onMouseLeave={(e) => e.target.style.background = 'transparent'}
@@ -152,12 +154,12 @@ export default function HeaderButtons(){
                 <span>Notifications</span>
               </button>
 
-              <Link href="/settings" role="menuitem" onClick={()=>setOpen(false)} style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'var(--text-900)'}}>
+              <Link href="/dashboard-admin/settings" role="menuitem" onClick={()=>setOpen(false)} style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'var(--text-900)'}}>
                 <CogIcon />
                 <span>Settings</span>
               </Link>
 
-              <Link href="/profile" role="menuitem" onClick={()=>setOpen(false)} style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'var(--text-900)'}}>
+              <Link href="/dashboard-admin/profile" role="menuitem" onClick={()=>setOpen(false)} style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'var(--text-900)'}}>
                 <UserIcon />
                 <span>Profile</span>
               </Link>

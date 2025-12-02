@@ -342,6 +342,16 @@ cursor: pointer;
 }
 .cta-pill:active { transform: translateY(-2px) scale(0.99); }
 
+/* Green variant for header sign-in pills (rounded, soft gradient) */
+.cta-pill.green {
+	background: linear-gradient(180deg, #e6fbef 0%, #8fd9a0 100%);
+	color: #07221a !important;
+	border: 1px solid rgba(16,185,129,0.08);
+}
+.cta-pill.green:hover {
+	background: linear-gradient(180deg,#c8f7db 0%,#6fcf8a 100%);
+}
+
 /* Prevent global anchor underline-on-hover from underlining CTA pill text
    Scoped to the dashboard CTA pills so other links keep their hover styles */
 .cta-pill,

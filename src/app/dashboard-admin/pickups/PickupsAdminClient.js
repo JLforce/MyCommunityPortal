@@ -1,9 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { supabase } from '../../../lib/supabase/supabase';
-import Brand from '../../../components/Brand';
-import HeaderButtons from '../../../components/HeaderButtons';
-import Link from 'next/link';
 
 export default function PickupsAdminClient({ user }) {
   const [pickups, setPickups] = useState([]);
@@ -218,86 +215,7 @@ export default function PickupsAdminClient({ user }) {
   };
 
   return (
-    <div className="admin-dashboard-root">
-      <header className="dashboard-header" style={{padding:'18px 0',background:'var(--green-50)',borderBottom:'1px solid rgba(16,185,129,0.06)'}}>
-        <div className="container" style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:12}}>
-          <div style={{display:'flex',alignItems:'center',gap:12}}>
-            <Brand />
-            <div style={{marginLeft:12}}>
-              <h2 className="dashboard-title" style={{margin:0}}>
-                <span className="title-main">City Authority</span>
-                <span className="title-tag"> (Admin)</span>
-              </h2>
-            </div>
-          </div>
-
-          <div style={{display:'flex',alignItems:'center',gap:12}}>
-            <HeaderButtons />
-          </div>
-        </div>
-      </header>
-
-      <div style={{display:'grid',gridTemplateColumns:'300px 1fr',gap:32,alignItems:'start',marginTop:20}} className="container">
-        <aside style={{width:300,background:'var(--green-50)',padding:'28px 22px',borderRadius:12,border:'1px solid rgba(16,185,129,0.04)',minHeight:720}}>
-          <div style={{display:'flex',flexDirection:'column',gap:12}}>
-            <Link href="/dashboard-admin" className="nav-link" style={{display:'flex',alignItems:'center',gap:12,padding:'12px 20px',borderRadius:8,fontSize:17,fontWeight:600}}>
-              <div className="nav-icon nav-icon--dashboard">
-                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                  <rect x="3" y="3" width="7" height="7" rx="1" fill="#065f46" />
-                  <rect x="14" y="3" width="7" height="7" rx="1" fill="#065f46" />
-                  <rect x="3" y="14" width="7" height="7" rx="1" fill="#065f46" />
-                  <rect x="14" y="14" width="7" height="7" rx="1" fill="#065f46" />
-                </svg>
-              </div>
-              <span>Dashboard</span>
-            </Link>
-
-            <Link href="/dashboard-admin/analytics" className="nav-link" style={{display:'flex',alignItems:'center',gap:12,padding:'12px 20px',borderRadius:8,fontSize:17,fontWeight:600}}>
-              <div className="nav-icon nav-icon--analytics">
-                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                  <rect x="3" y="10" width="3" height="8" rx="1" fill="#065f46" />
-                  <rect x="9" y="6" width="3" height="12" rx="1" fill="#065f46" />
-                  <rect x="15" y="3" width="3" height="15" rx="1" fill="#065f46" />
-                </svg>
-              </div>
-              Analytics
-            </Link>
-
-            <Link href="/dashboard-admin/reports" className="nav-link" style={{display:'flex',alignItems:'center',gap:12,padding:'12px 20px',borderRadius:8,fontSize:17,fontWeight:600}}>
-              <div className="nav-icon nav-icon--reports">
-                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M7 3h7l4 4v11a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V3z" fill="#c2410c" />
-                  <rect x="9" y="8" width="6" height="1.6" rx="0.8" fill="#fff" opacity="0.9" />
-                </svg>
-              </div>
-              Reports
-            </Link>
-
-            <Link href="/dashboard-admin/pickups" className="nav-link active" style={{display:'flex',alignItems:'center',gap:12,padding:'14px 20px',borderRadius:10,background:'var(--green-900)',color:'#fff',fontSize:18,fontWeight:800}}>
-              <div className="nav-icon nav-icon--pickup">
-                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                  <rect x="2" y="8" width="12" height="6" rx="1" fill="#ffffff" />
-                  <rect x="15" y="9" width="5" height="3" rx="0.8" fill="#ffffff" />
-                  <circle cx="8" cy="17" r="1.4" fill="#fff" />
-                  <circle cx="18" cy="17" r="1.4" fill="#fff" />
-                </svg>
-              </div>
-              <span>Pickups</span>
-            </Link>
-
-            <Link href="/users" className="nav-link" style={{display:'flex',alignItems:'center',gap:12,padding:'12px 20px',borderRadius:8,fontSize:17,fontWeight:600}}>
-              <div className="nav-icon nav-icon--users">
-                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                  <circle cx="12" cy="8" r="3" fill="#0f172a" />
-                  <path d="M4 19c1.5-4 7-4 8-4s6.5 0 8 4v1H4v-1z" fill="#0f172a" />
-                </svg>
-              </div>
-              Users
-            </Link>
-          </div>
-        </aside>
-
-        <main style={{paddingBottom:40}}>
+    <main style={{paddingBottom:40}}>
           {/* Page Header */}
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:24}}>
             <div>
@@ -433,9 +351,7 @@ export default function PickupsAdminClient({ user }) {
               })}
             </div>
           )}
-        </main>
-      </div>
-    </div>
+    </main>
   );
 }
 
