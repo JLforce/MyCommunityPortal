@@ -22,6 +22,7 @@
   "homepage": "https://github.com/JLforce/MyCommunityPortal#readme",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "@supabase/auth-helpers-nextjs": "^0.15.0",
     "@supabase/ssr": "^0.7.0",
     "browser-image-compression": "^2.0.2",
     "leaflet": "^1.9.4",
