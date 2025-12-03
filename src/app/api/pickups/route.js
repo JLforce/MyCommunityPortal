@@ -1,11 +1,11 @@
 // src/app/api/pickups/route.js
-import { createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 
 // --- GET: Fetch all pickup requests for the Admin dashboard ---
 export async function GET() {
   const cookieStore = cookies();
-  const supabase = createServerClient(cookieStore);
+  const supabase = createClient(cookieStore);
 
   // Authorization Check: Ensure the user is logged in
   const { data: { user } } = await supabase.auth.getUser();

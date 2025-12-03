@@ -2,10 +2,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase/supabase';
 
-export default function SettingsForm(){
+export default function SettingsForm({ initialSettings = {} }){
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
-    displayName: '',
+    displayName: `${initialSettings.first_name || ''} ${initialSettings.last_name || ''}`.trim() || (initialSettings.email?.split('@')[0] || ''),
     email: '',
     emailNotifications: true,
     inAppNotifications: true,
@@ -30,60 +30,22 @@ export default function SettingsForm(){
   },[]);
 
   useEffect(()=>{
-    let mounted = true;
-    async function load(){
-      try{
-        const { data: { session } } = await supabase.auth.getSession();
-        const user = session?.user || null;
-        if (!mounted) return;
-        if (!user){
-          setStatus({ ok: false, message: 'Please sign in to view settings' });
-          return;
-        }
-        setUserId(user.id);
-
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-
-        if (profileError){
-          setStatus({ ok: false, message: 'Failed to load profile' });
-        }
-
-        const displayName = profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || (user.email?.split('@')[0] || '') : (user.email?.split('@')[0] || '');
-        const email = profile?.email || user.email || '';
-
-        let prefs = null;
-        try{
-          const { data: settingsRow, error: settingsError } = await supabase
-            .from('user_settings')
-            .select('*')
-            .eq('user_id', user.id)
-            .single();
-          if (!settingsError){
-            prefs = settingsRow || null;
-          }
-        }catch(_e){}
-
-        setForm(prev=>({
-          ...prev,
-          displayName,
-          email,
-          emailNotifications: prefs?.email_notifications ?? prev.emailNotifications,
-          inAppNotifications: prefs?.in_app_notifications ?? prev.inAppNotifications,
-          language: prefs?.language ?? prev.language,
-          timezone: prefs?.timezone ?? prev.timezone,
-          twoFactor: prefs?.two_factor ?? prev.twoFactor,
-        }));
-      }catch(e){
-        setStatus({ ok: false, message: 'Unable to load settings' });
-      }
+    if (!initialSettings.id) {
+      setStatus({ ok: false, message: 'Please sign in to view settings' });
+      return;
     }
-    load();
-    return ()=>{ mounted = false; };
-  },[]);
+    setUserId(initialSettings.id);
+    setForm(prev => ({
+      ...prev,
+      displayName: `${initialSettings.first_name || ''} ${initialSettings.last_name || ''}`.trim() || (initialSettings.email?.split('@')[0] || ''),
+      email: initialSettings.email || '',
+      emailNotifications: initialSettings.email_notifications ?? prev.emailNotifications,
+      inAppNotifications: initialSettings.in_app_notifications ?? prev.inAppNotifications,
+      language: initialSettings.language ?? prev.language,
+      timezone: initialSettings.timezone ?? prev.timezone,
+      twoFactor: initialSettings.two_factor ?? prev.twoFactor,
+    }));
+  }, [initialSettings]);
 
   function onSelectAvatar(file){
     if (!file) return;

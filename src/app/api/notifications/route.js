@@ -1,11 +1,11 @@
 // src/app/api/notifications/route.js
-import { createServerClient } from '@/lib/supabase/server'; // Assumed utility for server-side Supabase connection
+import { createClient } from '@/lib/supabase/server'; // Assumed utility for server-side Supabase connection
 import { cookies } from 'next/headers';
 
 // --- GET: Fetch all UNREAD notifications for the current admin ---
 export async function GET() {
   const cookieStore = cookies();
-  const supabase = createServerClient(cookieStore);
+  const supabase = createClient(cookieStore);
 
   // 1. Get the current authenticated user's ID
   const { data: { user } } = await supabase.auth.getUser();
@@ -37,7 +37,7 @@ export async function GET() {
 // --- POST: Mark a list of notifications as READ ---
 export async function POST(request) {
   const cookieStore = cookies();
-  const supabase = createServerClient(cookieStore);
+  const supabase = createClient(cookieStore);
 
   const { ids } = await request.json(); // Expects an array of IDs to mark read
 

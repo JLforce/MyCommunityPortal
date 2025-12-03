@@ -1,14 +1,43 @@
+import { cookies } from 'next/headers';
+import { createClient } from '../../lib/supabase/server';
 import HeaderButtons from '../../components/HeaderButtons';
 import SettingsForm from '../../components/SettingsForm';
 import Brand from '../../components/Brand';
 
-export default function SettingsPage(){
+export default async function SettingsPage(){
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
+
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let profile = null;
+  let settings = null;
+
+  if (user) {
+    // Fetch profile and settings in parallel for better performance
+    const [profileRes, settingsRes] = await Promise.all([
+      supabase.from('profiles').select('*').eq('id', user.id).single(),
+      supabase.from('user_settings').select('*').eq('user_id', user.id).single()
+    ]);
+
+    if (profileRes.data) {
+      profile = profileRes.data;
+    }
+
+    if (settingsRes.data) {
+      settings = settingsRes.data;
+    }
+  }
+
+  // Combine data into a single object to pass to the form
+  const initialSettings = { ...profile, ...settings, email: user?.email };
+
   return (
     <div>
       <header style={{background:'var(--green-50)',borderBottom:'1px solid var(--border)'}}>
         <div className="container" style={{display:'flex',alignItems:'center',justifyContent:'space-between',height:64}}>
           <div style={{display:'flex',alignItems:'center',gap:12}}>
-            <Brand />
+            <Brand userRole={profile?.role} />
           </div>
 
           <div style={{display:'flex',alignItems:'center',gap:14}}>
@@ -23,7 +52,7 @@ export default function SettingsPage(){
 
         <div className="settings-grid" style={{marginTop:20}}>
           <section className="settings-main">
-            <SettingsForm />
+            <SettingsForm initialSettings={initialSettings} />
           </section>
 
           <aside className="settings-side">

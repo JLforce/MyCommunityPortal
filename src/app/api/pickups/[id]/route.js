@@ -1,11 +1,11 @@
 // src/app/api/pickups/[id]/route.js
-import { createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 
 // --- PUT: Update a specific pickup request by ID ---
 export async function PUT(request, { params }) {
   const cookieStore = cookies();
-  const supabase = createServerClient(cookieStore);
+  const supabase = createClient(cookieStore);
   const { id } = params; // Gets the ID from the URL (e.g., /api/pickups/123)
 
   // Authorization Check: Ensure the user is logged in

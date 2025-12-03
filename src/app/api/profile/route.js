@@ -1,11 +1,11 @@
 // src/app/api/profile/route.js
-import { createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 
 // --- GET: Fetch the current admin's profile data ---
 export async function GET() {
   const cookieStore = cookies();
-  const supabase = createServerClient(cookieStore);
+  const supabase = createClient(cookieStore);
 
   // 1. Get the current authenticated user's ID
   const { data: { user } } = await supabase.auth.getUser();
@@ -36,7 +36,7 @@ export async function GET() {
 // --- PUT: Update the current admin's profile data ---
 export async function PUT(request) {
   const cookieStore = cookies();
-  const supabase = createServerClient(cookieStore);
+  const supabase = createClient(cookieStore);
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {

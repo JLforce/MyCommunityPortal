@@ -1,11 +1,11 @@
 // src/app/api/settings/route.js
-import { createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 
 // --- GET: Fetch the current global settings (always ID 1) ---
 export async function GET() {
   const cookieStore = cookies();
-  const supabase = createServerClient(cookieStore);
+  const supabase = createClient(cookieStore);
 
   // 1. Fetch the user to perform an authorization check (ensure only admin can access)
   const { data: { user } } = await supabase.auth.getUser();
@@ -31,7 +31,10 @@ export async function GET() {
   
   // Handle case where settings table is empty
   if (!settings) {
-     return new Response(JSON.stringify({ error: 'Settings not initialized. Insert the first row (ID=1) manually in Supabase.' }), { status: 404 });
+    return new Response(JSON.stringify(null), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
   // 3. Return the settings data to the frontend
@@ -44,7 +47,7 @@ export async function GET() {
 // --- PUT: Update the global settings (always ID 1) ---
 export async function PUT(request) {
   const cookieStore = cookies();
-  const supabase = createServerClient(cookieStore);
+  const supabase = createClient(cookieStore);
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
@@ -61,12 +64,23 @@ export async function PUT(request) {
   };
 
   // 2. Update the single settings row with ID 1
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from('admin_settings')
     .update(updatePayload)
     .eq('id', 1) // Crucial: Only update the row with ID 1
-    .select() // Select the updated row to return it
-    .single();
+    .select() // Select the updated row to return it.
+    .maybeSingle(); // Use maybeSingle to avoid error if row doesn't exist yet.
+
+  // If data is null, it means the row with id=1 didn't exist. Let's create it.
+  if (!data && !error) {
+    const { data: insertedData, error: insertError } = await supabase
+      .from('admin_settings')
+      .insert({ id: 1, ...updatePayload })
+      .select()
+      .single();
+    data = insertedData;
+    error = insertError;
+  }
 
   if (error) {
     console.error('Settings update error:', error.message);

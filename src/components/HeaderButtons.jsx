@@ -1,9 +1,10 @@
 "use client";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import NotificationsModal from './NotificationsModal';
 import LogoutConfirmModal from './LogoutConfirmModal';
+import { supabase } from '@/lib/supabase';
 
 const BellIcon = ({width=18,height=18}) => (
   <svg width={width} height={height} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
@@ -42,6 +43,7 @@ export default function HeaderButtons(){
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [avatar, setAvatar] = useState(null);
+  const [role, setRole] = useState(null);
   const ref = useRef();
 
   useEffect(()=>{
@@ -61,6 +63,42 @@ export default function HeaderButtons(){
   },[]);
 
   useEffect(()=>{
+    let mounted = true;
+    async function fetchRole(){
+      try{
+        const { data: { session } } = await supabase.auth.getSession();
+        const userId = session?.user?.id;
+        if (!userId){
+          if (mounted) setRole(null);
+          return;
+        }
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', userId)
+          .maybeSingle();
+        if (mounted) setRole(profile?.role || null);
+      }catch(err){
+        if (mounted) setRole(null);
+        console.error('HeaderButtons: failed to fetch role', err);
+      }
+    }
+    fetchRole();
+    return ()=>{ mounted = false; };
+  },[]);
+
+  const isAdminRole = useMemo(()=>{
+    const norm = (role || '').toString().trim().toLowerCase().replace(/\s+/g,'_');
+    if (!norm) return false;
+    return norm.includes('admin') || norm.includes('official') || norm.includes('city_authority');
+  },[role]);
+
+  const navigateToNotifications = ()=>{
+    const target = isAdminRole ? '/dashboard-admin/notification' : '/notifications';
+    router.push(target);
+  };
+
+  useEffect(()=>{
     function onDoc(e){
       if (ref.current && !ref.current.contains(e.target)) setOpen(false);
     }
@@ -75,7 +113,7 @@ export default function HeaderButtons(){
           <>
             <div style={{position:'relative'}}>
               <button
-                onClick={() => router.push('/dashboard-admin/notification')}
+                onClick={navigateToNotifications}
                 title="Notifications"
                 aria-label="Notifications"
                 onMouseEnter={()=>setHovered('notifications')}
@@ -88,7 +126,7 @@ export default function HeaderButtons(){
             </div>
 
           <Link
-            href="/dashboard-admin/settings"
+            href={isAdminRole ? "/dashboard-admin/settings" : "/settings"}
             title="Settings"
             aria-label="Settings"
             onMouseEnter={()=>setHovered('settings')}
@@ -100,7 +138,7 @@ export default function HeaderButtons(){
 
           <div style={{position:'relative'}}>
             <Link
-              href="/dashboard-admin/profile"
+              href={isAdminRole ? "/dashboard-admin/profile" : "/profile"}
               title="Profile"
               aria-label="Profile"
               onMouseEnter={()=>setHovered('profile')}
@@ -144,7 +182,7 @@ export default function HeaderButtons(){
                 role="menuitem" 
                 onClick={() => {
                   setOpen(false);
-                  router.push('/dashboard-admin/notification');
+                  navigateToNotifications();
                 }} 
                 onMouseEnter={(e) => e.target.style.background = '#F3F4F6'}
                 onMouseLeave={(e) => e.target.style.background = 'transparent'}
@@ -154,12 +192,12 @@ export default function HeaderButtons(){
                 <span>Notifications</span>
               </button>
 
-              <Link href="/dashboard-admin/settings" role="menuitem" onClick={()=>setOpen(false)} style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'var(--text-900)'}}>
+              <Link href={isAdminRole ? "/dashboard-admin/settings" : "/settings"} role="menuitem" onClick={()=>setOpen(false)} style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'var(--text-900)'}}>
                 <CogIcon />
                 <span>Settings</span>
               </Link>
 
-              <Link href="/dashboard-admin/profile" role="menuitem" onClick={()=>setOpen(false)} style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'var(--text-900)'}}>
+              <Link href={isAdminRole ? "/dashboard-admin/profile" : "/profile"} role="menuitem" onClick={()=>setOpen(false)} style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'var(--text-900)'}}>
                 <UserIcon />
                 <span>Profile</span>
               </Link>

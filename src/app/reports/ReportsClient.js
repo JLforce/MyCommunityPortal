@@ -31,6 +31,7 @@ export default function ReportsClient({ user }) {
 
   const [recent, setRecent] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   // Log user prop for debugging
   useEffect(() => {
@@ -39,6 +40,13 @@ export default function ReportsClient({ user }) {
     console.log('User ID:', user?.id);
     console.log('User Email:', user?.email);
     console.log('==========================================');
+  }, [user]);
+
+  // Clear error when user starts typing
+  useEffect(() => {
+    if (issueType || priority || location || description || coords) {
+      setError('');
+    }
   }, [user]);
 
   // Request user's location permission
@@ -141,7 +149,7 @@ export default function ReportsClient({ user }) {
   const uploadPhotos = async (reportId, photoFiles) => {
     const uploadedUrls = [];
     for (const photoFile of photoFiles) {
-      const filename = `${reportId}/${Date.now()}-${photoFile.name}`;
+      const filename = `${user?.id || 'anonymous'}/${reportId}/${Date.now()}-${photoFile.name}`;
       const { data, error } = await supabase.storage
         .from('report-photos')
         .upload(filename, photoFile);
@@ -208,6 +216,21 @@ export default function ReportsClient({ user }) {
 
     console.log('Proceeding with report submission for user ID:', user.id);
 
+    setError(''); // Clear previous errors
+    const locationStringCandidate = coords
+      ? (location ? `${location} (lat: ${coords.lat}, lng: ${coords.lng})` : `lat: ${coords.lat}, lng: ${coords.lng}`)
+      : location;
+
+    const missing = [];
+    if (!issueType || !issueType.trim()) missing.push('Issue Type');
+    if (!priority || !priority.trim()) missing.push('Priority');
+    if (!locationStringCandidate || !locationStringCandidate.trim()) missing.push('Location (type or pin on map)');
+    if (!description || !description.trim()) missing.push('Description');
+    if (missing.length > 0) {
+      setError(`Please fill out all required fields: ${missing.join(', ')}`);
+      return;
+    }
+
     setLoading(true);
     
     try {
@@ -271,6 +294,7 @@ export default function ReportsClient({ user }) {
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
+      setError(''); // Clear error on success
       setRecent(newReports || []);
     } catch (err) {
       alert('Error: ' + err.message);
@@ -508,6 +532,11 @@ export default function ReportsClient({ user }) {
                 }}
               />
             )}
+            {error && (
+              <div style={{ color: '#dc2626', background: '#FEF2F2', padding: '10px 12px', borderRadius: 8, marginTop: 12, border: '1px solid #FECACA', fontWeight: 500 }}>
+                {error}
+              </div>
+            )}
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginTop: 12 }}>
               <button type="submit" disabled={loading} style={{ flex: 1, background: loading ? '#ccc' : '#0b6b2c', color: '#fff', padding: 12, borderRadius: 8, border: 'none', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer' }}>{loading ? 'Submitting...' : 'Submit Report'}</button>
               <button
@@ -519,6 +548,7 @@ export default function ReportsClient({ user }) {
                   setDescription(''); 
                   setFiles([]); 
                   setCoords(null);
+                  setError('');
                   // Reset map center
                   if (userLocation) {
                     setMapCenter([userLocation.lat, userLocation.lng]);

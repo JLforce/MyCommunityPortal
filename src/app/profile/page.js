@@ -31,7 +31,7 @@ export default async function ProfilePage(){
       <header style={{background:'var(--green-50)',borderBottom:'1px solid var(--border)'}}>
         <div className="container" style={{display:'flex',alignItems:'center',justifyContent:'space-between',height:64}}>
           <div style={{display:'flex',alignItems:'center',gap:12}}>
-            <Brand />
+            <Brand userRole={profile?.role} />
           </div>
 
           <div style={{display:'flex',alignItems:'center',gap:14}}>

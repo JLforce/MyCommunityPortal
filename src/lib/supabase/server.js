@@ -2,6 +2,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
+// Primary helper used across the app
 export function createClient(cookieStore) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -43,4 +44,9 @@ export function createClient(cookieStore) {
       },
     },
   })
+}
+
+// Backwards-compatible alias for older imports expecting `createServerClient`
+export function createServerClientFromCookies(cookieStore) {
+  return createClient(cookieStore)
 }
