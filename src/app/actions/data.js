@@ -105,13 +105,19 @@ export async function getPickupsCount() {
   return { count }
 }
 
-export async function getPendingReportsCount() {
+export async function getPendingReportsCount(municipality) {
   const cookieStore = cookies()
   const supabase = createClient(cookieStore)
-  const { count, error } = await supabase
+  let query = supabase
     .from('reports')
     .select('*', { count: 'exact', head: true })
-    .eq('status', 'pending')
+    .in('status', ['pending', 'under-review', 'under_review'])
+  
+  if (municipality) {
+    query = query.eq('municipality', municipality)
+  }
+
+  const { count, error } = await query
 
   if (error) {
     return { error: error.message }
@@ -120,14 +126,20 @@ export async function getPendingReportsCount() {
   return { count }
 }
 
-export async function getResolvedIssuesCount() {
+export async function getResolvedIssuesCount(municipality) {
   const cookieStore = cookies()
   const supabase = createClient(cookieStore)
-  const { count, error } = await supabase
+  let query = supabase
     .from('reports')
     .select('*', { count: 'exact', head: true })
     .eq('status', 'resolved')
 
+  if (municipality) {
+    query = query.eq('municipality', municipality)
+  }
+
+  const { count, error } = await query
+
   if (error) {
     return { error: error.message }
   }
@@ -135,13 +147,19 @@ export async function getResolvedIssuesCount() {
   return { count }
 }
 
-export async function getUsersCount() {
+export async function getUsersCount(municipality) {
   const cookieStore = cookies()
   const supabase = createClient(cookieStore)
-  const { count, error } = await supabase
+  let query = supabase
     .from('profiles')
     .select('*', { count: 'exact', head: true })
 
+  if (municipality) {
+    query = query.eq('municipality', municipality)
+  }
+
+  const { count, error } = await query
+
   if (error) {
     return { error: error.message }
   }
@@ -149,14 +167,20 @@ export async function getUsersCount() {
   return { count }
 }
 
-export async function getRecentActivity() {
+export async function getRecentActivity(municipality) {
   const cookieStore = cookies()
   const supabase = createClient(cookieStore)
-  const { data, error } = await supabase
+  let query = supabase
     .from('reports')
     .select('*, profiles(full_name)')
     .order('created_at', { ascending: false })
     .limit(5)
+
+  if (municipality) {
+    query = query.eq('municipality', municipality)
+  }
+
+  const { data, error } = await query
 
   if (error) {
     return { error: error.message }

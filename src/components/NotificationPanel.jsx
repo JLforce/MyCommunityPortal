@@ -1,6 +1,7 @@
 "use client";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { supabase } from '../lib/supabase/supabase';
 
 const Icon = ({ type }) => {
   if (type === 'report') {
@@ -27,19 +28,36 @@ const Icon = ({ type }) => {
   );
 };
 
-export default function NotificationPanel() {
+export default function NotificationPanel({ initialNotifications = [] }) {
   const router = useRouter();
-  const [notifications, setNotifications] = useState([
-    { id: 1, title: 'New Report Submitted', message: 'Illegal dumping reported in Barangay A', time: '5 minutes ago', type: 'report' },
-    { id: 2, title: 'Issue Resolved', message: 'Missed collection case in Barangay B has been resolved', time: '1 hour ago', type: 'success' },
-    { id: 3, title: 'Pickup Scheduled', message: 'New special pickup request from Barangay C', time: '2 hours ago', type: 'info' },
-    { id: 4, title: 'Pending Review', message: '10 reports awaiting authority review', time: '3 hours ago', type: 'report' },
-    { id: 5, title: 'Collection Complete', message: 'Weekly collection in Barangay A completed successfully', time: '4 hours ago', type: 'success' }
-  ]);
+  const [notifications, setNotifications] = useState(initialNotifications);
 
-  function removeNotification(id) {
+  async function removeNotification(id) {
     setNotifications((prev) => prev.filter(n => n.id !== id));
+    try {
+      await supabase.from('notifications').delete().eq('id', id);
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+    }
   }
+
+  async function markAllRead() {
+    setNotifications([]);
+    try {
+      const ids = notifications.map(n => n.id);
+      if (ids.length > 0) {
+        await supabase.from('notifications').update({ is_read: true }).in('id', ids);
+      }
+    } catch (error) {
+      console.error('Error marking notifications read:', error);
+    }
+  }
+
+  const formatTime = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleString();
+  };
   return (
     <div
       role="dialog"
@@ -57,7 +75,7 @@ export default function NotificationPanel() {
               <p style={{margin:0,fontSize:14,color:'#6b7280',marginTop:6}}>Recent activity and updates</p>
             </div>
             <div style={{display:'flex',gap:8,alignItems:'center'}}>
-              <button onClick={() => setNotifications([])} style={{background:'transparent',border:'none',padding:8,borderRadius:8,cursor:'pointer'}} title="Mark all as read">Mark all read</button>
+              <button onClick={markAllRead} style={{background:'transparent',border:'none',padding:8,borderRadius:8,cursor:'pointer'}} title="Mark all as read">Mark all read</button>
               <button onClick={() => router.back()} title="Close" style={{background:'transparent',border:'none',padding:8,borderRadius:8,cursor:'pointer'}}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
                   <path d="M18 6L6 18M6 6l12 12" stroke="#6B7280" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -84,7 +102,7 @@ export default function NotificationPanel() {
                         <div style={{fontSize:13,color:'#6b7280',marginTop:6}}>{n.message}</div>
                       </div>
                       <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:8}}>
-                        <span style={{fontSize:12,color:'#9CA3AF'}}>{n.time}</span>
+                        <span style={{fontSize:12,color:'#9CA3AF'}}>{formatTime(n.created_at) || n.time}</span>
                         <button onClick={() => removeNotification(n.id)} title="Delete" style={{background:'transparent',border:'none',cursor:'pointer',color:'#9CA3AF'}}>
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
                             <path d="M3 6h18" stroke="#9CA3AF" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />

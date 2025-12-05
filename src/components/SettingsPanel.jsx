@@ -1,42 +1,57 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase/supabase';
 
-export default function SettingsPanel(){
-  const [general, setGeneral] = useState({
-    barangayName: 'Barangay A',
-    contactEmail: 'barangay@example.com',
-    contactPhone: '09123456789'
-  });
-
-  const [notifications, setNotifications] = useState({
-    email: true,
-    sms: true,
-    push: false,
-    weeklyReports: true
-  });
-
-  const [pickup, setPickup] = useState({
-    defaultTime: 'Morning (6 AM - 12 PM)',
-    maxPerDay: 50
-  });
+export default function SettingsPanel({
+  settingsId,
+  initialGeneral = { barangayName: 'Barangay', contactEmail: '', contactPhone: '' },
+  initialNotifications = { email: true, sms: true, push: false, weeklyReports: true },
+  initialPickup = { defaultTime: 'Morning (6 AM - 12 PM)', maxPerDay: 50, enable: true },
+}) {
+  const [general, setGeneral] = useState(initialGeneral);
+  const [notifications, setNotifications] = useState(initialNotifications);
+  const [pickup, setPickup] = useState(initialPickup);
 
   const [saving, setSaving] = useState(false);
 
-  function handleSave(e){
+  useEffect(() => {
+    setGeneral(initialGeneral);
+    setNotifications(initialNotifications);
+    setPickup(initialPickup);
+  }, [initialGeneral, initialNotifications, initialPickup]);
+
+  async function handleSave(e){
     e.preventDefault();
     setSaving(true);
-    // simulate save
-    setTimeout(()=>{
+    try {
+      const payload = {
+        id: settingsId,
+        site_name: general.barangayName,
+        contact_email: general.contactEmail,
+        pickup_enable: pickup.enable ?? true,
+        update_at: new Date().toISOString(),
+      };
+
+      const { error } = await supabase.from('admin_settings').upsert(payload);
+      if (error) {
+        console.error('Error saving settings:', error);
+        alert('Failed to save settings. Please try again.');
+      } else {
+        alert('Settings saved');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to save settings. Please try again.');
+    } finally {
       setSaving(false);
-      alert('Settings saved (demo)');
-    },700);
+    }
   }
 
   function handleCancel(){
     // reset demo values or navigate away in real app
-    setGeneral({ barangayName:'Barangay A', contactEmail:'barangay@example.com', contactPhone:'09123456789' });
-    setNotifications({ email:true, sms:true, push:false, weeklyReports:true });
-    setPickup({ defaultTime:'Morning (6 AM - 12 PM)', maxPerDay:50 });
+    setGeneral(initialGeneral);
+    setNotifications(initialNotifications);
+    setPickup(initialPickup);
   }
 
   return (
@@ -100,6 +115,10 @@ export default function SettingsPanel(){
             <label>
               <div style={{fontSize:13,color:'#374151',marginBottom:6}}>Max Requests Per Day</div>
               <input type="number" value={pickup.maxPerDay} onChange={(e)=>setPickup(p=>({...p,maxPerDay:parseInt(e.target.value||0)}))} style={{width:'100%',padding:'10px 12px',borderRadius:8,border:'1px solid #D1FAE5',background:'#FAFFFB'}} />
+            </label>
+            <label style={{display:'flex',alignItems:'center',gap:8}}>
+              <input type="checkbox" checked={pickup.enable} onChange={(e)=>setPickup(p=>({...p,enable:e.target.checked}))} />
+              <span>Enable Pickup Requests</span>
             </label>
           </div>
         </section>

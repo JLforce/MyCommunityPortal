@@ -40,14 +40,11 @@ export default function ReportsAdminClient({ user }) {
         setAdminProfile(profile);
         const adminMunicipality = profile.municipality;
 
-        // 2. Fetch reports for the admin's municipality and join profile info in one query
+        // 2. Fetch reports scoped to the admin's municipality
         const { data: reportsData, error: reportsError } = await supabase
           .from('reports')
-          .select(`
-            *,
-            profile:profiles(first_name, last_name, email)
-          `)
-          .eq('municipality', adminMunicipality) // Filter directly on the reports table
+          .select('*')
+          .eq('municipality', adminMunicipality)
           .order('created_at', { ascending: false });
 
         if (reportsError) {
@@ -58,9 +55,25 @@ export default function ReportsAdminClient({ user }) {
           return;
         }
 
-        // Transform the data to create a residentName property
-        const transformedReports = reportsData.map(report => {
-          const residentProfile = report.profile;
+        // 3. Fetch resident profiles for those reports (no FK join defined in DB)
+        const residentIds = Array.from(new Set((reportsData || []).map(r => r.user_id).filter(Boolean)));
+        let profilesMap = new Map();
+
+        if (residentIds.length > 0) {
+          const { data: profilesData, error: profilesError } = await supabase
+            .from('profiles')
+            .select('id, first_name, last_name, municipality, phone, email')
+            .in('id', residentIds);
+
+          if (profilesError) {
+            console.error('Error fetching resident profiles:', profilesError);
+          } else {
+            profilesMap = new Map(profilesData.map(p => [p.id, p]));
+          }
+        }
+
+        const transformedReports = (reportsData || []).map(report => {
+          const residentProfile = profilesMap.get(report.user_id);
           const residentName = residentProfile
             ? `${residentProfile.first_name || ''} ${residentProfile.last_name || ''}`.trim() || residentProfile.email || 'Unknown User'
             : 'Unknown User';
@@ -346,7 +359,6 @@ export default function ReportsAdminClient({ user }) {
                           <button
                             onClick={() => {
                               // TODO: Implement edit functionality
-                              console.log('Edit report:', report.id);
                             }}
                             style={{
                               display:'inline-flex',
