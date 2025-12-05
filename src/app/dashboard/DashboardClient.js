@@ -94,9 +94,9 @@ function Sidebar({ user }) {
 
   return (
     <aside className="sidebar" role="navigation" aria-label="Primary">
-      <div className="sidebar-brand">
+     {/* <div className="sidebar-brand">
         <Brand size="small" userRole={role} />
-      </div>
+      </div>*/}
 
       <nav>
         <Link href="/dashboard" className="nav-link active" aria-current="page">
@@ -106,7 +106,7 @@ function Sidebar({ user }) {
             </span>
             <span>Dashboard</span>
           </div>
-          <span className="home-badge">Home</span>
+          {/*<span className="home-badge">Home</span>*/}
         </Link>
 
         <Link href="/pickup" className="nav-link">
@@ -160,6 +160,7 @@ export default function DashboardClient({ user }) {
   const [profile, setProfile] = useState(null);
   const [pickups, setPickups] = useState([]);
   const [reports, setReports] = useState([]);
+  const [defaultSchedule, setDefaultSchedule] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -188,6 +189,19 @@ export default function DashboardClient({ user }) {
         } else {
           console.log('Profile data:', profileData);
           setProfile(profileData);
+          
+          // Fetch default schedule for municipality
+          if (profileData?.municipality) {
+            const { data: scheduleData, error: scheduleError } = await supabase
+              .from('admin_settings')
+              .select('default_pickup_day, default_pickup_time')
+              .eq('municipality', profileData.municipality)
+              .maybeSingle();
+            
+            if (!scheduleError && scheduleData) {
+              setDefaultSchedule(scheduleData);
+            }
+          }
         }
 
         // Fetch upcoming pickups
@@ -285,6 +299,14 @@ export default function DashboardClient({ user }) {
                   <Link href="/pickup" className="cta-pill small">+ Schedule</Link>
                 </div>
                 <p className="muted">Your scheduled waste collection dates</p>
+                {defaultSchedule && (
+                  <div style={{marginTop:8, padding:10, background:'#ECFDF5', borderRadius:8, border:'1px solid #D1FAE5'}}>
+                    <div style={{fontSize:12, fontWeight:600, color:'#065f46', marginBottom:4}}>Default Schedule</div>
+                    <div style={{fontSize:13, color:'#047857'}}>
+                      Every {defaultSchedule.default_pickup_day} • {defaultSchedule.default_pickup_time}
+                    </div>
+                  </div>
+                )}
 
                 <div className="card-content">
                   {loading ? (

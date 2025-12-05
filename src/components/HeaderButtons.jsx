@@ -172,7 +172,27 @@ export default function HeaderButtons(){
         </>
       ) : (
         <div style={{position:'relative'}}>
-          <button onClick={()=> setOpen(v=>!v)} aria-haspopup="true" aria-expanded={open} title="More" style={{background:'transparent',border:'1px solid var(--border)',padding:'6px 8px',borderRadius:8,display:'inline-flex',alignItems:'center',justifyContent:'center'}}>
+          <button 
+            onClick={()=> setOpen(v=>!v)} 
+            aria-haspopup="true" 
+            aria-expanded={open} 
+            title="More" 
+            style={{
+              background:'transparent',
+              border:'1px solid var(--border)',
+              padding:'8px 10px',
+              borderRadius:8,
+              display:'inline-flex',
+              alignItems:'center',
+              justifyContent:'center',
+              minWidth:44,
+              minHeight:44,
+              cursor:'pointer',
+              transition:'background .12s'
+            }}
+            onMouseEnter={()=>setHovered('menu')}
+            onMouseLeave={()=>setHovered(null)}
+          >
             {/* three dots */}
             <svg width="18" height="6" viewBox="0 0 18 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
               <circle cx="3" cy="3" r="2" fill="#374151" />
@@ -182,22 +202,105 @@ export default function HeaderButtons(){
           </button>
 
           {open && (
-            <div role="menu" aria-label="Header actions" style={{position:'absolute',right:0,top:'calc(100% + 8px)',background:'#fff',boxShadow:'0 6px 20px rgba(15,23,42,0.08)',borderRadius:8,padding:8,minWidth:180,zIndex:40}}>
-              <Link href={isAdminRole ? "/dashboard-admin/settings" : "/settings"} role="menuitem" onClick={()=>setOpen(false)} style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'var(--text-900)'}}>
-                <CogIcon />
-                <span>Settings</span>
-              </Link>
+            <>
+              {/* Backdrop to close menu on outside click */}
+              <div 
+                style={{
+                  position:'fixed',
+                  inset:0,
+                  zIndex:39,
+                  background:'transparent'
+                }}
+                onClick={()=>setOpen(false)}
+                aria-hidden="true"
+              />
+              <div 
+                role="menu" 
+                aria-label="Header actions" 
+                style={{
+                  position:'absolute',
+                  right:0,
+                  top:'calc(100% + 8px)',
+                  background:'#fff',
+                  boxShadow:'0 6px 20px rgba(15,23,42,0.08)',
+                  borderRadius:8,
+                  padding:8,
+                  minWidth:200,
+                  zIndex:40,
+                  width:'max-content',
+                  maxWidth:'calc(100vw - 32px)'
+                }}
+              >
+                <Link 
+                  href={isAdminRole ? "/dashboard-admin/settings" : "/settings"} 
+                  role="menuitem" 
+                  onClick={()=>setOpen(false)} 
+                  style={{
+                    display:'flex',
+                    gap:10,
+                    alignItems:'center',
+                    padding:'12px 10px',
+                    borderRadius:6,
+                    color:'var(--text-900)',
+                    textDecoration:'none',
+                    minHeight:44,
+                    transition:'background .12s'
+                  }}
+                  onMouseEnter={(e)=>e.currentTarget.style.background='rgba(0,0,0,0.04)'}
+                  onMouseLeave={(e)=>e.currentTarget.style.background='transparent'}
+                >
+                  <CogIcon />
+                  <span>Settings</span>
+                </Link>
 
-              <Link href={isAdminRole ? "/dashboard-admin/profile" : "/profile"} role="menuitem" onClick={()=>setOpen(false)} style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'var(--text-900)'}}>
-                <UserIcon />
-                <span>Profile</span>
-              </Link>
+                <Link 
+                  href={isAdminRole ? "/dashboard-admin/profile" : "/profile"} 
+                  role="menuitem" 
+                  onClick={()=>setOpen(false)} 
+                  style={{
+                    display:'flex',
+                    gap:10,
+                    alignItems:'center',
+                    padding:'12px 10px',
+                    borderRadius:6,
+                    color:'var(--text-900)',
+                    textDecoration:'none',
+                    minHeight:44,
+                    transition:'background .12s'
+                  }}
+                  onMouseEnter={(e)=>e.currentTarget.style.background='rgba(0,0,0,0.04)'}
+                  onMouseLeave={(e)=>e.currentTarget.style.background='transparent'}
+                >
+                  <UserIcon />
+                  <span>Profile</span>
+                </Link>
 
-              <button role="menuitem" onClick={()=>{ setOpen(false); setLogoutOpen(true); }} style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'#ef4444',background:'transparent',border:'none',width:'100%',textAlign:'left',cursor:'pointer'}}>
-                <LogoutIcon />
-                <span>Logout</span>
-              </button>
-            </div>
+                <button 
+                  role="menuitem" 
+                  onClick={()=>{ setOpen(false); setLogoutOpen(true); }} 
+                  style={{
+                    display:'flex',
+                    gap:10,
+                    alignItems:'center',
+                    padding:'12px 10px',
+                    borderRadius:6,
+                    color:'#ef4444',
+                    background:'transparent',
+                    border:'none',
+                    width:'100%',
+                    textAlign:'left',
+                    cursor:'pointer',
+                    minHeight:44,
+                    transition:'background .12s'
+                  }}
+                  onMouseEnter={(e)=>e.currentTarget.style.background='rgba(239,68,68,0.08)'}
+                  onMouseLeave={(e)=>e.currentTarget.style.background='transparent'}
+                >
+                  <LogoutIcon />
+                  <span>Logout</span>
+                </button>
+              </div>
+            </>
           )}
         </div>
       )}

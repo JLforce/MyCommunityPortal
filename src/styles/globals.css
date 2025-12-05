@@ -124,6 +124,37 @@ a:hover { color: var(--green-800); text-decoration: underline; }
 	color: #475569;
 	margin-top: 6px;
 }
+/* --- Mobile Responsive Typography --- */
+@media (max-width: 768px) {
+	.admin-dashboard-root .dashboard-title {
+	  font-size: 22px;
+	}
+  
+	.admin-dashboard-root .dashboard-title .title-tag {
+	  font-size: 18px;
+	}
+  
+	.admin-dashboard-root .dashboard-subtitle {
+	  font-size: 13px;
+	}
+  }
+  
+  @media (max-width: 480px) {
+	.admin-dashboard-root .dashboard-title {
+	  font-size: 20px;
+	}
+  
+	.admin-dashboard-root .dashboard-title .title-tag {
+	  font-size: 16px;
+	}
+  
+	.admin-dashboard-root .dashboard-subtitle {
+	  font-size: 12px;
+	}
+  }
+  
+
+
 
 /* Sidebar 3D icon styles */
 .nav-icon {
@@ -2975,6 +3006,61 @@ html { scroll-behavior: smooth; }
 	.profile-main .card[style*="display:flex"][style*="gap:8"] a {
 		width: 100%;
 		justify-content: center;
+	}
+}
+
+/* ProfilePanel Component Mobile Responsive Styles */
+@media (max-width: 768px) {
+	.profile-form {
+		grid-template-columns: 1fr !important;
+		gap: 20px !important;
+	}
+	
+	.profile-avatar-section {
+		order: 1;
+	}
+	
+	.profile-form-fields {
+		order: 2;
+	}
+	
+	.profile-avatar-actions {
+		width: 100%;
+	}
+	
+	.profile-avatar-actions button {
+		flex: 1 1 100% !important;
+		min-width: 100% !important;
+	}
+	
+	.profile-form-grid {
+		grid-template-columns: 1fr !important;
+		gap: 12px !important;
+	}
+	
+	.profile-security-section {
+		grid-template-columns: 1fr !important;
+		gap: 16px !important;
+	}
+	
+	.profile-security-section > div:last-child {
+		text-align: left !important;
+	}
+	
+	.profile-form-actions {
+		flex-direction: column-reverse;
+	}
+	
+	.profile-form-actions button {
+		width: 100% !important;
+		flex: 1 1 100% !important;
+		min-width: 100% !important;
+	}
+}
+
+@media (max-width: 480px) {
+	.profile-form {
+		gap: 16px !important;
 	}
 }
 
