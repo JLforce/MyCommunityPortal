@@ -200,6 +200,7 @@ export default function PickupClient({ user }){
   const [instructions, setInstructions] = useState('');
   const [pickupRequests, setPickupRequests] = useState([]);
   const [profile, setProfile] = useState(null);
+  const [defaultSchedule, setDefaultSchedule] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const dateInputRef = useRef(null);
@@ -235,6 +236,19 @@ export default function PickupClient({ user }){
             console.log('City:', profileData?.city);
             console.log('Zip Code:', profileData?.zip_code);
             console.log('Full profile object:', JSON.stringify(profileData, null, 2));
+            
+            // Fetch default schedule for municipality
+            if (profileData.municipality) {
+              const { data: scheduleData, error: scheduleError } = await supabase
+                .from('admin_settings')
+                .select('default_pickup_day, default_pickup_time')
+                .eq('municipality', profileData.municipality)
+                .maybeSingle();
+              
+              if (!scheduleError && scheduleData) {
+                setDefaultSchedule(scheduleData);
+              }
+            }
           } else {
             console.warn('No profile found for user. User needs to complete their profile.');
           }
@@ -450,6 +464,20 @@ export default function PickupClient({ user }){
                   <p className="muted pickup-address" style={{margin:'8px 0 0', fontSize:'clamp(12px, 2vw, 13px)', lineHeight:'1.4', wordBreak:'break-word'}}>
                     Pickup address: {[profile.street_address, profile.barangay, profile.municipality, profile.province].filter(Boolean).join(', ')}
                   </p>
+                )}
+                {defaultSchedule && (
+                  <div style={{marginTop:12, padding:12, background:'#ECFDF5', borderRadius:10, border:'1px solid #D1FAE5'}}>
+                    <div style={{display:'flex', alignItems:'center', gap:8, marginBottom:4}}>
+                      <CalendarIcon width={16} height={16} />
+                      <div style={{fontSize:13, fontWeight:700, color:'#065f46'}}>Municipality Default Schedule</div>
+                    </div>
+                    <div style={{fontSize:13, color:'#047857', marginLeft:24}}>
+                      Every <strong>{defaultSchedule.default_pickup_day}</strong> • <strong>{defaultSchedule.default_pickup_time}</strong>
+                    </div>
+                    <div style={{fontSize:11, color:'#059669', marginTop:4, marginLeft:24}}>
+                      Regular pickups follow this schedule unless you request a special pickup
+                    </div>
+                  </div>
                 )}
               </div>
 

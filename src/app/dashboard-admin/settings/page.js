@@ -32,10 +32,18 @@ export default async function SettingsPage() {
     console.error('Error fetching profile for settings:', profileError);
   }
 
-  const { data: settingsData, error: settingsError } = await supabase
+  const municipality = profileData?.municipality || null;
+
+  // Get settings for this municipality
+  let settingsQuery = supabase
     .from('admin_settings')
-    .select('id, site_name, contact_email, pickup_enable')
-    .limit(1)
+    .select('id, site_name, contact_email, pickup_enable, default_pickup_day, default_pickup_time')
+  
+  if (municipality) {
+    settingsQuery = settingsQuery.eq('municipality', municipality)
+  }
+  
+  const { data: settingsData, error: settingsError } = await settingsQuery
     .maybeSingle();
 
   if (settingsError) {
@@ -56,7 +64,8 @@ export default async function SettingsPage() {
   };
 
   const initialPickup = {
-    defaultTime: 'Morning (6 AM - 12 PM)',
+    defaultDay: settingsData?.default_pickup_day || 'Monday',
+    defaultTime: settingsData?.default_pickup_time || 'Morning (6 AM - 12 PM)',
     maxPerDay: 50,
     enable: settingsData?.pickup_enable ?? true,
   };
@@ -65,6 +74,7 @@ export default async function SettingsPage() {
     <main>
       <SettingsPanel
         settingsId={settingsData?.id}
+        municipality={municipality}
         initialGeneral={initialGeneral}
         initialNotifications={initialNotifications}
         initialPickup={initialPickup}

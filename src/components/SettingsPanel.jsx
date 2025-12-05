@@ -4,9 +4,10 @@ import { supabase } from '../lib/supabase/supabase';
 
 export default function SettingsPanel({
   settingsId,
+  municipality,
   initialGeneral = { barangayName: 'Barangay', contactEmail: '', contactPhone: '' },
   initialNotifications = { email: true, sms: true, push: false, weeklyReports: true },
-  initialPickup = { defaultTime: 'Morning (6 AM - 12 PM)', maxPerDay: 50, enable: true },
+  initialPickup = { defaultTime: 'Morning (6 AM - 12 PM)', maxPerDay: 50, enable: true, defaultDay: 'Monday' },
 }) {
   const [general, setGeneral] = useState(initialGeneral);
   const [notifications, setNotifications] = useState(initialNotifications);
@@ -29,6 +30,9 @@ export default function SettingsPanel({
         site_name: general.barangayName,
         contact_email: general.contactEmail,
         pickup_enable: pickup.enable ?? true,
+        default_pickup_day: pickup.defaultDay || 'Monday',
+        default_pickup_time: pickup.defaultTime || 'Morning (6 AM - 12 PM)',
+        municipality: municipality || null,
         update_at: new Date().toISOString(),
       };
 
@@ -106,17 +110,34 @@ export default function SettingsPanel({
         </section>
 
         <section style={{background:'#fff',borderRadius:10,padding:18,boxShadow:'0 6px 20px rgba(2,6,23,0.04)'}}>
-          <h3 style={{margin:0,fontSize:15,fontWeight:700,color:'#064e3b'}}>Pickup Schedule</h3>
+          <h3 style={{margin:0,fontSize:15,fontWeight:700,color:'#064e3b'}}>Default Pickup Schedule</h3>
+          <p style={{margin:'6px 0 12px',fontSize:12,color:'#6b7280'}}>Set the default weekly schedule for your municipality. Residents will see this schedule.</p>
           <div style={{marginTop:12,display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
             <label>
+              <div style={{fontSize:13,color:'#374151',marginBottom:6}}>Default Pickup Day</div>
+              <select value={pickup.defaultDay} onChange={(e)=>setPickup(p=>({...p,defaultDay:e.target.value}))} style={{width:'100%',padding:'10px 12px',borderRadius:8,border:'1px solid #D1FAE5',background:'#FAFFFB'}}>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+              </select>
+            </label>
+            <label>
               <div style={{fontSize:13,color:'#374151',marginBottom:6}}>Default Pickup Time</div>
-              <input value={pickup.defaultTime} onChange={(e)=>setPickup(p=>({...p,defaultTime:e.target.value}))} style={{width:'100%',padding:'10px 12px',borderRadius:8,border:'1px solid #D1FAE5',background:'#FAFFFB'}} />
+              <select value={pickup.defaultTime} onChange={(e)=>setPickup(p=>({...p,defaultTime:e.target.value}))} style={{width:'100%',padding:'10px 12px',borderRadius:8,border:'1px solid #D1FAE5',background:'#FAFFFB'}}>
+                <option value="Morning (6 AM - 12 PM)">Morning (6 AM - 12 PM)</option>
+                <option value="Afternoon (12 PM - 6 PM)">Afternoon (12 PM - 6 PM)</option>
+                <option value="Evening (6 PM - 9 PM)">Evening (6 PM - 9 PM)</option>
+              </select>
             </label>
             <label>
               <div style={{fontSize:13,color:'#374151',marginBottom:6}}>Max Requests Per Day</div>
               <input type="number" value={pickup.maxPerDay} onChange={(e)=>setPickup(p=>({...p,maxPerDay:parseInt(e.target.value||0)}))} style={{width:'100%',padding:'10px 12px',borderRadius:8,border:'1px solid #D1FAE5',background:'#FAFFFB'}} />
             </label>
-            <label style={{display:'flex',alignItems:'center',gap:8}}>
+            <label style={{display:'flex',alignItems:'center',gap:8,gridColumn:'1/-1'}}>
               <input type="checkbox" checked={pickup.enable} onChange={(e)=>setPickup(p=>({...p,enable:e.target.checked}))} />
               <span>Enable Pickup Requests</span>
             </label>
