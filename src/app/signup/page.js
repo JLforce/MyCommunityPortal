@@ -3,12 +3,27 @@
 import Link from 'next/link';
 import Brand from '../../components/Brand';
 import { signUp } from '../actions/auth';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function SignUpPage(){
   const [message, setMessage] = useState(null);
   const router = useRouter();
+  
+  // State for location dropdowns
+  const [regions, setRegions] = useState([]);
+  const [provinces, setProvinces] = useState([]);
+  const [municipalities, setMunicipalities] = useState([]);
+  const [barangays, setBarangays] = useState([]);
+
+  // State for selected location
+  const [selectedRegion, setSelectedRegion] = useState('');
+  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedMunicipality, setSelectedMunicipality] = useState('');
+  const [selectedBarangay, setSelectedBarangay] = useState('');
+
+  // State for selected location names
+  const [locationNames, setLocationNames] = useState({ region: '', province: '', municipality: '', barangay: '' });
 
   async function handleSubmit(formData) {
     const result = await signUp(formData);
@@ -19,6 +34,78 @@ export default function SignUpPage(){
       router.push('/signin?message=Successfully created an account. Please sign in.');
     }
   }
+
+  // Fetch regions on component mount
+  useEffect(() => {
+    const fetchRegions = async () => {
+      try {
+        const response = await fetch('https://psgc.gitlab.io/api/regions/');
+        const data = await response.json();
+        setRegions(data);
+      } catch (error) {
+        console.error("Failed to fetch regions:", error);
+      }
+    };
+    fetchRegions();
+  }, []);
+
+  // Fetch provinces when a region is selected
+  useEffect(() => {
+    if (!selectedRegion) return;
+    const regionName = regions.find(r => r.code === selectedRegion)?.name;
+    setLocationNames(prev => ({ ...prev, region: regionName, province: '', municipality: '', barangay: '' }));
+
+    const fetchProvinces = async () => {
+      const response = await fetch(`https://psgc.gitlab.io/api/regions/${selectedRegion}/provinces/`);
+      const data = await response.json();
+      setProvinces(data);
+      setMunicipalities([]);
+      setBarangays([]);
+      setSelectedProvince('');
+      setSelectedMunicipality('');
+      setSelectedBarangay('');
+    };
+    fetchProvinces();
+  }, [selectedRegion, regions]);
+
+  // Fetch municipalities when a province is selected
+  useEffect(() => {
+    if (!selectedProvince) return;
+    const provinceName = provinces.find(p => p.code === selectedProvince)?.name;
+    setLocationNames(prev => ({ ...prev, province: provinceName, municipality: '', barangay: '' }));
+
+    const fetchMunicipalities = async () => {
+      const response = await fetch(`https://psgc.gitlab.io/api/provinces/${selectedProvince}/cities-municipalities/`);
+      const data = await response.json();
+      setMunicipalities(data);
+      setBarangays([]);
+      setSelectedMunicipality('');
+      setSelectedBarangay('');
+    };
+    fetchMunicipalities();
+  }, [selectedProvince, provinces]);
+
+  // Fetch barangays when a municipality is selected
+  useEffect(() => {
+    if (!selectedMunicipality) return;
+    const municipalityName = municipalities.find(m => m.code === selectedMunicipality)?.name;
+    setLocationNames(prev => ({ ...prev, municipality: municipalityName, barangay: '' }));
+
+    const fetchBarangays = async () => {
+      const response = await fetch(`https://psgc.gitlab.io/api/cities-municipalities/${selectedMunicipality}/barangays/`);
+      const data = await response.json();
+      setBarangays(data);
+      setSelectedBarangay('');
+    };
+    fetchBarangays();
+  }, [selectedMunicipality, municipalities]);
+
+  // Store barangay name when selected
+  useEffect(() => {
+    if (!selectedBarangay) return;
+    const barangayName = barangays.find(b => b.code === selectedBarangay)?.name;
+    setLocationNames(prev => ({ ...prev, barangay: barangayName }));
+  }, [selectedBarangay, barangays]);
 
   return (
     <main>
@@ -84,18 +171,49 @@ export default function SignUpPage(){
                 <input id="street_address" name="street_address" type="text" placeholder="123 Main Street" required />
               </div>
 
+              {/* Hidden inputs to store the names for the form submission */}
+              <input type="hidden" name="region" value={locationNames.region} />
+              <input type="hidden" name="province" value={locationNames.province} />
+              <input type="hidden" name="municipality" value={locationNames.municipality} />
+              <input type="hidden" name="barangay" value={locationNames.barangay} />
+
+              <label className="input-label" htmlFor="region">Region</label>
+              <div className="input-field">
+                <select id="region_select" required onChange={e => setSelectedRegion(e.target.value)} value={selectedRegion}>
+                  <option value="" disabled>Select Region</option>
+                  {regions.map(region => <option key={region.code} value={region.code}>{region.name}</option>)}
+                </select>
+              </div>
+
+              <label className="input-label" htmlFor="province">Province</label>
+              <div className="input-field">
+                <select id="province_select" required disabled={!selectedRegion} onChange={e => setSelectedProvince(e.target.value)} value={selectedProvince}>
+                  <option value="" disabled>Select Province</option>
+                  {provinces.map(province => <option key={province.code} value={province.code}>{province.name}</option>)}
+                </select>
+              </div>
+
+              <label className="input-label" htmlFor="municipality">City / Municipality</label>
+              <div className="input-field">
+                <select id="municipality_select" required disabled={!selectedProvince} onChange={e => setSelectedMunicipality(e.target.value)} value={selectedMunicipality}>
+                  <option value="" disabled>Select City / Municipality</option>
+                  {municipalities.map(mun => <option key={mun.code} value={mun.code}>{mun.name}</option>)}
+                </select>
+              </div>
+
+              <label className="input-label" htmlFor="barangay">Barangay</label>
+              <div className="input-field">
+                <select id="barangay_select" required disabled={!selectedMunicipality} onChange={e => setSelectedBarangay(e.target.value)} value={selectedBarangay}>
+                  <option value="" disabled>Select Barangay</option>
+                  {barangays.map(bgy => <option key={bgy.code} value={bgy.code}>{bgy.name}</option>)}
+                </select>
+              </div>
+
               <div className="form-row">
-                <div>
-                  <label className="input-label" htmlFor="city">City</label>
-                  <div className="input-field">
-                    <img className="input-icon" src="/icons/location.svg" alt="" />
-                    <input id="city" name="city" type="text" placeholder="Springfield" required />
-                  </div>
-                </div>
                 <div>
                   <label className="input-label" htmlFor="zip_code">ZIP Code</label>
                   <div className="input-field">
-                    <input id="zip_code" name="zip_code" type="text" placeholder="12345" required />
+                    <input id="zip_code" name="zip_code" type="text" placeholder="6046" required />
                   </div>
                 </div>
               </div>
@@ -105,7 +223,7 @@ export default function SignUpPage(){
                 <select id="role" name="role" defaultValue="" required>
                   <option value="" disabled>Select your role</option>
                   <option value="Resident">Resident</option>
-                  <option value="Collector">Collector</option>
+                  {/*<option value="Collector">Collector</option>*/}
                   <option value="City Official">City Official</option>
                 </select>
               </div>

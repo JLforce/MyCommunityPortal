@@ -36,7 +36,7 @@ export async function insertPendingProfile() {
     console.log('insertPendingProfile: inserting/updating profileData', profileData)
 
     // Extra validation: ensure required profile fields exist before attempting DB write
-    const requiredProfileFields = ['id', 'first_name', 'last_name', 'email', 'phone', 'street_address', 'city', 'zip_code', 'role']
+    const requiredProfileFields = ['id', 'first_name', 'last_name', 'email', 'phone', 'street_address', 'region', 'province', 'municipality', 'barangay', 'zip_code', 'role']
     const missingFields = requiredProfileFields.filter(key => profileData[key] === undefined || profileData[key] === null || (typeof profileData[key] === 'string' && profileData[key].trim() === ''))
     if (missingFields.length > 0) {
       console.error('insertPendingProfile: aborting - missing/empty fields', missingFields)
@@ -51,7 +51,10 @@ export async function insertPendingProfile() {
         email: profileData.email,
         phone: profileData.phone,
         street_address: profileData.street_address,
-        city: profileData.city,
+        region: profileData.region,
+        province: profileData.province,
+        municipality: profileData.municipality,
+        barangay: profileData.barangay,
         zip_code: profileData.zip_code,
         role: profileData.role,
       })
@@ -68,7 +71,10 @@ export async function insertPendingProfile() {
             last_name: profileData.last_name,
             phone: profileData.phone,
             street_address: profileData.street_address,
-            city: profileData.city,
+            region: profileData.region,
+            province: profileData.province,
+            municipality: profileData.municipality,
+            barangay: profileData.barangay,
             zip_code: profileData.zip_code,
             role: profileData.role,
           })

@@ -8,27 +8,48 @@ export default function ReportsAdminClient({ user }) {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [adminProfile, setAdminProfile] = useState(null);
 
   // Fetch all reports with resident information
   useEffect(() => {
     const fetchReports = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
-        // Fetch all reports
+        // 1. Fetch the logged-in admin's profile to get their municipality
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('municipality')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError || !profile?.municipality) {
+          console.error('Could not fetch admin profile or municipality is not set.', profileError);
+          setReports([]);
+          setFilteredReports([]);
+          setLoading(false);
+          return;
+        }
+        setAdminProfile(profile);
+        const adminMunicipality = profile.municipality;
+
+        // 2. Fetch all reports and join with profiles to filter by the admin's municipality
         const { data: reportsData, error: reportsError } = await supabase
           .from('reports')
-          .select('*')
+          .select(`
+            *,
+            profile:profiles(first_name, last_name, email, municipality)
+          `)
+          .eq('profile.municipality', adminMunicipality)
           .order('created_at', { ascending: false });
 
         if (reportsError) {
           console.error('Error fetching reports:', reportsError);
-          setLoading(false);
-          return;
-        }
-
-        if (!reportsData || reportsData.length === 0) {
-          setReports([]);
-          setFilteredReports([]);
+          setReports([]); setFilteredReports([]);
           setLoading(false);
           return;
         }
@@ -198,7 +219,9 @@ export default function ReportsAdminClient({ user }) {
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:24}}>
             <div>
               <h1 style={{margin:'0 0 6px',fontSize:32,fontWeight:800,color:'#111827'}}>Reports</h1>
-              <p style={{margin:0,fontSize:16,color:'#6b7280'}}>Manage and monitor community waste management.</p>
+              <p style={{margin:0,fontSize:16,color:'#6b7280'}}>
+                {adminProfile ? `Viewing reports for ${adminProfile.municipality}` : 'Manage and monitor community waste management.'}
+              </p>
             </div>
           </div>
 
@@ -375,4 +398,3 @@ export default function ReportsAdminClient({ user }) {
     </main>
   );
 }
-

@@ -14,7 +14,10 @@ Columns:
 - email (TEXT): User's email address.
 - phone (TEXT): User's phone number.
 - street_address (TEXT): User's street address.
-- city (TEXT): User's city.
+- region (TEXT): User's region.
+- province (TEXT): User's province.
+- municipality (TEXT): User's municipality/city.
+- barangay (TEXT): User's barangay.
 - zip_code (TEXT): User's ZIP code.
 - role (TEXT): User's role (e.g., Resident, Collector, City Official).
 
@@ -27,7 +30,10 @@ CREATE TABLE profiles (
   email TEXT,
   phone TEXT,
   street_address TEXT,
-  city TEXT,
+  region TEXT,
+  province TEXT,
+  municipality TEXT,
+  barangay TEXT,
   zip_code TEXT,
   role TEXT
 );

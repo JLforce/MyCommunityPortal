@@ -17,12 +17,18 @@ export async function signUp(formData) {
   const lastName = formData.get('last_name')?.trim()
   const phone = formData.get('phone')?.trim()
   const street = formData.get('street_address')?.trim()
-  const city = formData.get('city')?.trim()
+  const region = formData.get('region')?.trim()
+  const province = formData.get('province')?.trim()
+  const municipality = formData.get('municipality')?.trim()
+  const barangay = formData.get('barangay')?.trim()
   const zip = formData.get('zip_code')?.trim()
   const role = formData.get('role')?.trim()
 
-  if (!email || !password || !confirm || !firstName || !lastName || !phone || !street || !city || !zip || !role) {
-    return { error: 'Please fill in all required fields.' }
+  const requiredFields = { email, password, confirm, firstName, lastName, phone, street, region, province, municipality, barangay, zip, role };
+  for (const [key, value] of Object.entries(requiredFields)) {
+    if (!value) {
+      return { error: `Please fill in all required fields. Missing: ${key}` };
+    }
   }
 
   if (password !== confirm) {
@@ -63,13 +69,16 @@ export async function signUp(formData) {
     email,
     phone,
     street_address: street,
-    city,
+    region,
+    province,
+    municipality,
+    barangay,
     zip_code: zip,
     role: normalizedRole,
   }
 
   // Extra validation: log and abort if any required profile field is null/empty
-  const requiredProfileFields = ['id', 'first_name', 'last_name', 'email', 'phone', 'street_address', 'city', 'zip_code', 'role']
+  const requiredProfileFields = ['id', 'first_name', 'last_name', 'email', 'phone', 'street_address', 'region', 'province', 'municipality', 'barangay', 'zip_code', 'role']
   const missingFields = requiredProfileFields.filter(key => profileData[key] === undefined || profileData[key] === null || (typeof profileData[key] === 'string' && profileData[key].trim() === ''))
   if (missingFields.length > 0) {
     console.error('Aborting profile insert - missing/empty fields:', missingFields)
@@ -167,41 +176,39 @@ export async function signIn(formData) {
   // DEBUG: Log successful signin
   console.log('--- User signed in successfully ---', data.user.id);
 
-  // After sign in, read the profile role and redirect appropriately
+  // After sign in, read the profile role and redirect appropriately.
+  // The redirect logic is outside the try...catch to prevent the catch block
+  // from interfering with the Next.js redirect exception.
+  let profileData = null;
   try {
-    const { data: profileData, error: profileError } = await supabase
+    const { data: fetchedProfile, error: profileError } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', data.user.id)
       .maybeSingle();
 
     if (profileError) {
-      console.error('Error fetching profile after sign in:', profileError.message || profileError);
+      console.error('Error fetching profile after sign in:', profileError.message);
     }
-
-    const role = (profileData?.role || '').toString().toLowerCase();
-    // normalize fetched role to a predictable form (underscores)
-    const normRole = role.replace(/\s+/g, '_').replace(/-/g, '_');
-    revalidatePath('/', 'layout');
-
-    // If the request contained a role hint (click from 'Sign In as City Official'),
-    // prefer redirecting to the admin dashboard after successful sign-in.
-    if (roleHint === 'city_official' || roleHint.includes('official')) {
-      redirect('/dashboard-admin');
-    }
-
-    // If the user's stored role indicates admin/official, redirect to admin dashboard
-    if (normRole === 'city_official' || normRole === 'city_authority' || normRole === 'admin' || normRole.includes('official')) {
-      redirect('/dashboard-admin');
-    }
-
-    // Default redirect for normal users
-    redirect('/dashboard');
+    profileData = fetchedProfile;
   } catch (e) {
     console.error('Error in post-signin redirect logic:', e);
-    revalidatePath('/', 'layout');
-    redirect('/dashboard');
   }
+
+  revalidatePath('/', 'layout');
+
+  const role = (profileData?.role || '').toString().toLowerCase();
+  // normalize fetched role to a predictable form (underscores)
+  const normRole = role.replace(/\s+/g, '_').replace(/-/g, '_');
+
+  // If the user's stored role indicates admin/official, redirect to admin dashboard
+  if (normRole === 'city_official') {
+    redirect('/dashboard-admin');
+  }
+
+  // Default redirect for normal users
+  revalidatePath('/', 'layout');
+  redirect('/dashboard');
 }
 
 export async function signOut() {

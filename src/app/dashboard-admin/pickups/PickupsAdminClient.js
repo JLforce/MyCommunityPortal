@@ -7,27 +7,46 @@ export default function PickupsAdminClient({ user }) {
   const [filteredPickups, setFilteredPickups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [adminProfile, setAdminProfile] = useState(null);
 
   // Fetch all pickups with user information
   useEffect(() => {
     const fetchPickups = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
-        // Fetch all pickups
+        // 1. Fetch the logged-in admin's profile to get their municipality
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('municipality')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError || !profile?.municipality) {
+          console.error('Could not fetch admin profile or municipality is not set.', profileError);
+          setPickups([]);
+          setFilteredPickups([]);
+          setLoading(false);
+          return;
+        }
+        setAdminProfile(profile);
+        const adminMunicipality = profile.municipality;
+
+        // 2. Fetch pickups where the address contains the admin's municipality
+        // We use 'ilike' for a case-insensitive search.
         const { data: pickupsData, error: pickupsError } = await supabase
           .from('pickup_schedule')
           .select('*')
+          .ilike('address', `%${adminMunicipality}%`)
           .order('pickup_date', { ascending: true });
 
         if (pickupsError) {
           console.error('Error fetching pickups:', pickupsError);
-          setLoading(false);
-          return;
-        }
-
-        if (!pickupsData || pickupsData.length === 0) {
-          setPickups([]);
-          setFilteredPickups([]);
+          setPickups([]); setFilteredPickups([]);
           setLoading(false);
           return;
         }
@@ -220,7 +239,9 @@ export default function PickupsAdminClient({ user }) {
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:24}}>
             <div>
               <h1 style={{margin:'0 0 6px',fontSize:32,fontWeight:800,color:'#111827'}}>Pickups</h1>
-              <p style={{margin:0,fontSize:16,color:'#6b7280'}}>Manage and monitor community waste management.</p>
+              <p style={{margin:0,fontSize:16,color:'#6b7280'}}>
+                {adminProfile ? `Viewing pickups for ${adminProfile.municipality}` : 'Manage and monitor community waste management.'}
+              </p>
             </div>
           </div>
 
@@ -354,4 +375,3 @@ export default function PickupsAdminClient({ user }) {
     </main>
   );
 }
-

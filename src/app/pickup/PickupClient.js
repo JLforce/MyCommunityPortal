@@ -322,13 +322,15 @@ export default function PickupClient({ user }){
     if (profile) {
       console.log('Profile exists, checking address fields:');
       console.log('street_address:', profile.street_address);
-      console.log('city:', profile.city);
+      console.log('barangay:', profile.barangay);
+      console.log('municipality:', profile.municipality);
       console.log('zip_code:', profile.zip_code);
       
       const addressParts = [
         profile.street_address,
-        profile.city,
-        profile.zip_code
+        profile.barangay,
+        profile.municipality,
+        profile.province,
       ].filter(Boolean);
       
       console.log('Address parts after filter:', addressParts);
@@ -345,7 +347,7 @@ export default function PickupClient({ user }){
         alert('Please complete your profile with an address before scheduling a pickup. You will be redirected to your profile page.');
         window.location.href = '/profile';
       } else {
-        alert('Please complete your profile with an address (street address, city, and zip code) before scheduling a pickup. You will be redirected to your profile page.');
+        alert('Please complete your profile with a full address before scheduling a pickup. You will be redirected to your profile page.');
         window.location.href = '/profile';
       }
       return;
@@ -451,7 +453,7 @@ export default function PickupClient({ user }){
                 <p className="muted" style={{margin:0, fontSize:14}}>Request regular or special waste collection</p>
                 {profile && (
                   <p className="muted" style={{margin:'8px 0 0', fontSize:13}}>
-                    Pickup address: {profile.street_address}, {profile.city} {profile.zip_code}
+                    Pickup address: {[profile.street_address, profile.barangay, profile.municipality, profile.province].filter(Boolean).join(', ')}
                   </p>
                 )}
               </div>
@@ -1001,4 +1003,3 @@ export default function PickupClient({ user }){
     </>
   );
 }
-
