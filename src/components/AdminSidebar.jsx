@@ -62,13 +62,6 @@ export default function AdminSidebar() {
               boxShadow: activeClass ? '0 8px 18px rgba(6,95,46,0.25), inset 0 2px 0 rgba(255,255,255,0.06)' : '0 6px 18px rgba(6,95,46,0.06), inset 0 6px 12px rgba(255,255,255,0.8)'
             };
           }
-          if (item.key === 'analytics') {
-            return {
-              ...base,
-              background: activeClass ? 'linear-gradient(180deg,#dffaf0,#c8f3e0)' : 'linear-gradient(180deg,#f1fff8,#e7fff4)',
-              boxShadow: activeClass ? '0 8px 18px rgba(16,185,129,0.18), inset 0 2px 0 rgba(255,255,255,0.06)' : '0 6px 18px rgba(16,185,129,0.06), inset 0 6px 12px rgba(255,255,255,0.85)'
-            };
-          }
           if (item.key === 'reports') {
             return {
               ...base,

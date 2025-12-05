@@ -251,10 +251,13 @@ a:hover { color: var(--green-800); text-decoration: underline; }
 	color: #07221a;
 	border: 1px solid rgba(16,185,129,0.12);
 	box-shadow: 0 8px 24px rgba(16,185,129,0.10);
-	padding: 14px 32px;
-	min-width: 280px;
+	padding: 18px 44px;
+	min-width: 360px;
 	border-radius: 12px;
 	font-weight: 800;
+	font-size: 18px;
+	text-align: center;
+	justify-content: center;
 	transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease;
 }
 .hero .btn:hover, .hero .btn-primary:hover {

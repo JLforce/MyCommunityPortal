@@ -32,7 +32,7 @@ export default function LogoutPage(){
   return (
     <div className="container" style={{padding:'48px 0',minHeight:'60vh',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:12}}>
       <h2>Signing out…</h2>
-      <p className="muted">You will be redirected to the sign-in page.</p>
+      <p className="muted">You will be redirected to the home page.</p>
     </div>
   );
 }

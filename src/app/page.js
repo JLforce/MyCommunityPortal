@@ -37,9 +37,8 @@ export default function HomePage() {
             <span className="badge">🌿 Connecting Communities</span>
             <h1>Waste & Issue<br/>Management Made Simple</h1>
             <p className="lead">A centralized platform connecting residents and local authorities for better waste collection, community issue reporting, and transparent governance.</p>
-            <div className="hero-actions" style={{display:'flex',gap:16,justifyContent:'center'}}>
-              <a className="btn btn-primary" href="/signup" onClick={handleTransition('/signup')}>Join Your Community (Resident) →</a>
-              <a className="btn btn-primary" href="/admin-signup" onClick={handleTransition('/admin-signup')}>Sign-Up (City Official) →</a>
+            <div className="hero-actions">
+              <a className="btn btn-primary" href="/signup" onClick={handleTransition('/signup')}>Join Your Community →</a>
             </div>
           </div>
         </section>
