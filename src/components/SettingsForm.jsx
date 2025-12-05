@@ -14,6 +14,8 @@ export default function SettingsForm({ initialSettings = {} }){
     twoFactor: false
   });
   const [avatar, setAvatar] = useState(null);
+  const [avatarUrl, setAvatarUrl] = useState(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const fileRef = useRef();
   const [status, setStatus] = useState(null);
   const [userId, setUserId] = useState(null);
@@ -23,11 +25,18 @@ export default function SettingsForm({ initialSettings = {} }){
   }
 
   useEffect(()=>{
-    try{
-      const stored = localStorage.getItem('mcp_avatar');
-      if (stored) setAvatar(stored);
-    }catch(e){}
-  },[]);
+    // Load avatar from database if available
+    if (initialSettings.avatar_url) {
+      setAvatarUrl(initialSettings.avatar_url);
+      setAvatar(initialSettings.avatar_url);
+    } else {
+      // Fallback to localStorage
+      try{
+        const stored = localStorage.getItem('mcp_avatar');
+        if (stored) setAvatar(stored);
+      }catch(e){}
+    }
+  },[initialSettings]);
 
   useEffect(()=>{
     if (!initialSettings.id) {
@@ -47,15 +56,112 @@ export default function SettingsForm({ initialSettings = {} }){
     }));
   }, [initialSettings]);
 
-  function onSelectAvatar(file){
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(ev){
-      const data = ev.target.result;
-      setAvatar(data);
-      try{ localStorage.setItem('mcp_avatar', data); }catch(e){}
-    };
-    reader.readAsDataURL(file);
+  async function onSelectAvatar(file){
+    if (!file || !userId) return;
+    
+    setUploadingAvatar(true);
+    
+    try {
+      // Create a preview immediately
+      const reader = new FileReader();
+      reader.onload = function(ev){
+        const data = ev.target.result;
+        setAvatar(data);
+      };
+      reader.readAsDataURL(file);
+
+      // Upload to Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${userId}/${Date.now()}.${fileExt}`;
+      const bucketName = 'avatars';
+
+      // Upload file
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from(bucketName)
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
+
+      if (uploadError) {
+        // If bucket doesn't exist, try 'profile-pictures' or create a fallback
+        console.error('Upload error:', uploadError);
+        // Try alternative bucket name
+        const altBucketName = 'profile-pictures';
+        const { data: altUploadData, error: altUploadError } = await supabase.storage
+          .from(altBucketName)
+          .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: true
+          });
+
+        if (altUploadError) {
+          throw new Error(altUploadError.message || 'Failed to upload avatar');
+        }
+
+        // Get public URL
+        const { data: urlData } = supabase.storage
+          .from(altBucketName)
+          .getPublicUrl(fileName);
+
+        const publicUrl = urlData.publicUrl;
+        setAvatarUrl(publicUrl);
+        setAvatar(publicUrl);
+
+        // Save URL to database
+        const { error: dbError } = await supabase
+          .from('profiles')
+          .update({ avatar_url: publicUrl })
+          .eq('id', userId);
+
+        if (dbError) {
+          console.error('Error saving avatar URL:', dbError);
+          setStatus({ ok: false, message: 'Avatar uploaded but failed to save URL' });
+        } else {
+          setStatus({ ok: true, message: 'Avatar updated successfully' });
+          setTimeout(()=>setStatus(null), 3000);
+          // Clear localStorage since we're using database now
+          try { localStorage.removeItem('mcp_avatar'); } catch(e){}
+        }
+      } else {
+        // Get public URL
+        const { data: urlData } = supabase.storage
+          .from(bucketName)
+          .getPublicUrl(fileName);
+
+        const publicUrl = urlData.publicUrl;
+        setAvatarUrl(publicUrl);
+        setAvatar(publicUrl);
+
+        // Save URL to database
+        const { error: dbError } = await supabase
+          .from('profiles')
+          .update({ avatar_url: publicUrl })
+          .eq('id', userId);
+
+        if (dbError) {
+          console.error('Error saving avatar URL:', dbError);
+          setStatus({ ok: false, message: 'Avatar uploaded but failed to save URL' });
+        } else {
+          setStatus({ ok: true, message: 'Avatar updated successfully' });
+          setTimeout(()=>setStatus(null), 3000);
+          // Clear localStorage since we're using database now
+          try { localStorage.removeItem('mcp_avatar'); } catch(e){}
+        }
+      }
+    } catch (err) {
+      console.error('Error uploading avatar:', err);
+      setStatus({ ok: false, message: 'Failed to upload avatar: ' + (err.message || 'Unknown error') });
+      setTimeout(()=>setStatus(null), 5000);
+      // Revert to previous avatar
+      if (avatarUrl) {
+        setAvatar(avatarUrl);
+      } else {
+        setAvatar(null);
+      }
+    } finally {
+      setUploadingAvatar(false);
+    }
   }
 
   async function handleSave(e){
@@ -125,7 +231,14 @@ export default function SettingsForm({ initialSettings = {} }){
 
           <div style={{display:'flex',gap:10,marginTop:8,alignItems:'center'}}>
             <button type="button" className="btn btn-light" onClick={()=>alert('Change password flow not implemented')}>Change password</button>
-            <button type="button" className="btn" onClick={()=>fileRef.current && fileRef.current.click()}>Update avatar</button>
+            <button 
+              type="button" 
+              className="btn" 
+              onClick={()=>fileRef.current && fileRef.current.click()}
+              disabled={uploadingAvatar}
+            >
+              {uploadingAvatar ? 'Uploading...' : 'Update avatar'}
+            </button>
             <input ref={fileRef} type="file" accept="image/*" style={{display:'none'}} onChange={e=> onSelectAvatar(e.target.files && e.target.files[0])} />
             {avatar && (
               <div style={{marginLeft:8}}>

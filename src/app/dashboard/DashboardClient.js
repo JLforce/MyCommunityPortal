@@ -242,7 +242,7 @@ export default function DashboardClient({ user }) {
                 <p className="muted welcome-subheader">Here's what's happening in your community today.</p>
               </div>
 
-              <div className="cta-pill-container">
+              {/*<div className="cta-pill-container">
                 <Link href="/pickup" className="cta-pill blue">
                   <span className="cta-pill-icon" style={{background:'rgba(37,99,235,0.08)',color:'#2563eb'}} aria-hidden>
                     <CalendarIcon width={16} height={16} />
@@ -270,7 +270,7 @@ export default function DashboardClient({ user }) {
                   </span>
                   <span>AI Assistant</span>
                 </Link>
-              </div>
+              </div>*/}
             </div>
 
             <div className="dashboard-grid">
