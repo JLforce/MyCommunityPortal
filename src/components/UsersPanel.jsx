@@ -1,22 +1,19 @@
 "use client";
 import { useState, useMemo } from 'react';
 
-export default function UsersPanel(){
+export default function UsersPanel({ initialUsers = [] }){
   const [query, setQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
-  const [users, setUsers] = useState([
-    { id: 1, name: 'Jane Doe', email: 'jane.doe@example.com', role: 'Resident', status: 'active' },
-    { id: 2, name: 'John Smith', email: 'john.smith@example.com', role: 'City Official', status: 'active' },
-    { id: 3, name: 'Alice Park', email: 'alice.park@example.com', role: 'Resident', status: 'inactive' },
-    { id: 4, name: 'Carlos Tan', email: 'carlos.tan@example.com', role: 'City Official', status: 'active' }
-  ]);
+  const [users, setUsers] = useState(initialUsers);
 
   const filtered = useMemo(()=>{
     return users.filter(u => {
-      if (roleFilter !== 'all' && u.role !== roleFilter) return false;
+      const userRole = u.role?.replace(/_/g, ' ')?.replace(/\b\w/g, l => l.toUpperCase());
+      if (roleFilter !== 'all' && userRole !== roleFilter) return false;
       if (!query) return true;
       const q = query.toLowerCase();
-      return u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || u.role.toLowerCase().includes(q);
+      const name = `${u.first_name || ''} ${u.last_name || ''}`.trim();
+      return name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || userRole?.toLowerCase().includes(q);
     });
   },[users, query, roleFilter]);
 
@@ -34,7 +31,7 @@ export default function UsersPanel(){
   function editUser(u){
     const name = prompt('Edit user name', u.name);
     if (name == null) return;
-    setUsers(users.map(x => x.id === u.id ? {...x, name} : x));
+    setUsers(users.map(x => x.id === u.id ? {...x, first_name: name.split(' ')[0], last_name: name.split(' ').slice(1).join(' ')} : x));
   }
 
   return (
@@ -73,7 +70,11 @@ export default function UsersPanel(){
               </tr>
             </thead>
             <tbody>
-              {filtered.map(u => (
+              {filtered.map(u => {
+                const name = `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email;
+                const role = u.role?.replace(/_/g, ' ')?.replace(/\b\w/g, l => l.toUpperCase()) || 'N/A';
+                const status = u.status || 'active'; // Assuming a default status
+                return (
                 <tr key={u.id} style={{borderTop:'1px solid #F1F5F9'}}>
                   <td style={{padding:'14px 12px'}}>
                     <div style={{display:'flex',alignItems:'center',gap:12}}>
@@ -84,22 +85,22 @@ export default function UsersPanel(){
                         </svg>
                       </div>
                       <div>
-                        <div style={{fontWeight:700,color:'#0f172a'}}>{u.name}</div>
+                        <div style={{fontWeight:700,color:'#0f172a'}}>{name}</div>
                         <div style={{fontSize:13,color:'#6b7280'}}>{u.email}</div>
                       </div>
                     </div>
                   </td>
                   <td style={{padding:'14px 12px'}}>{u.email}</td>
-                  <td style={{padding:'14px 12px'}}>{u.role}</td>
+                  <td style={{padding:'14px 12px'}}>{role}</td>
                   <td style={{padding:'14px 12px'}}>
-                    <span style={{padding:'6px 10px',borderRadius:999,background: u.status==='active' ? '#ECFDF5' : '#FEF3F2',color: u.status==='active' ? '#065f46' : '#B91C1C',fontWeight:700,fontSize:12}}>{u.status}</span>
+                    <span style={{padding:'6px 10px',borderRadius:999,background: status==='active' ? '#ECFDF5' : '#FEF3F2',color: status==='active' ? '#065f46' : '#B91C1C',fontWeight:700,fontSize:12}}>{status}</span>
                   </td>
                   <td style={{padding:'14px 12px',textAlign:'right'}}>
                     <button onClick={()=>editUser(u)} style={{background:'transparent',border:'1px solid #E6F6EE',padding:'8px 10px',borderRadius:8,marginRight:8}}>Edit</button>
                     <button onClick={()=>removeUser(u.id)} style={{background:'#fff',border:'1px solid #FECACA',color:'#B91C1C',padding:'8px 10px',borderRadius:8}}>Delete</button>
                   </td>
                 </tr>
-              ))}
+              )})}
             </tbody>
           </table>
         </div>

@@ -148,6 +148,7 @@ export default function ReportsClient({ user }) {
   // Upload photos to Supabase Storage
   const uploadPhotos = async (reportId, photoFiles) => {
     const uploadedUrls = [];
+    const uploadErrors = [];
     for (const photoFile of photoFiles) {
       const filename = `${user?.id || 'anonymous'}/${reportId}/${Date.now()}-${photoFile.name}`;
       const { data, error } = await supabase.storage
@@ -155,6 +156,7 @@ export default function ReportsClient({ user }) {
         .upload(filename, photoFile);
       if (error) {
         console.error('Error uploading photo:', error);
+        uploadErrors.push({ file: photoFile.name, message: error.message });
       } else {
         const { data: publicData } = supabase.storage
           .from('report-photos')
@@ -162,7 +164,7 @@ export default function ReportsClient({ user }) {
         uploadedUrls.push(publicData.publicUrl);
       }
     }
-    return uploadedUrls;
+    return { uploadedUrls, uploadErrors };
   };
 
   const handleFiles = async (e) => {
@@ -234,6 +236,40 @@ export default function ReportsClient({ user }) {
     setLoading(true);
     
     try {
+      // --- LOCATION VALIDATION ---
+      // 1. Fetch resident's profile to get their municipality for validation
+      const { data: residentProfile, error: profileError } = await supabase
+        .from('profiles')
+        .select('municipality, first_name, last_name')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError || !residentProfile?.municipality) {
+        setError('Could not verify your registered municipality. Please try again.');
+        setLoading(false);
+        return;
+      }
+      const residentMunicipality = residentProfile.municipality;
+      const residentName = `${residentProfile.first_name || ''} ${residentProfile.last_name || ''}`.trim();
+
+      // 2. If a location is pinned, validate it against the user's municipality
+      if (coords) {
+        const geoResponse = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}`);
+        if (!geoResponse.ok) {
+          setError('Could not verify the pinned location. Please try again.');
+          setLoading(false);
+          return;
+        }
+        const geoData = await geoResponse.json();
+        const pinnedMunicipality = geoData.address?.city || geoData.address?.town || geoData.address?.municipality;
+
+        if (!pinnedMunicipality || pinnedMunicipality.toLowerCase() !== residentMunicipality.toLowerCase()) {
+          setError(`The pinned location appears to be in "${pinnedMunicipality}", which is outside your registered municipality of "${residentMunicipality}". Please pin a location within your municipality.`);
+          setLoading(false);
+          return;
+        }
+      }
+
       // Combine typed location and pinned coords for storage
       const locationString = coords
         ? (location ? `${location} (lat: ${coords.lat}, lng: ${coords.lng})` : `lat: ${coords.lat}, lng: ${coords.lng}`)
@@ -247,6 +283,7 @@ export default function ReportsClient({ user }) {
             issue_type: issueType,
             priority,
             location: locationString,
+            municipality: residentMunicipality, // <-- Add this line
             description,
             files: [],
           }
@@ -265,17 +302,47 @@ export default function ReportsClient({ user }) {
       // Upload photos if any
       let photoUrls = [];
       if (files.length > 0) {
-        photoUrls = await uploadPhotos(reportId, files.map(f => f.file));
+        const { uploadedUrls, uploadErrors } = await uploadPhotos(reportId, files.map(f => f.file));
+        photoUrls = uploadedUrls;
+
+        // Update report with any successfully uploaded URLs
+        const { error: updateError } = await supabase
+          .from('reports')
+          .update({ files: photoUrls })
+          .eq('id', reportId);
+
+        if (updateError) {
+          console.error('Error updating report with photos:', updateError);
+        }
+
+        if (uploadErrors.length > 0) {
+          const failedList = uploadErrors.map(e => e.file).join(', ');
+          setError(`Report saved, but some photos failed to upload: ${failedList}`);
+          setLoading(false);
+          return;
+        }
       }
 
-      // Update report with photo URLs
-      const { error: updateError } = await supabase
-        .from('reports')
-        .update({ files: photoUrls })
-        .eq('id', reportId);
+      // 2. Call the API route to notify city officials
+      const notifyResponse = await fetch('/api/notify-officials', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          reportId: reportId,
+          reporterUserId: user.id,
+          municipality: residentMunicipality,
+          issueType: issueType,
+          reporterName: residentName,
+        }),
+      });
 
-      if (updateError) {
-        console.error('Error updating report with photos:', updateError);
+      if (!notifyResponse.ok) {
+        const errorData = await notifyResponse.json();
+        console.error('Failed to send notifications to officials:', errorData.error);
+      } else {
+        console.log('Notification request sent to officials API.');
       }
 
       // inside handleSubmit (after successful submission and resets)

@@ -1,4 +1,28 @@
-export default function AdminDashboardPage() {
+import { cookies } from 'next/headers';
+import { createClient } from '../../lib/supabase/server';
+import { redirect } from 'next/navigation';
+import { getPickupsCount, getPendingReportsCount, getResolvedIssuesCount, getUsersCount, getRecentActivity } from '@/app/actions/data'
+
+export default async function AdminDashboardPage() {
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    redirect('/signin');
+  }
+  const pickupsCountData = await getPickupsCount()
+  const pendingReportsCountData = await getPendingReportsCount()
+  const resolvedIssuesCountData = await getResolvedIssuesCount()
+  const usersCountData = await getUsersCount()
+  const recentActivityData = await getRecentActivity()
+
+  const pickupsCount = pickupsCountData.count ?? 0
+  const pendingReportsCount = pendingReportsCountData.count ?? 0
+  const resolvedIssuesCount = resolvedIssuesCountData.count ?? 0
+  const usersCount = usersCountData.count ?? 0
+  const recentActivity = recentActivityData.data ?? []
+
   return (
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 24, marginBottom: 18 }}>
@@ -12,8 +36,7 @@ export default function AdminDashboardPage() {
             </div>
             <div className="muted small" style={{ fontSize: 16, fontWeight: 700 }}>Total Pickups</div>
           </div>
-          <div style={{ fontSize: 52, fontWeight: 900, marginTop: 10 }}>1,248</div>
-          <div className="small" style={{ color: 'var(--green-800)', marginTop: 8, fontSize: 15 }}>+12.5% from last month</div>
+          <div style={{ fontSize: 52, fontWeight: 900, marginTop: 10 }}>{pickupsCount}</div>
         </div>
 
         <div className="card" style={{ padding: 22, borderRadius: 12, background: '#ffffff', boxShadow: '0 6px 18px rgba(16,24,40,0.03)' }}>
@@ -26,8 +49,7 @@ export default function AdminDashboardPage() {
             </div>
             <div className="muted small" style={{ fontSize: 16, fontWeight: 700 }}>Pending Reports</div>
           </div>
-          <div style={{ fontSize: 52, fontWeight: 900, marginTop: 10 }}>45</div>
-          <div className="small" style={{ color: '#059669', marginTop: 8, fontSize: 15 }}>-8.2% from last month</div>
+          <div style={{ fontSize: 52, fontWeight: 900, marginTop: 10 }}>{pendingReportsCount}</div>
         </div>
 
         <div className="card" style={{ padding: 22, borderRadius: 12, background: '#ffffff', boxShadow: '0 6px 18px rgba(16,24,40,0.03)' }}>
@@ -40,8 +62,7 @@ export default function AdminDashboardPage() {
             </div>
             <div className="muted small" style={{ fontSize: 16, fontWeight: 700 }}>Resolved Issues</div>
           </div>
-          <div style={{ fontSize: 52, fontWeight: 900, marginTop: 10 }}>892</div>
-          <div className="small" style={{ color: 'var(--green-800)', marginTop: 8, fontSize: 15 }}>+23.1% from last month</div>
+          <div style={{ fontSize: 52, fontWeight: 900, marginTop: 10 }}>{resolvedIssuesCount}</div>
         </div>
 
         <div className="card" style={{ padding: 22, borderRadius: 12, background: '#ffffff', boxShadow: '0 6px 18px rgba(16,24,40,0.03)' }}>
@@ -54,8 +75,7 @@ export default function AdminDashboardPage() {
             </div>
             <div className="muted small" style={{ fontSize: 16, fontWeight: 700 }}>Active Users</div>
           </div>
-          <div style={{ fontSize: 52, fontWeight: 900, marginTop: 10 }}>3,421</div>
-          <div className="small" style={{ color: 'var(--green-800)', marginTop: 8, fontSize: 15 }}>+5.4% from last month</div>
+          <div style={{ fontSize: 52, fontWeight: 900, marginTop: 10 }}>{usersCount}</div>
         </div>
       </div>
 
@@ -63,29 +83,15 @@ export default function AdminDashboardPage() {
         <div className="card" style={{ padding: 20, borderRadius: 12, background: '#ffffff', boxShadow: '0 6px 18px rgba(16,24,40,0.03)' }}>
           <h3 style={{ marginTop: 0, fontSize: 20, fontWeight: 800 }}>Recent Activity</h3>
           <div style={{ display: 'grid', gap: 0, marginTop: 14 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: '1px solid rgba(16,24,40,0.04)' }}>
-              <div>
-                <div style={{ fontWeight: 800, fontSize: 16 }}>Illegal dumping reported</div>
-                <div className="small muted" style={{ fontSize: 13 }}>Barangay A</div>
+            {recentActivity.map((activity, index) => (
+              <div key={activity.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: index === recentActivity.length - 1 ? 'none' : '1px solid rgba(16,24,40,0.04)' }}>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: 16 }}>{activity.title}</div>
+                  <div className="small muted" style={{ fontSize: 13 }}>{activity.profiles?.full_name ?? 'Anonymous'}</div>
+                </div>
+                <div className="muted small" style={{ fontSize: 13 }}>{new Date(activity.created_at).toLocaleDateString()}</div>
               </div>
-              <div className="muted small" style={{ fontSize: 13 }}>2 hours ago</div>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: '1px solid rgba(16,24,40,0.04)' }}>
-              <div>
-                <div style={{ fontWeight: 800, fontSize: 16 }}>Special pickup scheduled</div>
-                <div className="small muted" style={{ fontSize: 13 }}>Barangay B</div>
-              </div>
-              <div className="muted small" style={{ fontSize: 13 }}>1 hour ago</div>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0' }}>
-              <div>
-                <div style={{ fontWeight: 800, fontSize: 16 }}>Issue resolved</div>
-                <div className="small muted" style={{ fontSize: 13 }}>Barangay C</div>
-              </div>
-              <div className="muted small" style={{ fontSize: 13 }}>30 minutes ago</div>
-            </div>
+            ))}
           </div>
         </div>
 
