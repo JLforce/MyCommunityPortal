@@ -20,13 +20,6 @@ export default function AdminSidebar() {
         <rect x="14" y="14" width="7" height="7" rx="1" fill="#ffffff" />
       </svg>
     )},
-    { key: 'analytics', href: '/dashboard-admin/analytics', label: 'Analytics', icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-        <rect x="3" y="10" width="3" height="8" rx="1" fill="#065f46" />
-        <rect x="9" y="6" width="3" height="12" rx="1" fill="#065f46" />
-        <rect x="15" y="3" width="3" height="15" rx="1" fill="#065f46" />
-      </svg>
-    )},
     { key: 'reports', href: '/dashboard-admin/reports', label: 'Reports', icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
         <path d="M7 3h7l4 4v11a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V3z" fill="#c2410c" />
@@ -67,13 +60,6 @@ export default function AdminSidebar() {
               ...base,
               background: activeClass ? 'linear-gradient(180deg,#0b6b39,#0a5a31)' : 'linear-gradient(180deg,#e6f7ee,#dff6eb)',
               boxShadow: activeClass ? '0 8px 18px rgba(6,95,46,0.25), inset 0 2px 0 rgba(255,255,255,0.06)' : '0 6px 18px rgba(6,95,46,0.06), inset 0 6px 12px rgba(255,255,255,0.8)'
-            };
-          }
-          if (item.key === 'analytics') {
-            return {
-              ...base,
-              background: activeClass ? 'linear-gradient(180deg,#dffaf0,#c8f3e0)' : 'linear-gradient(180deg,#f1fff8,#e7fff4)',
-              boxShadow: activeClass ? '0 8px 18px rgba(16,185,129,0.18), inset 0 2px 0 rgba(255,255,255,0.06)' : '0 6px 18px rgba(16,185,129,0.06), inset 0 6px 12px rgba(255,255,255,0.85)'
             };
           }
           if (item.key === 'reports') {
