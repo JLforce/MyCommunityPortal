@@ -1073,7 +1073,7 @@ aside .btn.small:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rg
 	position: relative;
 	overflow: hidden;
 	border-radius: 12px;
-	padding: 18px;
+	padding: clamp(12px, 3vw, 18px);
 	background: linear-gradient(120deg, rgba(236,253,245,0.9) 0%, rgba(229,246,238,0.9) 40%, rgba(240,255,250,0.95) 100%);
 }
 
@@ -1115,6 +1115,260 @@ aside .btn.small:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rg
 .recent-list > div:nth-child(2) { animation-delay: 140ms; }
 .recent-list > div:nth-child(3) { animation-delay: 220ms; }
 @keyframes recentItemIn { to { opacity: 1; transform: none; } }
+
+/* Reports Page Mobile Responsive Styles */
+.reports-page-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.reports-new-btn {
+	white-space: nowrap;
+	font-size: 14px;
+	padding: 10px 16px;
+}
+
+.reports-form-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	gap: 12px;
+}
+
+.reports-select,
+.reports-textarea {
+	width: 100%;
+	font-size: 15px;
+	font-family: inherit;
+}
+
+.reports-map-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.reports-location-btn {
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+
+.reports-location-btn-text {
+	display: inline-block;
+}
+
+.reports-map-container {
+	width: 100%;
+	height: clamp(250px, 40vh, 400px);
+	border-radius: 8px;
+	overflow: hidden;
+	border: 1px solid #E5E7EB;
+	position: relative;
+}
+
+.reports-photo-buttons {
+	display: flex;
+	justify-content: center;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.reports-upload-btn,
+.reports-camera-btn {
+	min-width: 120px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 14px;
+	padding: 10px 18px;
+}
+
+.reports-file-thumbs {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+}
+
+.reports-form-actions {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.reports-submit-btn {
+	flex: 1 1 200px;
+	min-width: 140px;
+	padding: 14px 20px;
+	font-size: 15px;
+}
+
+.reports-cancel-btn {
+	flex: 0 1 auto;
+	min-width: 100px;
+	padding: 14px 20px;
+	font-size: 15px;
+}
+
+.reports-recent-item {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	padding: clamp(12px, 3vw, 16px);
+}
+
+.camera-modal-actions {
+	display: flex;
+	justify-content: center;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+/* Mobile-specific responsive adjustments */
+@media (max-width: 768px) {
+	.reports-page-header {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.reports-page-header > div:first-child {
+		flex: 1 1 100%;
+	}
+
+	.reports-new-btn {
+		width: 100%;
+		justify-content: center;
+	}
+
+	.reports-form-grid {
+		grid-template-columns: 1fr;
+		gap: 12px;
+	}
+
+	.reports-map-header {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 8px;
+	}
+
+	.reports-location-btn {
+		width: 100%;
+		justify-content: center;
+	}
+
+	.reports-location-btn-text {
+		display: inline;
+	}
+
+	.reports-photo-buttons {
+		flex-direction: column;
+		width: 100%;
+	}
+
+	.reports-upload-btn,
+	.reports-camera-btn {
+		width: 100%;
+		min-width: auto;
+	}
+
+	.reports-form-actions {
+		flex-direction: column;
+	}
+
+	.reports-submit-btn,
+	.reports-cancel-btn {
+		width: 100%;
+		flex: 1 1 100%;
+		min-width: auto;
+	}
+
+	.reports-recent-item > div:first-child {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.reports-recent-item > div:first-child > div:last-child {
+		align-self: flex-start;
+	}
+
+	.camera-modal-actions {
+		flex-direction: column;
+		width: 100%;
+	}
+
+	.camera-modal-actions button {
+		width: 100%;
+		min-width: auto;
+	}
+}
+
+@media (max-width: 480px) {
+	.reports-page {
+		padding: 16px 0;
+	}
+
+	.reports-bg {
+		padding: 12px;
+		border-radius: 8px;
+	}
+
+	.reports-card {
+		padding: 16px;
+		margin-bottom: 12px;
+	}
+
+	.reports-map-container {
+		height: 250px;
+	}
+
+	.reports-file-thumbs .file-thumb {
+		width: 80px;
+		height: 80px;
+	}
+
+	.reports-recent-item {
+		padding: 12px;
+	}
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+	.reports-form-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	.reports-map-container {
+		height: 350px;
+	}
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+	.reports-select,
+	.reports-textarea,
+	.reports-submit-btn,
+	.reports-cancel-btn,
+	.reports-upload-btn,
+	.reports-camera-btn,
+	.reports-location-btn {
+		min-height: 44px; /* iOS recommended touch target */
+	}
+
+	.reports-location-btn {
+		padding: 10px 16px;
+	}
+
+	.file-thumb button {
+		min-width: 32px;
+		min-height: 32px;
+		padding: 8px;
+	}
+}
 
 /* Animations */
 .fade-in {
@@ -2259,6 +2513,116 @@ html { scroll-behavior: smooth; }
 	.profile-main{ order: 1; }
 }
 
+/* --- Dashboard Responsive Layout --- */
+
+.dashboard-main {
+  padding: 28px 0;
+}
+
+.dashboard-container {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.dashboard-content {
+  flex: 1;
+  min-width: 0; /* Prevents content from overflowing flex container */
+}
+
+.welcome-section {
+  margin-bottom: 18px;
+}
+
+.welcome-header {
+  margin: 0 0 6px;
+}
+
+.welcome-subheader {
+  margin: 0;
+}
+
+.cta-pill-container {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 6px;
+}
+
+.cta-pill-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 16px;
+}
+
+/* --- Card Styles --- */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.card-header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+}
+
+.card-title {
+  margin: 0;
+}
+
+.card-content {
+  margin-top: 12px;
+}
+
+/* --- Empty State Styles --- */
+.empty-state {
+  padding: 48px;
+  text-align: center;
+  border-radius: 12px;
+  background: #F9FAFB;
+  border: 1px dashed #E5E7EB;
+}
+
+.empty-state-icon-wrapper {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.empty-state-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Guide page intro spacing: move intro slightly lower so it doesn't sit at the very top */
 .guide-intro {
 	margin-top: 34px;
@@ -2270,11 +2634,151 @@ html { scroll-behavior: smooth; }
 	}
 }
 
+/* --- Pickup Page --- */
+.pickup-page {
+  padding: 28px 0;
+}
+
+.page-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.page-title {
+  margin: 0 0 6px;
+}
+
+.page-subtitle {
+  margin: 0;
+}
+
+.pickup-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.pickup-form-card,
+.pickup-schedule-card {
+  padding: 20px;
+  background: #F6FEF6;
+}
+
+.card-title-large {
+  margin: 0 0 8px;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--green-900);
+}
+
+.card-subtitle {
+  margin: 0 0 12px;
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.form-select,
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+  font-size: 15px;
+  font-family: inherit;
+}
+
+.form-select {
+  height: 48px;
+}
+
+.form-textarea {
+  resize: vertical;
+}
+
+.form-error {
+  color: #dc2626;
+  background: #FEF2F2;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-top: 12px;
+  border: 1px solid #FECACA;
+  font-weight: 500;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* --- Dashboard Responsive Media Queries --- */
+@media (max-width: 768px) {
+  .dashboard-container {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .sidebar {
+    width: 100%;
+    /* You might want to hide the sidebar behind a hamburger menu on mobile,
+       but for a simple responsive fix, we can make it horizontal. */
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 10px;
+  }
+
+  .sidebar nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .sidebar .sidebar-brand {
+    display: none; /* Hide brand in sidebar on mobile as it's in the header */
+  }
 
 
 
 
 
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
 
+  .pickup-grid {
+    grid-template-columns: 1fr;
+  }
 
+  .reports-page-header {
+    align-items: flex-start;
+  }
 
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .recent-report-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+}

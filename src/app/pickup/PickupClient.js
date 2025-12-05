@@ -437,13 +437,13 @@ export default function PickupClient({ user }){
       <DashboardHeader />
 
       <main className="page-fade-in" style={{padding:'28px 0'}}>
-        <div className="container" style={{display:'flex',gap:20,alignItems:'flex-start'}}>
+        <div className="container pickup-layout">
           <Sidebar />
 
-          <div style={{flex:1}}>
-            <div style={{marginBottom:24}}>
-              <h1 style={{margin:'0 0 6px'}}>Waste Pickup Management</h1>
-              <p className="muted" style={{margin:0}}>Schedule and track your waste collection requests.</p>
+          <div className="pickup-main-content">
+            <div className="page-header" style={{marginBottom:24}}>
+              <h1>Waste Pickup Management</h1>
+              <p className="muted">Schedule and track your waste collection requests.</p>
             </div>
 
             {/* Schedule Pickup Request Section */}
