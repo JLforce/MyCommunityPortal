@@ -157,6 +157,7 @@ export async function signIn(formData) {
   })
 
   if (error) {
+    console.error('Sign-in error:', error);
     // Customize error messages for better user experience
     if (error.message.includes('Invalid login credentials') || error.message.includes('invalid_credentials')) {
       return { error: 'Email or password is incorrect, or account does not exist.' }

@@ -11,11 +11,20 @@ export default async function AdminDashboardPage() {
   if (!user) {
     redirect('/signin');
   }
+  // Get admin profile to scope metrics by municipality
+  const { data: adminProfile } = await supabase
+    .from('profiles')
+    .select('municipality')
+    .eq('id', user.id)
+    .single();
+
+  const adminMunicipality = adminProfile?.municipality || null;
+
   const pickupsCountData = await getPickupsCount()
-  const pendingReportsCountData = await getPendingReportsCount()
-  const resolvedIssuesCountData = await getResolvedIssuesCount()
-  const usersCountData = await getUsersCount()
-  const recentActivityData = await getRecentActivity()
+  const pendingReportsCountData = await getPendingReportsCount(adminMunicipality)
+  const resolvedIssuesCountData = await getResolvedIssuesCount(adminMunicipality)
+  const usersCountData = await getUsersCount(adminMunicipality)
+  const recentActivityData = await getRecentActivity(adminMunicipality)
 
   const pickupsCount = pickupsCountData.count ?? 0
   const pendingReportsCount = pendingReportsCountData.count ?? 0

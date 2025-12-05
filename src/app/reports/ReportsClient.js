@@ -35,15 +35,6 @@ export default function ReportsClient({ user }) {
 
   // Log user prop for debugging
   useEffect(() => {
-    console.log('=== Reports Client: User Prop Received ===');
-    console.log('User:', user);
-    console.log('User ID:', user?.id);
-    console.log('User Email:', user?.email);
-    console.log('==========================================');
-  }, [user]);
-
-  // Clear error when user starts typing
-  useEffect(() => {
     if (issueType || priority || location || description || coords) {
       setError('');
     }
@@ -101,7 +92,6 @@ export default function ReportsClient({ user }) {
       // We have permission, stop the stream immediately as we only need it for the prompt
       stream.getTracks().forEach(track => track.stop());
       setCameraPermission('granted');
-      console.log('Camera permission granted.');
       return true;
     } catch (err) {
       console.error('Error accessing camera:', err);
@@ -118,18 +108,12 @@ export default function ReportsClient({ user }) {
 
   // Fetch reports from Supabase on mount
   useEffect(() => {
-    console.log('=== Reports Client: Fetch Reports Effect ===');
-    console.log('User available:', !!user);
-    console.log('User ID:', user?.id);
-    
     // Only fetch reports if we have a user
     if (!user) {
-      console.log('No user found, skipping report fetch');
       return;
     }
 
     const fetchReports = async () => {
-      console.log('Fetching reports for user ID:', user.id);
       const { data, error } = await supabase
         .from('reports')
         .select('*')
@@ -138,7 +122,6 @@ export default function ReportsClient({ user }) {
       if (error) {
         console.error('Error fetching reports:', error);
       } else {
-        console.log('Reports fetched successfully:', data?.length || 0, 'reports');
         setRecent(data || []);
       }
     };
@@ -181,7 +164,6 @@ export default function ReportsClient({ user }) {
       selectedFiles.map(async (file) => {
         try {
           const compressedFile = await imageCompression(file, options);
-          console.log(`Compressed ${file.name} from ${file.size / 1024} KB to ${compressedFile.size / 1024} KB`);
           return { file: compressedFile, preview: URL.createObjectURL(compressedFile) };
         } catch (error) {
           console.error('Error compressing image:', error);
@@ -206,17 +188,11 @@ export default function ReportsClient({ user }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log('=== Reports Client: Form Submit Started ===');
-    console.log('User from prop:', user);
-    console.log('User ID:', user?.id);
-
     if (!user) {
       console.error('=== ERROR: No user found for report submission ===');
       alert('You must be logged in to submit a report.');
       return;
     }
-
-    console.log('Proceeding with report submission for user ID:', user.id);
 
     setError(''); // Clear previous errors
     const locationStringCandidate = coords
@@ -341,9 +317,7 @@ export default function ReportsClient({ user }) {
       if (!notifyResponse.ok) {
         const errorData = await notifyResponse.json();
         console.error('Failed to send notifications to officials:', errorData.error);
-      } else {
-        console.log('Notification request sent to officials API.');
-      }
+      } 
 
       // inside handleSubmit (after successful submission and resets)
       alert('Report submitted successfully!');
