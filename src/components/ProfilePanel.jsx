@@ -1,16 +1,57 @@
 "use client";
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/lib/supabase';
 
 export default function ProfilePanel(){
+  const { user, loading: authLoading } = useAuth();
   const [profile, setProfile] = useState({
     fullName: 'Unknown User',
     email: 'user@example.com',
     phone: '',
     role: 'City Official'
   });
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [avatar, setAvatar] = useState('/avatar-default.svg');
   const fileRef = useRef();
+
+  // Fetch profile data from database
+  useEffect(() => {
+    fetchProfileData();
+  }, [user, authLoading]);
+
+  async function fetchProfileData() {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching profile:', error);
+      } else if (data) {
+        setProfile({
+          fullName: `${data.first_name || ''} ${data.last_name || ''}`.trim() || 'Unknown User',
+          email: data.email || user.email || 'user@example.com',
+          phone: data.phone || '',
+          role: data.role === 'city_official' ? 'City Official' : 
+                data.role === 'resident' ? 'Resident' : 
+                data.role === 'collector' ? 'Collector' : 'City Official'
+        });
+      }
+    } catch (err) {
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   function onPickAvatar(){
     if (fileRef.current) fileRef.current.click();
@@ -25,11 +66,51 @@ export default function ProfilePanel(){
 
   function handleSave(e){
     e.preventDefault();
+    if (!user) {
+      alert('You must be signed in to save changes');
+      return;
+    }
+
     setSaving(true);
-    setTimeout(()=>{
-      setSaving(false);
-      alert('Profile saved (demo)');
-    },700);
+    
+    // Split fullName into first_name and last_name
+    const nameParts = profile.fullName.trim().split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
+    // Update profile in database
+    supabase
+      .from('profiles')
+      .update({
+        first_name: firstName,
+        last_name: lastName,
+        email: profile.email,
+        phone: profile.phone
+      })
+      .eq('id', user.id)
+      .then(({ error }) => {
+        setSaving(false);
+        if (error) {
+          console.error('Error saving profile:', error);
+          alert('Error saving profile: ' + error.message);
+        } else {
+          alert('Profile saved successfully!');
+        }
+      });
+  }
+
+  function handleCancel() {
+    setAvatar('/avatar-default.svg');
+    fetchProfileData();
+  }
+
+  if (authLoading || loading) {
+    return (
+      <div style={{paddingTop:8}}>
+        <h1 style={{fontSize:28,fontWeight:800,color:'#064e3b',marginBottom:6}}>Profile</h1>
+        <p style={{marginTop:0,color:'#6b7280',marginBottom:18}}>Loading...</p>
+      </div>
+    );
   }
 
   return (
@@ -92,7 +173,7 @@ export default function ProfilePanel(){
 
           <div style={{display:'flex',gap:12,marginTop:8,marginBottom:28}}>
             <button type="submit" disabled={saving} style={{background:'#064e3b',color:'#fff',padding:'12px 22px',borderRadius:14,border:'none',fontWeight:900,boxShadow:'0 12px 30px rgba(6,95,46,0.18)',transform:'translateY(0)'}}>{saving ? 'Saving...' : 'Save Changes'}</button>
-            <button type="button" onClick={()=>{ /* reset demo */ setProfile({fullName:'Unknown User',email:'user@example.com',phone:'',role:'City Official'}); setAvatar('/avatar-default.svg'); }} style={{background:'#fff',border:'1px solid #D1FAE5',padding:'10px 16px',borderRadius:12}}>Cancel</button>
+            <button type="button" onClick={handleCancel} style={{background:'#fff',border:'1px solid #D1FAE5',padding:'10px 16px',borderRadius:12}}>Cancel</button>
           </div>
         </div>
       </form>
