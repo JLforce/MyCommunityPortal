@@ -111,20 +111,6 @@ export default function HeaderButtons(){
       <div ref={ref} style={{display:'flex',alignItems:'center',gap:12}}>
         {!isMobile ? (
           <>
-            <div style={{position:'relative'}}>
-              <button
-                onClick={navigateToNotifications}
-                title="Notifications"
-                aria-label="Notifications"
-                onMouseEnter={()=>setHovered('notifications')}
-                onMouseLeave={()=>setHovered(null)}
-                style={{display:'inline-flex',background: hovered==='notifications' ? 'rgba(0,0,0,0.04)' : 'transparent',border:'none',padding:8,borderRadius:10,alignItems:'center',justifyContent:'center',cursor:'pointer',transition:'background .15s, transform .08s'}}
-              >
-                <BellIcon />
-              </button>
-              <span aria-hidden style={{position:'absolute',right:3,top:3,width:8,height:8,background:'#ef4444',borderRadius:999,border:'2px solid var(--green-50)'}}></span>
-            </div>
-
           <Link
             href={isAdminRole ? "/dashboard-admin/settings" : "/settings"}
             title="Settings"
@@ -178,20 +164,6 @@ export default function HeaderButtons(){
 
           {open && (
             <div role="menu" aria-label="Header actions" style={{position:'absolute',right:0,top:'calc(100% + 8px)',background:'#fff',boxShadow:'0 6px 20px rgba(15,23,42,0.08)',borderRadius:8,padding:8,minWidth:180,zIndex:40}}>
-              <button 
-                role="menuitem" 
-                onClick={() => {
-                  setOpen(false);
-                  navigateToNotifications();
-                }} 
-                onMouseEnter={(e) => e.target.style.background = '#F3F4F6'}
-                onMouseLeave={(e) => e.target.style.background = 'transparent'}
-                style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'var(--text-900)',background:'transparent',border:'none',width:'100%',textAlign:'left',cursor:'pointer',transition:'background 0.2s'}}
-              >
-                <BellIcon />
-                <span>Notifications</span>
-              </button>
-
               <Link href={isAdminRole ? "/dashboard-admin/settings" : "/settings"} role="menuitem" onClick={()=>setOpen(false)} style={{display:'flex',gap:10,alignItems:'center',padding:8,borderRadius:6,color:'var(--text-900)'}}>
                 <CogIcon />
                 <span>Settings</span>

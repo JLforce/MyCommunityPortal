@@ -1,9 +1,11 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '../../../lib/supabase/supabase';
 
 export default function PickupsAdminClient({ user }) {
   const [pickups, setPickups] = useState([]);
+  const router = useRouter();
   const [filteredPickups, setFilteredPickups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -346,8 +348,17 @@ export default function PickupsAdminClient({ user }) {
                     {/* View Details Button */}
                     <button
                       onClick={() => {
-                        // TODO: Implement view details functionality
-                        console.log('View details for pickup:', pickup.id);
+                        const qs = new URLSearchParams({
+                          id: pickup.id || '',
+                          name: pickup.userName || '',
+                          status: pickup.status || '',
+                          type: pickup.pickup_type || 'Pickup',
+                          datetime: pickup.pickup_date || '',
+                          address: pickup.address || pickup.location || '',
+                          notes: pickup.notes || '',
+                          contact: pickup.contact_number || pickup.phone || ''
+                        }).toString();
+                        router.push(`/dashboard-admin/pickup-details?${qs}`);
                       }}
                       style={{
                         width:'100%',
