@@ -22,7 +22,7 @@ export default function LogoutPage(){
         console.error('Server logout call failed', err);
       }
       if (!cancelled){
-        router.replace('/signin');
+        router.replace('/');
       }
     }
     doLogout();
