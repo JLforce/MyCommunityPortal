@@ -140,7 +140,7 @@ function Sidebar({ user }) {
       </nav>
     </aside>
   );
-}
+} 
 
 function DashboardHeader({ userRole }){
   return (
@@ -231,41 +231,41 @@ export default function DashboardClient({ user }) {
     <>
       <DashboardHeader userRole={profile?.role} />
 
-      <main className="page-fade-in" style={{padding:'28px 0'}}>
-        <div className="container" style={{display:'flex',gap:20,alignItems:'flex-start'}}>
+      <main className="page-fade-in dashboard-main">
+        <div className="container dashboard-container">
           <Sidebar user={user} />
 
-          <div style={{flex:1}}>
-            <div style={{marginBottom:18}}>
+          <div className="dashboard-content">
+            <div className="welcome-section">
               <div>
-                <h1 style={{margin:'0 0 6px'}}>Welcome back, {profile?.first_name || 'there'}!</h1>
-                <p className="muted" style={{margin:0}}>Here's what's happening in your community today.</p>
+                <h1 className="welcome-header">Welcome back, {profile?.first_name || 'there'}!</h1>
+                <p className="muted welcome-subheader">Here's what's happening in your community today.</p>
               </div>
 
-              <div style={{display:'flex',gap:12,marginTop:12,flexWrap:'nowrap',overflowX:'auto',WebkitOverflowScrolling:'touch',paddingBottom:6}}>
+              <div className="cta-pill-container">
                 <Link href="/pickup" className="cta-pill blue">
-                  <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:28,height:28,borderRadius:8,background:'rgba(37,99,235,0.08)',color:'#2563eb'}} aria-hidden>
+                  <span className="cta-pill-icon" style={{background:'rgba(37,99,235,0.08)',color:'#2563eb'}} aria-hidden>
                     <CalendarIcon width={16} height={16} />
                   </span>
                   <span>Schedule Pickup</span>
                 </Link>
 
                 <Link href="/reports" className="cta-pill orange">
-                  <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:28,height:28,borderRadius:8,background:'rgba(251,146,60,0.08)',color:'#fb923c'}} aria-hidden>
+                  <span className="cta-pill-icon" style={{background:'rgba(251,146,60,0.08)',color:'#fb923c'}} aria-hidden>
                     <WarningIcon width={16} height={16} />
                   </span>
                   <span>Report Issue</span>
                 </Link>
 
                 <Link href="/guide" className="cta-pill green">
-                  <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:28,height:28,borderRadius:8,background:'rgba(16,185,129,0.06)',color:'var(--green-700)'}} aria-hidden>
+                  <span className="cta-pill-icon" style={{background:'rgba(16,185,129,0.06)',color:'var(--green-700)'}} aria-hidden>
                     <CheckIcon width={16} height={16} />
                   </span>
                   <span>Waste Guide</span>
                 </Link>
 
                 <Link href="/ai-assistant" className="cta-pill indigo">
-                  <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:28,height:28,borderRadius:8,background:'rgba(55,65,81,0.06)',color:'var(--text-700)'}} aria-hidden>
+                  <span className="cta-pill-icon" style={{background:'rgba(55,65,81,0.06)',color:'var(--text-700)'}} aria-hidden>
                     <AnimatedRobotIcon width={16} height={16} />
                   </span>
                   <span>AI Assistant</span>
@@ -273,20 +273,20 @@ export default function DashboardClient({ user }) {
               </div>
             </div>
 
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:18,marginTop:16}}>
+            <div className="dashboard-grid">
               <div className="card">
-                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
-                  <div style={{display:'flex',alignItems:'center',gap:10}}>
-                    <div aria-hidden style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:28,height:28,borderRadius:8,background:'rgba(16,185,129,0.12)'}}>
+                <div className="card-header">
+                  <div className="card-header-title">
+                    <div aria-hidden className="card-icon-wrapper" style={{background:'rgba(16,185,129,0.12)'}}>
                       <RecycleIcon width={16} height={16} />
                     </div>
-                    <h3 style={{margin:0}}>Upcoming Pickups</h3>
+                    <h3 className="card-title">Upcoming Pickups</h3>
                   </div>
                   <Link href="/pickup" className="cta-pill small">+ Schedule</Link>
                 </div>
                 <p className="muted">Your scheduled waste collection dates</p>
 
-                <div style={{marginTop:12}}>
+                <div className="card-content">
                   {loading ? (
                     <p className="muted">Loading pickups...</p>
                   ) : pickups.length > 0 ? (
@@ -299,14 +299,14 @@ export default function DashboardClient({ user }) {
                       ))}
                     </ul>
                   ) : (
-                    <div style={{padding:48, textAlign:'center', borderRadius:12, background:'#F9FAFB', border:'1px dashed #E5E7EB'}}>
-                      <div style={{marginBottom:16, display:'flex', justifyContent:'center'}}>
-                        <div style={{width:64, height:64, borderRadius:50, background:'#ECFDF5', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                    <div className="empty-state">
+                      <div className="empty-state-icon-wrapper">
+                        <div className="empty-state-icon" style={{background:'#ECFDF5'}}>
                           <RecycleIcon width={32} height={32} />
                         </div>
                       </div>
-                      <h3 style={{margin:'0 0 8px', fontSize:18, color:'var(--text-900)', fontWeight:700}}>No Scheduled Pickups</h3>
-                      <p className="muted" style={{margin:0, fontSize:14, maxWidth:400, marginLeft:'auto', marginRight:'auto'}}>
+                      <h3 className="empty-state-title">No Scheduled Pickups</h3>
+                      <p className="muted empty-state-description">
                         You have no upcoming pickups. Schedule one now!
                       </p>
                     </div>
@@ -315,18 +315,18 @@ export default function DashboardClient({ user }) {
               </div>
 
               <div className="card">
-                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
-                  <div style={{display:'flex',alignItems:'center',gap:10}}>
-                    <div aria-hidden style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:28,height:28,borderRadius:8,background:'rgba(251,146,60,0.08)'}}>
+                <div className="card-header">
+                  <div className="card-header-title">
+                    <div aria-hidden className="card-icon-wrapper" style={{background:'rgba(251,146,60,0.08)'}}>
                       <WarningIcon width={16} height={16} />
                     </div>
-                    <h3 style={{margin:0}}>Recent Reports</h3>
+                    <h3 className="card-title">Recent Reports</h3>
                   </div>
                   <Link href="/reports" className="cta-pill small">+ Report</Link>
                 </div>
                 <p className="muted">Issues you've reported to the community</p>
 
-                <div style={{marginTop:12}}>
+                <div className="card-content">
                   {loading ? (
                     <p className="muted">Loading reports...</p>
                   ) : reports.length > 0 ? (
@@ -339,14 +339,14 @@ export default function DashboardClient({ user }) {
                       ))}
                     </ul>
                   ) : (
-                    <div style={{padding:48, textAlign:'center', borderRadius:12, background:'#F9FAFB', border:'1px dashed #E5E7EB'}}>
-                      <div style={{marginBottom:16, display:'flex', justifyContent:'center'}}>
-                        <div style={{width:64, height:64, borderRadius:50, background:'#FFF7ED', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                    <div className="empty-state">
+                      <div className="empty-state-icon-wrapper">
+                        <div className="empty-state-icon" style={{background:'#FFF7ED'}}>
                           <WarningIcon width={32} height={32} />
                         </div>
                       </div>
-                      <h3 style={{margin:'0 0 8px', fontSize:18, color:'var(--text-900)', fontWeight:700}}>No Reports Yet</h3>
-                      <p className="muted" style={{margin:0, fontSize:14, maxWidth:400, marginLeft:'auto', marginRight:'auto'}}>
+                      <h3 className="empty-state-title">No Reports Yet</h3>
+                      <p className="muted empty-state-description">
                         You haven't reported any issues. All clear!
                       </p>
                     </div>
@@ -355,7 +355,7 @@ export default function DashboardClient({ user }) {
               </div>
             </div>
 
-            <div style={{height:36}} />
+            <div style={{height:36}} /> {/* Spacer */}
           </div>
         </div>
       </main>
