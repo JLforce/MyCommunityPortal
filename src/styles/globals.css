@@ -1370,6 +1370,325 @@ aside .btn.small:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rg
 	}
 }
 
+/* Pickup Page Mobile Responsive Styles */
+.pickup-page {
+	padding: clamp(16px, 4vw, 28px) 0;
+}
+
+.pickup-layout {
+	display: flex;
+	gap: clamp(16px, 3vw, 20px);
+	align-items: flex-start;
+}
+
+.pickup-content {
+	flex: 1;
+	min-width: 0;
+}
+
+.pickup-page-header h1 {
+	font-size: clamp(24px, 5vw, 32px);
+	margin: 0 0 6px;
+	font-weight: 800;
+}
+
+.pickup-form-card,
+.pickup-tracking-card {
+	padding: clamp(20px, 4vw, 32px);
+	margin-bottom: clamp(20px, 4vw, 24px);
+}
+
+.pickup-address {
+	margin: 8px 0 0;
+	font-size: clamp(12px, 2vw, 13px);
+	line-height: 1.4;
+	word-break: break-word;
+}
+
+.pickup-type-section {
+	margin-bottom: clamp(20px, 4vw, 24px);
+}
+
+.pickup-type-options {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.pickup-type-option {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: clamp(10px, 2vw, 12px);
+	border-radius: 10px;
+	transition: all 0.2s;
+}
+
+.pickup-type-option span {
+	font-size: clamp(13px, 2vw, 14px);
+	line-height: 1.4;
+}
+
+.pickup-volume-section {
+	margin-bottom: clamp(20px, 4vw, 24px);
+}
+
+.volume-slider-container {
+	position: relative;
+	width: 100%;
+	padding: 8px 0;
+}
+
+.pickup-textarea {
+	width: 100%;
+	font-size: clamp(13px, 2vw, 14px);
+	font-family: inherit;
+}
+
+.pickup-form-actions {
+	display: flex;
+	gap: 12px;
+	justify-content: flex-start;
+	flex-wrap: wrap;
+}
+
+.pickup-submit-btn {
+	flex: 1 1 200px;
+	min-width: 140px;
+	padding: clamp(12px, 2vw, 14px) clamp(24px, 4vw, 32px);
+	font-size: clamp(14px, 2vw, 15px);
+}
+
+.pickup-cancel-btn {
+	flex: 0 1 auto;
+	min-width: 100px;
+	padding: clamp(12px, 2vw, 14px) clamp(20px, 3vw, 24px);
+	font-size: clamp(14px, 2vw, 15px);
+}
+
+.pickup-requests-list {
+	display: flex;
+	flex-direction: column;
+	gap: clamp(12px, 3vw, 16px);
+}
+
+.pickup-request-item {
+	display: flex;
+	align-items: flex-start;
+	gap: clamp(12px, 2vw, 16px);
+	padding: clamp(12px, 2vw, 16px);
+	border-radius: 12px;
+}
+
+.pickup-modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0,0,0,0.6);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+	padding: clamp(12px, 3vw, 20px);
+}
+
+.pickup-modal-content {
+	background: #fff;
+	border-radius: 16px;
+	padding: clamp(20px, 4vw, 32px);
+	max-width: 500px;
+	width: 100%;
+	max-height: 90vh;
+	overflow: auto;
+	box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+	position: relative;
+}
+
+.pickup-modal-close {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	min-width: 36px;
+	min-height: 36px;
+	padding: 8px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 8px;
+	transition: background 0.2s;
+}
+
+.pickup-date-input,
+.pickup-time-select {
+	width: 100%;
+	font-size: clamp(13px, 2vw, 14px);
+	min-height: 44px;
+}
+
+.pickup-modal-actions {
+	display: flex;
+	gap: 12px;
+	justify-content: flex-end;
+	flex-wrap: wrap;
+}
+
+.pickup-modal-cancel,
+.pickup-modal-confirm {
+	min-height: 44px;
+	min-width: 100px;
+	font-size: clamp(14px, 2vw, 15px);
+}
+
+/* Mobile-specific responsive adjustments for Pickup Page */
+@media (max-width: 768px) {
+	.pickup-layout {
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.pickup-page-header {
+		margin-bottom: 20px;
+	}
+
+	.pickup-form-card,
+	.pickup-tracking-card {
+		padding: 20px;
+		margin-bottom: 20px;
+	}
+
+	.pickup-type-option {
+		flex-wrap: wrap;
+		align-items: flex-start;
+	}
+
+	.pickup-type-option input {
+		margin-top: 2px;
+	}
+
+	.pickup-type-option span {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.volume-slider-container {
+		padding: 12px 0;
+	}
+
+	.pickup-form-actions {
+		flex-direction: column;
+		width: 100%;
+	}
+
+	.pickup-submit-btn,
+	.pickup-cancel-btn {
+		width: 100%;
+		flex: 1 1 100%;
+		min-width: auto;
+	}
+
+	.pickup-request-item {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 12px;
+	}
+
+	.pickup-request-item > div:last-child {
+		align-self: flex-start;
+	}
+
+	.pickup-modal-content {
+		padding: 20px;
+		border-radius: 12px;
+	}
+
+	.pickup-modal-actions {
+		flex-direction: column;
+		width: 100%;
+	}
+
+	.pickup-modal-cancel,
+	.pickup-modal-confirm {
+		width: 100%;
+		min-width: auto;
+	}
+}
+
+@media (max-width: 480px) {
+	.pickup-page {
+		padding: 16px 0;
+	}
+
+	.pickup-form-card,
+	.pickup-tracking-card {
+		padding: 16px;
+		border-radius: 12px;
+	}
+
+	.pickup-type-option {
+		padding: 10px;
+	}
+
+	.pickup-request-item {
+		padding: 12px;
+		gap: 10px;
+	}
+
+	.pickup-modal-content {
+		padding: 16px;
+		border-radius: 10px;
+	}
+
+	.pickup-modal-close {
+		top: 8px;
+		right: 8px;
+		min-width: 32px;
+		min-height: 32px;
+		padding: 6px;
+	}
+}
+
+/* Tablet adjustments for Pickup Page */
+@media (min-width: 769px) and (max-width: 1024px) {
+	.pickup-form-card,
+	.pickup-tracking-card {
+		padding: 24px;
+	}
+
+	.pickup-modal-content {
+		padding: 28px;
+	}
+}
+
+/* Touch-friendly improvements for Pickup Page */
+@media (hover: none) and (pointer: coarse) {
+	.pickup-submit-btn,
+	.pickup-cancel-btn,
+	.pickup-modal-cancel,
+	.pickup-modal-confirm,
+	.pickup-date-input,
+	.pickup-time-select,
+	.pickup-textarea {
+		min-height: 44px; /* iOS recommended touch target */
+	}
+
+	.pickup-type-option {
+		min-height: 48px;
+		padding: 12px;
+	}
+
+	.pickup-type-option input {
+		width: 20px;
+		height: 20px;
+	}
+
+	.pickup-modal-close {
+		min-width: 44px;
+		min-height: 44px;
+	}
+}
+
 /* Animations */
 .fade-in {
 	animation: fadeInUp 0.9s cubic-bezier(0.23, 1, 0.32, 1);
@@ -2493,6 +2812,48 @@ html { scroll-behavior: smooth; }
 	.settings-main{ order: 1; }
 }
 
+/* Mobile-specific responsive adjustments for Settings Page */
+@media (max-width: 768px) {
+	.settings-form .card {
+		padding: 16px;
+	}
+	
+	.settings-form .input-field input,
+	.settings-form .input-field select {
+		width: 100%;
+		font-size: 16px; /* Prevents zoom on iOS */
+	}
+	
+	.settings-form section > div[style*="display:flex"] {
+		flex-direction: column;
+		gap: 8px;
+	}
+	
+	.settings-form section > div[style*="display:flex"] button {
+		width: 100%;
+		justify-content: center;
+	}
+	
+	.settings-form > div[style*="display:flex"][style*="justify-content:flex-end"] {
+		flex-direction: column-reverse;
+		align-items: stretch;
+		gap: 8px;
+	}
+	
+	.settings-form > div[style*="display:flex"][style*="justify-content:flex-end"] button {
+		width: 100%;
+	}
+	
+	.settings-side .card {
+		padding: 16px;
+	}
+	
+	.settings-side .card .btn {
+		width: 100%;
+		justify-content: center;
+	}
+}
+
 /* Small helpers for the settings form to match existing tokens */
 .settings-form .card{ padding:18px; }
 .settings-form .input-label{ font-weight:600; margin-top:6px; color:var(--text-600); }
@@ -2513,6 +2874,110 @@ html { scroll-behavior: smooth; }
 	.profile-main{ order: 1; }
 }
 
+/* Profile Card - Prevent overflow */
+.profile-main {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.profile-main .card {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* Mobile-specific responsive adjustments for Profile Page */
+@media (max-width: 768px) {
+	.profile-main .card {
+		padding: 16px;
+	}
+	
+	.profile-main .card[style*="display:flex"][style*="gap:18"] {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 16px;
+		width: 100%;
+		max-width: 100%;
+		box-sizing: border-box;
+	}
+	
+	.profile-main .card[style*="display:flex"][style*="gap:18"] > div[style*="display:flex"][style*="alignItems:center"] {
+		width: 100%;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 12px;
+		max-width: 100%;
+		box-sizing: border-box;
+	}
+	
+	/* Profile card actions - buttons section */
+	.profile-card-actions {
+		margin-left: 0 !important;
+		width: 100% !important;
+		flex-direction: column !important;
+		align-items: stretch !important;
+		gap: 8px !important;
+	}
+	
+	.profile-card-actions button {
+		width: 100%;
+		justify-content: center;
+	}
+	
+	/* Profile card edit form */
+	.profile-card-edit-form {
+		flex-direction: column !important;
+		width: 100% !important;
+		gap: 8px !important;
+	}
+	
+	.profile-card-edit-form input {
+		width: 100% !important;
+		font-size: 16px !important; /* Prevents zoom on iOS */
+		box-sizing: border-box;
+	}
+	
+	.profile-card-edit-form button {
+		width: 100%;
+		justify-content: center;
+	}
+	
+	.profile-main .card[style*="display:grid"][style*="gridTemplateColumns:1fr 1fr"] {
+		grid-template-columns: 1fr;
+	}
+	
+	.profile-main .card button {
+		width: 100%;
+		justify-content: center;
+	}
+	
+	.profile-main .card form button {
+		width: 100%;
+	}
+	
+	.profile-side .card {
+		padding: 16px;
+	}
+	
+	.profile-side .card .btn {
+		width: 100%;
+		justify-content: center;
+	}
+	
+	.profile-main .card[style*="display:flex"][style*="gap:8"] {
+		flex-direction: column;
+	}
+	
+	.profile-main .card[style*="display:flex"][style*="gap:8"] button,
+	.profile-main .card[style*="display:flex"][style*="gap:8"] a {
+		width: 100%;
+		justify-content: center;
+	}
+}
+
 /* --- Dashboard Responsive Layout --- */
 
 .dashboard-main {
@@ -2523,15 +2988,27 @@ html { scroll-behavior: smooth; }
   display: flex;
   gap: 20px;
   align-items: flex-start;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden; /* Prevent horizontal overflow */
 }
 
 .dashboard-content {
   flex: 1;
   min-width: 0; /* Prevents content from overflowing flex container */
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden; /* Prevent horizontal overflow */
 }
 
 .welcome-section {
   margin-bottom: 18px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .welcome-header {
@@ -2566,6 +3043,9 @@ html { scroll-behavior: smooth; }
   grid-template-columns: 1fr 1fr;
   gap: 18px;
   margin-top: 16px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* --- Card Styles --- */
@@ -2762,6 +3242,78 @@ html { scroll-behavior: smooth; }
 
   .dashboard-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* CTA Pills Container - Better mobile scrolling */
+  .cta-pill-container {
+    gap: 8px;
+    padding-bottom: 8px;
+    margin-top: 16px;
+  }
+
+  .cta-pill {
+    min-width: auto;
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  .cta-pill-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .cta-pill-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Card Headers - Stack on mobile */
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .card-header-title {
+    width: 100%;
+  }
+
+  .card-header .cta-pill.small {
+    align-self: flex-end;
+    margin-top: -4px;
+    min-height: 36px; /* Better touch target */
+  }
+
+  /* Card Content - Better spacing on mobile */
+  .card-content {
+    margin-top: 16px;
+  }
+
+  .data-list {
+    gap: 10px;
+  }
+
+  .data-list li {
+    padding: 10px 0;
+    font-size: 14px;
+  }
+
+  /* Empty States - Reduce padding on mobile */
+  .empty-state {
+    padding: 32px 20px;
+  }
+
+  .empty-state-icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .empty-state-icon svg {
+    width: 28px;
+    height: 28px;
   }
 
   .pickup-grid {

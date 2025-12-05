@@ -119,12 +119,7 @@ function Sidebar() {
           <span>Guide</span>
         </Link>
 
-       {/*} <Link href="/analytics" className="nav-link">
-          <span className="icon-box" aria-hidden>
-            <CogIcon width={16} height={16} />
-          </span>
-          <span>Analytics</span>
-        </Link>*/}
+       
 
         <Link href="/ai-assistant" className="nav-link">
           <span className="icon-box" aria-hidden>
@@ -436,23 +431,23 @@ export default function PickupClient({ user }){
     <>
       <DashboardHeader />
 
-      <main className="page-fade-in" style={{padding:'28px 0'}}>
-        <div className="container pickup-layout">
+      <main className="page-fade-in pickup-page" style={{padding:'clamp(16px, 4vw, 28px) 0'}}>
+        <div className="container pickup-layout" style={{display:'flex',gap:'clamp(16px, 3vw, 20px)',alignItems:'flex-start'}}>
           <Sidebar />
 
-          <div className="pickup-main-content">
-            <div className="page-header" style={{marginBottom:24}}>
-              <h1>Waste Pickup Management</h1>
-              <p className="muted">Schedule and track your waste collection requests.</p>
+          <div className="pickup-content" style={{flex:1, minWidth:0}}>
+            <div className="pickup-page-header" style={{marginBottom:'clamp(20px, 4vw, 24px)'}}>
+              <h1 style={{margin:'0 0 6px', fontSize:'clamp(24px, 5vw, 32px)', fontWeight:800}}>Waste Pickup Management</h1>
+              <p className="muted" style={{margin:0, fontSize:'clamp(13px, 2vw, 15px)'}}>Schedule and track your waste collection requests.</p>
             </div>
 
             {/* Schedule Pickup Request Section */}
-            <div className="card" style={{marginBottom:24, background:'#fff', padding:'32px'}}>
-              <div style={{marginBottom:20}}>
-                <h2 style={{margin:'0 0 6px', fontSize:24, color:'var(--green-900)'}}>Schedule Pickup Request</h2>
-                <p className="muted" style={{margin:0, fontSize:14}}>Request regular or special waste collection</p>
+            <div className="card pickup-form-card" style={{marginBottom:'clamp(20px, 4vw, 24px)', background:'#fff', padding:'clamp(20px, 4vw, 32px)'}}>
+              <div style={{marginBottom:'clamp(16px, 3vw, 20px)'}}>
+                <h2 style={{margin:'0 0 6px', fontSize:'clamp(20px, 4vw, 24px)', color:'var(--green-900)', fontWeight:800}}>Schedule Pickup Request</h2>
+                <p className="muted" style={{margin:0, fontSize:'clamp(13px, 2vw, 14px)'}}>Request regular or special waste collection</p>
                 {profile && (
-                  <p className="muted" style={{margin:'8px 0 0', fontSize:13}}>
+                  <p className="muted pickup-address" style={{margin:'8px 0 0', fontSize:'clamp(12px, 2vw, 13px)', lineHeight:'1.4', wordBreak:'break-word'}}>
                     Pickup address: {[profile.street_address, profile.barangay, profile.municipality, profile.province].filter(Boolean).join(', ')}
                   </p>
                 )}
@@ -460,47 +455,47 @@ export default function PickupClient({ user }){
 
               <form onSubmit={handleSubmit}>
                 {/* Pickup Type */}
-                <div style={{marginBottom:24}}>
-                  <label style={{display:'block', marginBottom:12, fontWeight:700, fontSize:14, color:'var(--text-900)'}}>
+                <div className="pickup-type-section" style={{marginBottom:'clamp(20px, 4vw, 24px)'}}>
+                  <label style={{display:'block', marginBottom:12, fontWeight:700, fontSize:'clamp(13px, 2vw, 14px)', color:'var(--text-900)'}}>
                     Pickup Type
                   </label>
-                  <div style={{display:'flex', flexDirection:'column', gap:12}}>
-                    <label style={{display:'flex', alignItems:'center', gap:10, cursor:'pointer', padding:12, borderRadius:10, border:'2px solid', borderColor: pickupType === 'regular' ? '#10B981' : '#E5E7EB', background: pickupType === 'regular' ? '#ECFDF5' : '#fff', transition:'all 0.2s'}}>
+                  <div className="pickup-type-options" style={{display:'flex', flexDirection:'column', gap:12}}>
+                    <label className="pickup-type-option" style={{display:'flex', alignItems:'center', gap:10, cursor:'pointer', padding:'clamp(10px, 2vw, 12px)', borderRadius:10, border:'2px solid', borderColor: pickupType === 'regular' ? '#10B981' : '#E5E7EB', background: pickupType === 'regular' ? '#ECFDF5' : '#fff', transition:'all 0.2s'}}>
                       <input
                         type="radio"
                         name="pickupType"
                         value="regular"
                         checked={pickupType === 'regular'}
                         onChange={(e) => handlePickupTypeChange(e.target.value)}
-                        style={{width:18, height:18, accentColor:'#10B981', cursor:'pointer'}}
+                        style={{width:18, height:18, accentColor:'#10B981', cursor:'pointer', flexShrink:0}}
                       />
-                      <span style={{fontWeight:600, color:'var(--text-900)'}}>Regular Pickup (default weekly schedule)</span>
+                      <span style={{fontWeight:600, color:'var(--text-900)', fontSize:'clamp(13px, 2vw, 14px)', lineHeight:'1.4'}}>Regular Pickup (default weekly schedule)</span>
                     </label>
-                    <label style={{display:'flex', alignItems:'center', gap:10, cursor:'pointer', padding:12, borderRadius:10, border:'2px solid', borderColor: pickupType === 'special' ? '#10B981' : '#E5E7EB', background: pickupType === 'special' ? '#ECFDF5' : '#fff', transition:'all 0.2s'}}>
+                    <label className="pickup-type-option" style={{display:'flex', alignItems:'center', gap:10, cursor:'pointer', padding:'clamp(10px, 2vw, 12px)', borderRadius:10, border:'2px solid', borderColor: pickupType === 'special' ? '#10B981' : '#E5E7EB', background: pickupType === 'special' ? '#ECFDF5' : '#fff', transition:'all 0.2s'}}>
                       <input
                         type="radio"
                         name="pickupType"
                         value="special"
                         checked={pickupType === 'special'}
                         onChange={(e) => handlePickupTypeChange(e.target.value)}
-                        style={{width:18, height:18, accentColor:'#10B981', cursor:'pointer'}}
+                        style={{width:18, height:18, accentColor:'#10B981', cursor:'pointer', flexShrink:0}}
                       />
-                      <span style={{fontWeight:600, color:'var(--text-900)'}}>Special Pickup (custom date/time selection)</span>
+                      <span style={{fontWeight:600, color:'var(--text-900)', fontSize:'clamp(13px, 2vw, 14px)', lineHeight:'1.4'}}>Special Pickup (custom date/time selection)</span>
                     </label>
                   </div>
                 </div>
 
                 {/* Waste Volume Estimate */}
-                <div style={{marginBottom:24}}>
-                  <label style={{display:'block', marginBottom:12, fontWeight:700, fontSize:14, color:'var(--text-900)'}}>
+                <div className="pickup-volume-section" style={{marginBottom:'clamp(20px, 4vw, 24px)'}}>
+                  <label style={{display:'block', marginBottom:12, fontWeight:700, fontSize:'clamp(13px, 2vw, 14px)', color:'var(--text-900)'}}>
                     Waste Volume Estimate
                   </label>
-                  <div style={{padding:'0 8px'}}>
+                  <div className="volume-slider-container" style={{padding:'0 8px'}}>
                     <div style={{display:'flex', justifyContent:'space-between', marginBottom:8}}>
-                      <span style={{fontSize:13, color:'var(--text-600)', fontWeight:600}}>Small</span>
-                      <span style={{fontSize:13, color:'var(--text-600)', fontWeight:600}}>Large</span>
+                      <span style={{fontSize:'clamp(12px, 2vw, 13px)', color:'var(--text-600)', fontWeight:600}}>Small</span>
+                      <span style={{fontSize:'clamp(12px, 2vw, 13px)', color:'var(--text-600)', fontWeight:600}}>Large</span>
                     </div>
-                    <div style={{position:'relative', width:'100%'}}>
+                    <div style={{position:'relative', width:'100%', padding:'8px 0'}}>
                       {/* Background track */}
                       <div style={{
                         position:'absolute',
@@ -543,33 +538,35 @@ export default function PickupClient({ user }){
                       />
                     </div>
                     <div style={{marginTop:8, textAlign:'center'}}>
-                      <span style={{fontSize:13, color:'var(--text-700)', fontWeight:600}}>Current: {getVolumeLabel(wasteVolume)}</span>
+                      <span style={{fontSize:'clamp(12px, 2vw, 13px)', color:'var(--text-700)', fontWeight:600}}>Current: {getVolumeLabel(wasteVolume)}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Special Instructions */}
-                <div style={{marginBottom:24}}>
-                  <label style={{display:'block', marginBottom:12, fontWeight:700, fontSize:14, color:'var(--text-900)'}}>
+                <div style={{marginBottom:'clamp(20px, 4vw, 24px)'}}>
+                  <label style={{display:'block', marginBottom:12, fontWeight:700, fontSize:'clamp(13px, 2vw, 14px)', color:'var(--text-900)'}}>
                     Special Instructions
                   </label>
                   <textarea
+                    className="pickup-textarea"
                     placeholder="Additional notes for collection team..."
                     rows={4}
                     value={instructions}
                     onChange={(e) => setInstructions(e.target.value)}
-                    style={{width:'100%', padding:12, borderRadius:10, border:'1px solid #E5E7EB', fontSize:14, fontFamily:'inherit', resize:'vertical', outline:'none', transition:'border-color 0.2s'}}
+                    style={{width:'100%', padding:12, borderRadius:10, border:'1px solid #E5E7EB', fontSize:'clamp(13px, 2vw, 14px)', fontFamily:'inherit', resize:'vertical', outline:'none', transition:'border-color 0.2s'}}
                     onFocus={(e) => e.target.style.borderColor = '#10B981'}
                     onBlur={(e) => e.target.style.borderColor = '#E5E7EB'}
                   />
                 </div>
 
                 {/* Action Buttons */}
-                <div style={{display:'flex', gap:12, justifyContent:'flex-start'}}>
+                <div className="pickup-form-actions" style={{display:'flex', gap:12, justifyContent:'flex-start', flexWrap:'wrap'}}>
                   <button
                     type="submit"
                     disabled={submitting}
-                    style={{padding:'12px 32px', background:submitting ? '#D1D5DB' : '#10B981', color:'#fff', border:'none', borderRadius:10, fontWeight:700, fontSize:15, cursor:submitting ? 'not-allowed' : 'pointer', boxShadow:submitting ? 'none' : '0 4px 12px rgba(16,185,129,0.3)', transition:'all 0.2s', opacity:submitting ? 0.6 : 1}}
+                    className="pickup-submit-btn"
+                    style={{flex:'1 1 13px', minWidth:'140px', padding:'clamp(12px, 2vw, 14px) clamp(24px, 4vw, 32px)', background:submitting ? '#D1D5DB' : '#10B981', color:'#fff', border:'none', borderRadius:10, fontWeight:700, fontSize:'clamp(14px, 2vw, 15px)', cursor:submitting ? 'not-allowed' : 'pointer', boxShadow:submitting ? 'none' : '0 4px 12px rgba(16,185,129,0.3)', transition:'all 0.2s', opacity:submitting ? 0.6 : 1}}
                     onMouseEnter={(e) => {
                       if (!submitting) {
                         e.target.style.background = '#059669';
@@ -587,6 +584,7 @@ export default function PickupClient({ user }){
                   </button>
                   <button
                     type="button"
+                    className="pickup-cancel-btn"
                     onClick={() => {
                       setPickupType('regular');
                       setWasteVolume(50);
@@ -595,7 +593,7 @@ export default function PickupClient({ user }){
                       setInstructions('');
                     }}
                     disabled={submitting}
-                    style={{padding:'12px 24px', background:'#fff', color:'var(--text-700)', border:'1px solid #E5E7EB', borderRadius:10, fontWeight:600, fontSize:15, cursor:submitting ? 'not-allowed' : 'pointer', transition:'all 0.2s', opacity:submitting ? 0.6 : 1}}
+                    style={{flex:'0 1 auto', minWidth:'100px', padding:'clamp(12px, 2vw, 14px) clamp(20px, 3vw, 24px)', background:'#fff', color:'var(--text-700)', border:'1px solid #E5E7EB', borderRadius:10, fontWeight:600, fontSize:'clamp(14px, 2vw, 15px)', cursor:submitting ? 'not-allowed' : 'pointer', transition:'all 0.2s', opacity:submitting ? 0.6 : 1}}
                     onMouseEnter={(e) => {
                       if (!submitting) {
                         e.target.style.background = '#F9FAFB';
@@ -616,10 +614,10 @@ export default function PickupClient({ user }){
             </div>
 
             {/* Request Tracking Section */}
-            <div className="card" style={{background:'#fff', padding:'32px'}}>
-              <div style={{marginBottom:20}}>
-                <h2 style={{margin:'0 0 6px', fontSize:24, color:'var(--green-900)'}}>Request Tracking</h2>
-                <p className="muted" style={{margin:0, fontSize:14}}>Monitor your pickup request status</p>
+            <div className="card pickup-tracking-card" style={{background:'#fff', padding:'clamp(20px, 4vw, 32px)'}}>
+              <div style={{marginBottom:'clamp(16px, 3vw, 20px)'}}>
+                <h2 style={{margin:'0 0 6px', fontSize:'clamp(20px, 4vw, 24px)', color:'var(--green-900)', fontWeight:800}}>Request Tracking</h2>
+                <p className="muted" style={{margin:0, fontSize:'clamp(13px, 2vw, 14px)'}}>Monitor your pickup request status</p>
               </div>
 
               {loading ? (
@@ -639,7 +637,7 @@ export default function PickupClient({ user }){
                   </p>
                 </div>
               ) : (
-                <div style={{display:'flex', flexDirection:'column', gap:16}}>
+                <div className="pickup-requests-list" style={{display:'flex', flexDirection:'column', gap:'clamp(12px, 3vw, 16px)'}}>
                   {pickupRequests.map((request) => {
                     const statusInfo = getStatusInfo(request.status || 'pending');
                     const pickupDate = request.pickup_date ? new Date(request.pickup_date).toLocaleDateString() : 'Not scheduled';
@@ -647,12 +645,13 @@ export default function PickupClient({ user }){
                     
                     return (
                       <div 
-                        key={request.id} 
+                        key={request.id}
+                        className="pickup-request-item"
                         style={{
                           display:'flex', 
-                          alignItems:'center', 
-                          gap:16, 
-                          padding:16, 
+                          alignItems:'flex-start', 
+                          gap:'clamp(12px, 2vw, 16px)', 
+                          padding:'clamp(12px, 2vw, 16px)', 
                           borderRadius:12, 
                           background:statusInfo.color === 'green' ? '#ECFDF5' : statusInfo.color === 'orange' ? '#FFF7ED' : statusInfo.color === 'blue' ? '#EFF6FF' : '#FEFCE8',
                           border:`1px solid ${statusInfo.color === 'green' ? '#10B981' : statusInfo.color === 'orange' ? '#F97316' : statusInfo.color === 'blue' ? '#3B82F6' : '#EAB308'}`
@@ -661,28 +660,30 @@ export default function PickupClient({ user }){
                         <div style={{flexShrink:0}}>
                           {statusInfo.icon}
                         </div>
-                        <div style={{flex:1}}>
-                          <div style={{fontWeight:700, fontSize:15, color:'var(--text-900)', marginBottom:4}}>
+                        <div style={{flex:1, minWidth:0}}>
+                          <div style={{fontWeight:700, fontSize:'clamp(14px, 2vw, 15px)', color:'var(--text-900)', marginBottom:4, wordBreak:'break-word'}}>
                             {request.pickup_type === 'regular' ? 'Regular Pickup' : 'Special Pickup'}
                           </div>
-                          <div style={{fontSize:13, color:'var(--text-600)', marginBottom:2}}>
+                          <div style={{fontSize:'clamp(12px, 2vw, 13px)', color:'var(--text-600)', marginBottom:2, lineHeight:'1.4'}}>
                             Date: {pickupDate}
                           </div>
                           {request.pickup_time && (
-                            <div style={{fontSize:13, color:'var(--text-600)', marginBottom:2}}>
+                            <div style={{fontSize:'clamp(12px, 2vw, 13px)', color:'var(--text-600)', marginBottom:2, lineHeight:'1.4'}}>
                               Time: {pickupTime}
                             </div>
                           )}
-                          <div style={{fontSize:13, color:'var(--text-600)', marginBottom:2}}>
+                          <div style={{fontSize:'clamp(12px, 2vw, 13px)', color:'var(--text-600)', marginBottom:2, lineHeight:'1.4'}}>
                             Volume: {request.waste_volume}
                           </div>
                           {request.address && (
-                            <div style={{fontSize:13, color:'var(--text-600)'}}>
+                            <div style={{fontSize:'clamp(12px, 2vw, 13px)', color:'var(--text-600)', lineHeight:'1.4', wordBreak:'break-word'}}>
                               Address: {request.address}
                             </div>
                           )}
                         </div>
-                        <StatusPill color={statusInfo.color}>{statusInfo.label}</StatusPill>
+                        <div style={{flexShrink:0}}>
+                          <StatusPill color={statusInfo.color}>{statusInfo.label}</StatusPill>
+                        </div>
                       </div>
                     );
                   })}
@@ -747,28 +748,32 @@ export default function PickupClient({ user }){
       {/* Special Pickup Date/Time Modal */}
       {showModal && (
         <div 
+          className="pickup-modal-overlay"
           style={{
             position:'fixed',
             top:0,
             left:0,
             right:0,
             bottom:0,
-            background:'rgba(0,0,0,0.5)',
+            background:'rgba(0,0,0,0.6)',
             display:'flex',
             alignItems:'center',
             justifyContent:'center',
             zIndex:1000,
-            padding:20
+            padding:'clamp(12px, 3vw, 20px)'
           }}
           onClick={handleModalClose}
         >
           <div 
+            className="pickup-modal-content"
             style={{
               background:'#fff',
               borderRadius:16,
-              padding:32,
+              padding:'clamp(20px, 4vw, 32px)',
               maxWidth:500,
               width:'100%',
+              maxHeight:'90vh',
+              overflow:'auto',
               boxShadow:'0 20px 60px rgba(0,0,0,0.3)',
               position:'relative'
             }}
@@ -777,10 +782,11 @@ export default function PickupClient({ user }){
             {/* Close Button */}
             <button
               onClick={handleModalClose}
+              className="pickup-modal-close"
               style={{
                 position:'absolute',
-                top:16,
-                right:16,
+                top:12,
+                right:12,
                 background:'transparent',
                 border:'none',
                 cursor:'pointer',
@@ -789,7 +795,9 @@ export default function PickupClient({ user }){
                 alignItems:'center',
                 justifyContent:'center',
                 borderRadius:8,
-                transition:'background 0.2s'
+                transition:'background 0.2s',
+                minWidth:36,
+                minHeight:36
               }}
               onMouseEnter={(e) => e.target.style.background = '#F3F4F6'}
               onMouseLeave={(e) => e.target.style.background = 'transparent'}
@@ -799,14 +807,14 @@ export default function PickupClient({ user }){
             </button>
 
             {/* Modal Header */}
-            <div style={{marginBottom:24}}>
-              <h2 style={{margin:'0 0 8px', fontSize:24, color:'var(--green-900)', fontWeight:700}}>Select Pickup Date & Time</h2>
-              <p className="muted" style={{margin:0, fontSize:14}}>Choose your preferred date and time slot for special pickup</p>
+            <div style={{marginBottom:'clamp(20px, 4vw, 24px)'}}>
+              <h2 style={{margin:'0 0 8px', fontSize:'clamp(20px, 4vw, 24px)', color:'var(--green-900)', fontWeight:700}}>Select Pickup Date & Time</h2>
+              <p className="muted" style={{margin:0, fontSize:'clamp(13px, 2vw, 14px)'}}>Choose your preferred date and time slot for special pickup</p>
             </div>
 
             {/* Preferred Pickup Date */}
-            <div style={{marginBottom:20}}>
-              <label style={{display:'block', marginBottom:8, fontWeight:700, fontSize:14, color:'var(--text-900)'}}>
+            <div style={{marginBottom:'clamp(16px, 3vw, 20px)'}}>
+              <label style={{display:'block', marginBottom:8, fontWeight:700, fontSize:'clamp(13px, 2vw, 14px)', color:'var(--text-900)'}}>
                 Preferred Pickup Date
               </label>
               <div style={{position:'relative'}}>
@@ -816,20 +824,21 @@ export default function PickupClient({ user }){
                   value={preferredDate}
                   onChange={(e) => setPreferredDate(e.target.value)}
                   min={new Date().toISOString().split('T')[0]}
-                  className="date-input-custom"
+                  className="date-input-custom pickup-date-input"
                   style={{
                     width:'100%',
                     padding:'12px 40px 12px 12px',
                     borderRadius:10,
                     border:'1px solid #E5E7EB',
-                    fontSize:14,
+                    fontSize:'clamp(13px, 2vw, 14px)',
                     fontFamily:'inherit',
                     outline:'none',
                     transition:'border-color 0.2s',
                     background:'#fff',
                     color: preferredDate ? 'var(--text-900)' : '#9CA3AF',
                     position:'relative',
-                    zIndex:1
+                    zIndex:1,
+                    minHeight:44
                   }}
                   onFocus={(e) => {
                     e.target.style.borderColor = '#10B981';
@@ -894,27 +903,29 @@ export default function PickupClient({ user }){
             </div>
 
             {/* Time Slot */}
-            <div style={{marginBottom:24}}>
-              <label style={{display:'block', marginBottom:8, fontWeight:700, fontSize:14, color:'var(--text-900)'}}>
+            <div style={{marginBottom:'clamp(20px, 4vw, 24px)'}}>
+              <label style={{display:'block', marginBottom:8, fontWeight:700, fontSize:'clamp(13px, 2vw, 14px)', color:'var(--text-900)'}}>
                 Time Slot
               </label>
               <div style={{position:'relative'}}>
                 <select
                   value={timeSlot}
                   onChange={(e) => setTimeSlot(e.target.value)}
+                  className="pickup-time-select"
                   style={{
                     width:'100%',
                     padding:'12px 40px 12px 12px',
                     borderRadius:10,
                     border:'1px solid #E5E7EB',
-                    fontSize:14,
+                    fontSize:'clamp(13px, 2vw, 14px)',
                     fontFamily:'inherit',
                     outline:'none',
                     transition:'border-color 0.2s',
                     background:'#fff',
                     appearance:'none',
                     cursor:'pointer',
-                    color: timeSlot ? 'var(--text-900)' : '#9CA3AF'
+                    color: timeSlot ? 'var(--text-900)' : '#9CA3AF',
+                    minHeight:44
                   }}
                   onFocus={(e) => e.target.style.borderColor = '#10B981'}
                   onBlur={(e) => e.target.style.borderColor = '#E5E7EB'}
@@ -939,10 +950,11 @@ export default function PickupClient({ user }){
             </div>
 
             {/* Modal Actions */}
-            <div style={{display:'flex', gap:12, justifyContent:'flex-end'}}>
+            <div className="pickup-modal-actions" style={{display:'flex', gap:12, justifyContent:'flex-end', flexWrap:'wrap'}}>
               <button
                 type="button"
                 onClick={handleModalClose}
+                className="pickup-modal-cancel"
                 style={{
                   padding:'12px 24px',
                   background:'#fff',
@@ -950,9 +962,11 @@ export default function PickupClient({ user }){
                   border:'1px solid #E5E7EB',
                   borderRadius:10,
                   fontWeight:600,
-                  fontSize:15,
+                  fontSize:'clamp(14px, 2vw, 15px)',
                   cursor:'pointer',
-                  transition:'all 0.2s'
+                  transition:'all 0.2s',
+                  minHeight:44,
+                  minWidth:100
                 }}
                 onMouseEnter={(e) => {
                   e.target.style.background = '#F9FAFB';
@@ -969,6 +983,7 @@ export default function PickupClient({ user }){
                 type="button"
                 onClick={handleModalConfirm}
                 disabled={!preferredDate || !timeSlot}
+                className="pickup-modal-confirm"
                 style={{
                   padding:'12px 32px',
                   background: preferredDate && timeSlot ? '#10B981' : '#D1D5DB',
@@ -976,10 +991,12 @@ export default function PickupClient({ user }){
                   border:'none',
                   borderRadius:10,
                   fontWeight:700,
-                  fontSize:15,
+                  fontSize:'clamp(14px, 2vw, 15px)',
                   cursor: preferredDate && timeSlot ? 'pointer' : 'not-allowed',
                   transition:'all 0.2s',
-                  opacity: preferredDate && timeSlot ? 1 : 0.6
+                  opacity: preferredDate && timeSlot ? 1 : 0.6,
+                  minHeight:44,
+                  minWidth:100
                 }}
                 onMouseEnter={(e) => {
                   if (preferredDate && timeSlot) {

@@ -10,14 +10,16 @@ const supabase = createClient(
 export default function ProfileCard({ user, profile }){
   const [editing, setEditing] = useState(false);
   const [avatar, setAvatar] = useState(null);
+  const [avatarUrl, setAvatarUrl] = useState(null);
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [street, setStreet] = useState('');
-  const [city, setCity] = useState('');
+  const [municipality, setMunicipality] = useState('');
   const [zip, setZip] = useState('');
   const [role, setRole] = useState('');
   const [loading, setLoading] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [error, setError] = useState(null);
   const [userId, setUserId] = useState(null);
   const fileRef = useRef();
@@ -40,27 +42,122 @@ export default function ProfileCard({ user, profile }){
       if (profile.email) setEmail(profile.email);
       if (profile.phone) setPhone(profile.phone);
       if (profile.street_address) setStreet(profile.street_address);
-      if (profile.city) setCity(profile.city);
+      if (profile.municipality) setMunicipality(profile.municipality);
       if (profile.zip_code) setZip(profile.zip_code);
       if (profile.role) setRole(profile.role);
+      // Load avatar from database if available
+      if (profile.avatar_url) {
+        setAvatarUrl(profile.avatar_url);
+        setAvatar(profile.avatar_url);
+      }
     } else {
       setDisplayName(user.email?.split('@')[0] || 'User');
     }
 
-    // Try to load avatar from localStorage
-    const a = localStorage.getItem('mcp_avatar');
-    if (a) setAvatar(a);
+    // Fallback to localStorage if no avatar_url in database
+    if (!avatarUrl) {
+      const a = localStorage.getItem('mcp_avatar');
+      if (a) setAvatar(a);
+    }
   },[user, profile]);
 
-  function onSelectAvatar(file){
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(ev){
-      const data = ev.target.result;
-      setAvatar(data);
-      try{ localStorage.setItem('mcp_avatar', data); }catch(e){}
-    };
-    reader.readAsDataURL(file);
+  async function onSelectAvatar(file){
+    if (!file || !userId) return;
+    
+    setUploadingAvatar(true);
+    
+    try {
+      // Create a preview immediately
+      const reader = new FileReader();
+      reader.onload = function(ev){
+        const data = ev.target.result;
+        setAvatar(data);
+      };
+      reader.readAsDataURL(file);
+
+      // Upload to Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${userId}/${Date.now()}.${fileExt}`;
+      const bucketName = 'avatars';
+
+      // Upload file
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from(bucketName)
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
+
+      if (uploadError) {
+        // If bucket doesn't exist, try 'profile-pictures' or create a fallback
+        console.error('Upload error:', uploadError);
+        // Try alternative bucket name
+        const altBucketName = 'profile-pictures';
+        const { data: altUploadData, error: altUploadError } = await supabase.storage
+          .from(altBucketName)
+          .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: true
+          });
+
+        if (altUploadError) {
+          throw new Error(altUploadError.message || 'Failed to upload avatar');
+        }
+
+        // Get public URL
+        const { data: urlData } = supabase.storage
+          .from(altBucketName)
+          .getPublicUrl(fileName);
+
+        const publicUrl = urlData.publicUrl;
+        setAvatarUrl(publicUrl);
+        setAvatar(publicUrl);
+
+        // Save URL to database
+        const { error: dbError } = await supabase
+          .from('profiles')
+          .update({ avatar_url: publicUrl })
+          .eq('id', userId);
+
+        if (dbError) {
+          console.error('Error saving avatar URL:', dbError);
+        }
+      } else {
+        // Get public URL
+        const { data: urlData } = supabase.storage
+          .from(bucketName)
+          .getPublicUrl(fileName);
+
+        const publicUrl = urlData.publicUrl;
+        setAvatarUrl(publicUrl);
+        setAvatar(publicUrl);
+
+        // Save URL to database
+        const { error: dbError } = await supabase
+          .from('profiles')
+          .update({ avatar_url: publicUrl })
+          .eq('id', userId);
+
+        if (dbError) {
+          console.error('Error saving avatar URL:', dbError);
+          alert('Avatar uploaded but failed to save URL to database');
+        } else {
+          // Clear localStorage since we're using database now
+          try { localStorage.removeItem('mcp_avatar'); } catch(e){}
+        }
+      }
+    } catch (err) {
+      console.error('Error uploading avatar:', err);
+      alert('Failed to upload avatar: ' + (err.message || 'Unknown error'));
+      // Revert to previous avatar
+      if (avatarUrl) {
+        setAvatar(avatarUrl);
+      } else {
+        setAvatar(null);
+      }
+    } finally {
+      setUploadingAvatar(false);
+    }
   }
 
   async function handleSave(e){
@@ -80,7 +177,7 @@ export default function ProfileCard({ user, profile }){
             email: email,
             phone: phone,
             street_address: street,
-            city: city,
+            municipality: municipality,
             zip_code: zip,
             role: role
           })
@@ -101,9 +198,29 @@ export default function ProfileCard({ user, profile }){
     setEditing(false);
   }
 
-  function handleClearAvatar(){
-    setAvatar(null);
-    try{ localStorage.removeItem('mcp_avatar'); }catch(e){}
+  async function handleClearAvatar(){
+    if (!userId) return;
+    
+    try {
+      // Remove from database
+      const { error } = await supabase
+        .from('profiles')
+        .update({ avatar_url: null })
+        .eq('id', userId);
+
+      if (error) {
+        console.error('Error removing avatar:', error);
+        alert('Failed to remove avatar');
+        return;
+      }
+
+      setAvatar(null);
+      setAvatarUrl(null);
+      try{ localStorage.removeItem('mcp_avatar'); }catch(e){}
+    } catch (err) {
+      console.error('Error removing avatar:', err);
+      alert('Failed to remove avatar');
+    }
   }
 
   if (error) {
@@ -131,15 +248,21 @@ export default function ProfileCard({ user, profile }){
           </div>
         </div>
 
-        <div style={{marginLeft:'auto',display:'flex',gap:8,alignItems:'center'}}>
+        <div className="profile-card-actions" style={{marginLeft:'auto',display:'flex',gap:8,alignItems:'center'}}>
           {!editing ? (
             <>
               <button className="btn" onClick={()=>setEditing(true)}>Edit profile</button>
-              <button className="btn btn-light" onClick={()=>fileRef.current && fileRef.current.click()}>Change avatar</button>
+              <button 
+                className="btn btn-light" 
+                onClick={()=>fileRef.current && fileRef.current.click()}
+                disabled={uploadingAvatar}
+              >
+                {uploadingAvatar ? 'Uploading...' : 'Change avatar'}
+              </button>
               <input ref={fileRef} type="file" accept="image/*" style={{display:'none'}} onChange={e=> onSelectAvatar(e.target.files && e.target.files[0])} />
             </>
           ) : (
-            <form onSubmit={handleSave} style={{display:'flex',gap:8,alignItems:'center'}}>
+            <form className="profile-card-edit-form" onSubmit={handleSave} style={{display:'flex',gap:8,alignItems:'center'}}>
               <input value={displayName} onChange={e=>setDisplayName(e.target.value)} placeholder="Full name" style={{padding:10,borderRadius:8,border:'1px solid var(--border)'}} />
               <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email" style={{padding:10,borderRadius:8,border:'1px solid var(--border)'}} />
               <button type="submit" className="btn btn-primary">Save</button>
@@ -164,8 +287,8 @@ export default function ProfileCard({ user, profile }){
               </div>
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
                 <div>
-                  <label className="small" style={{display:'block',marginBottom:6}}>City</label>
-                  <input value={city} onChange={e=>setCity(e.target.value)} placeholder="City" style={{width:'100%',padding:10,borderRadius:8,border:'1px solid var(--border)',boxSizing:'border-box'}} />
+                  <label className="small" style={{display:'block',marginBottom:6}}>Municipality</label>
+                  <input value={municipality} onChange={e=>setMunicipality(e.target.value)} placeholder="Municipality" style={{width:'100%',padding:10,borderRadius:8,border:'1px solid var(--border)',boxSizing:'border-box'}} />
                 </div>
                 <div>
                   <label className="small" style={{display:'block',marginBottom:6}}>ZIP Code</label>
@@ -186,8 +309,8 @@ export default function ProfileCard({ user, profile }){
               </div>
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
                 <div>
-                  <label className="small muted">City</label>
-                  <p style={{margin:0}}>{city || '—'}</p>
+                  <label className="small muted">Municipality</label>
+                  <p style={{margin:0}}>{municipality || '—'}</p>
                 </div>
                 <div>
                   <label className="small muted">ZIP Code</label>
