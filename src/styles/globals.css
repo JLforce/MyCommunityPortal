@@ -2639,6 +2639,20 @@ html { scroll-behavior: smooth; }
   padding: 28px 0;
 }
 
+.pickup-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 64px;
+  align-items: start;
+  margin-top: 20px;
+}
+
+.pickup-main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 .page-header-container {
   display: flex;
   justify-content: space-between;
@@ -2766,6 +2780,12 @@ html { scroll-behavior: smooth; }
 
   .pickup-grid {
     grid-template-columns: 1fr;
+  }
+
+  .pickup-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-top: 20px;
   }
 
   .reports-page-header {
