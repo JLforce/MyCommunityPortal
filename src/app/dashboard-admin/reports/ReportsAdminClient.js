@@ -21,22 +21,58 @@ export default function ReportsAdminClient({ user }) {
       }
 
       setLoading(true);
+      setProfileError('');
+      
       try {
+        // 0. Verify session first
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError || !session) {
+          console.error('Session error:', sessionError);
+          setProfileError('Session expired. Please sign in again.');
+          setLoading(false);
+          return;
+        }
+
+        console.log('=== Reports Admin: Fetching Data ===');
+        console.log('User ID:', user.id);
+        console.log('Has session:', !!session);
+
         // 1. Fetch the logged-in admin's profile to get their municipality
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
-          .select('municipality')
+          .select('municipality, role')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
 
-        if (profileError || !profile?.municipality) {
-          console.error('Could not fetch admin profile or municipality is not set.', profileError);
+        if (profileError) {
+          console.error('Error fetching admin profile:', profileError);
+          setProfileError(`Error loading profile: ${profileError.message}`);
+          setReports([]);
+          setFilteredReports([]);
+          setLoading(false);
+          return;
+        }
+
+        if (!profile) {
+          console.error('Admin profile not found');
+          setProfileError('Profile not found. Please complete your profile setup.');
+          setReports([]);
+          setFilteredReports([]);
+          setLoading(false);
+          return;
+        }
+
+        if (!profile.municipality) {
+          console.error('Municipality not set in admin profile');
           setProfileError('Your profile is missing a municipality. Update your profile to view reports.');
           setReports([]);
           setFilteredReports([]);
           setLoading(false);
           return;
         }
+
+        console.log('Admin municipality:', profile.municipality);
         setAdminProfile(profile);
         const adminMunicipality = profile.municipality;
 
@@ -49,11 +85,14 @@ export default function ReportsAdminClient({ user }) {
 
         if (reportsError) {
           console.error('Error fetching reports:', reportsError);
+          setProfileError(`Error loading reports: ${reportsError.message}`);
           setReports([]);
           setFilteredReports([]);
           setLoading(false);
           return;
         }
+
+        console.log(`Fetched ${reportsData?.length || 0} reports for municipality: ${adminMunicipality}`);
 
         // 3. Fetch resident profiles for those reports (no FK join defined in DB)
         const residentIds = Array.from(new Set((reportsData || []).map(r => r.user_id).filter(Boolean)));
@@ -68,7 +107,8 @@ export default function ReportsAdminClient({ user }) {
           if (profilesError) {
             console.error('Error fetching resident profiles:', profilesError);
           } else {
-            profilesMap = new Map(profilesData.map(p => [p.id, p]));
+            profilesMap = new Map((profilesData || []).map(p => [p.id, p]));
+            console.log(`Fetched ${profilesData?.length || 0} resident profiles`);
           }
         }
 
@@ -84,13 +124,17 @@ export default function ReportsAdminClient({ user }) {
           };
         });
 
+        console.log('Transformed reports:', transformedReports.length);
         setReports(transformedReports);
         setFilteredReports(transformedReports);
       } catch (error) {
-        console.error('Error:', error);
-        setProfileError('Unable to load reports right now. Please try again.');
+        console.error('Unexpected error:', error);
+        setProfileError(`Unable to load reports: ${error.message || 'Please try again.'}`);
+        setReports([]);
+        setFilteredReports([]);
       } finally {
         setLoading(false);
+        console.log('=== Reports Admin: Fetch Complete ===');
       }
     };
 

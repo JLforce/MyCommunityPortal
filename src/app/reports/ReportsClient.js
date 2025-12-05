@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import imageCompression from 'browser-image-compression';
+import { compareMunicipalities, extractMunicipalityFromNominatim, normalizeMunicipalityName } from '../../lib/utils/municipalityUtils';
 
 // Fix default Leaflet marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -230,19 +231,69 @@ export default function ReportsClient({ user }) {
 
       // 2. If a location is pinned, validate it against the user's municipality
       if (coords) {
-        const geoResponse = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}`);
-        if (!geoResponse.ok) {
-          setError('Could not verify the pinned location. Please try again.');
-          setLoading(false);
-          return;
-        }
-        const geoData = await geoResponse.json();
-        const pinnedMunicipality = geoData.address?.city || geoData.address?.town || geoData.address?.municipality;
-
-        if (!pinnedMunicipality || pinnedMunicipality.toLowerCase() !== residentMunicipality.toLowerCase()) {
-          setError(`The pinned location appears to be in "${pinnedMunicipality}", which is outside your registered municipality of "${residentMunicipality}". Please pin a location within your municipality.`);
-          setLoading(false);
-          return;
+        try {
+          // Use Nominatim for reverse geocoding (better coverage for Philippines)
+          const geoResponse = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}&addressdetails=1`,
+            {
+              headers: {
+                'User-Agent': 'MyCommunityPortal/1.0' // Nominatim requires User-Agent
+              }
+            }
+          );
+          
+          if (!geoResponse.ok) {
+            setError('Could not verify the pinned location. Please try again.');
+            setLoading(false);
+            return;
+          }
+          
+          const geoData = await geoResponse.json();
+          
+          // Extract municipality using improved extraction function
+          const pinnedMunicipality = extractMunicipalityFromNominatim(geoData);
+          
+          if (!pinnedMunicipality) {
+            // If we can't determine the municipality from geocoding, warn but allow submission
+            // This can happen in rural areas or if the geocoding service doesn't have detailed data
+            console.warn('Could not extract municipality from geocoding result:', geoData);
+            console.warn('Allowing submission without municipality validation. Full address:', geoData.display_name || geoData);
+          } else {
+            // Use fuzzy matching to compare municipalities (handles variations like "Cebu City" vs "City of Cebu")
+            const isMatch = compareMunicipalities(pinnedMunicipality, residentMunicipality);
+            
+            if (!isMatch) {
+              // Show helpful error message with normalized names for debugging
+              const normalizedPinned = normalizeMunicipalityName(pinnedMunicipality);
+              const normalizedRegistered = normalizeMunicipalityName(residentMunicipality);
+              
+              console.error('Municipality mismatch:', {
+                pinned: pinnedMunicipality,
+                registered: residentMunicipality,
+                normalizedPinned,
+                normalizedRegistered,
+                fullAddress: geoData.display_name
+              });
+              
+              setError(
+                `The pinned location appears to be in "${pinnedMunicipality}", which doesn't match your registered municipality of "${residentMunicipality}". Please ensure you pin a location within your municipality.`
+              );
+              setLoading(false);
+              return;
+            }
+            
+            // Log successful match for debugging
+            console.log('✓ Municipality match confirmed:', {
+              pinned: pinnedMunicipality,
+              registered: residentMunicipality,
+              normalizedPinned: normalizeMunicipalityName(pinnedMunicipality),
+              normalizedRegistered: normalizeMunicipalityName(residentMunicipality)
+            });
+          }
+        } catch (geoError) {
+          console.error('Error during reverse geocoding:', geoError);
+          // Allow submission if geocoding fails (user can still proceed)
+          console.warn('Geocoding failed, allowing submission without location validation');
         }
       }
 
