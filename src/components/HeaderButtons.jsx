@@ -56,34 +56,53 @@ export default function HeaderButtons(){
   },[]);
 
   useEffect(()=>{
-    try{
-      const stored = localStorage.getItem('mcp_avatar');
-      if (stored) setAvatar(stored);
-    }catch(e){ /* ignore in non-browser or privacy mode */ }
-  },[]);
-
-  useEffect(()=>{
     let mounted = true;
-    async function fetchRole(){
+    async function fetchProfile(){
       try{
         const { data: { session } } = await supabase.auth.getSession();
         const userId = session?.user?.id;
         if (!userId){
-          if (mounted) setRole(null);
+          if (mounted) {
+            setRole(null);
+            // Fallback to localStorage if no user
+            try{
+              const stored = localStorage.getItem('mcp_avatar');
+              if (stored) setAvatar(stored);
+            }catch(e){ /* ignore in non-browser or privacy mode */ }
+          }
           return;
         }
         const { data: profile } = await supabase
           .from('profiles')
-          .select('role')
+          .select('role, avatar_url')
           .eq('id', userId)
           .maybeSingle();
-        if (mounted) setRole(profile?.role || null);
+        if (mounted) {
+          setRole(profile?.role || null);
+          // Load avatar from database if available
+          if (profile?.avatar_url) {
+            setAvatar(profile.avatar_url);
+          } else {
+            // Fallback to localStorage if no avatar_url in database
+            try{
+              const stored = localStorage.getItem('mcp_avatar');
+              if (stored) setAvatar(stored);
+            }catch(e){ /* ignore in non-browser or privacy mode */ }
+          }
+        }
       }catch(err){
-        if (mounted) setRole(null);
-        console.error('HeaderButtons: failed to fetch role', err);
+        if (mounted) {
+          setRole(null);
+          // Fallback to localStorage on error
+          try{
+            const stored = localStorage.getItem('mcp_avatar');
+            if (stored) setAvatar(stored);
+          }catch(e){ /* ignore in non-browser or privacy mode */ }
+        }
+        console.error('HeaderButtons: failed to fetch profile', err);
       }
     }
-    fetchRole();
+    fetchProfile();
     return ()=>{ mounted = false; };
   },[]);
 
