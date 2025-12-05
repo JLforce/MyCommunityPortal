@@ -49,15 +49,20 @@ export default function ProfileCard({ user, profile }){
       if (profile.avatar_url) {
         setAvatarUrl(profile.avatar_url);
         setAvatar(profile.avatar_url);
+      } else {
+        // Fallback to localStorage if no avatar_url in database
+        try {
+          const a = localStorage.getItem('mcp_avatar');
+          if (a) setAvatar(a);
+        } catch(e){}
       }
     } else {
       setDisplayName(user.email?.split('@')[0] || 'User');
-    }
-
-    // Fallback to localStorage if no avatar_url in database
-    if (!avatarUrl) {
-      const a = localStorage.getItem('mcp_avatar');
-      if (a) setAvatar(a);
+      // Fallback to localStorage if no profile
+      try {
+        const a = localStorage.getItem('mcp_avatar');
+        if (a) setAvatar(a);
+      } catch(e){}
     }
   },[user, profile]);
 
