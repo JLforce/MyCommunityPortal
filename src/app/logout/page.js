@@ -1,15 +1,32 @@
 "use client";
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { supabase } from '../../lib/supabase/supabase';
 
 export default function LogoutPage(){
   const router = useRouter();
 
   useEffect(()=>{
-    // Placeholder logout flow: redirect to home page after clearing client state
-    // If you have auth, clear tokens or call sign-out endpoint here.
-    const t = setTimeout(()=> router.push('/'), 700);
-    return ()=> clearTimeout(t);
+    let cancelled = false;
+    async function doLogout(){
+      try{
+        // Clear browser session
+        await supabase.auth.signOut();
+      }catch(err){
+        console.error('Client signOut failed', err);
+      }
+      try{
+        // Clear server cookies/session
+        await fetch('/api/auth/logout', { method: 'POST' });
+      }catch(err){
+        console.error('Server logout call failed', err);
+      }
+      if (!cancelled){
+        router.replace('/signin');
+      }
+    }
+    doLogout();
+    return ()=>{ cancelled = true; };
   },[router]);
 
   return (

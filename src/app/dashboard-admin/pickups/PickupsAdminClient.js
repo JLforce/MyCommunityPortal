@@ -114,7 +114,7 @@ export default function PickupsAdminClient({ user }) {
     };
 
     fetchPickups();
-  }, []);
+  }, [user]);
 
   // Filter pickups based on search
   useEffect(() => {

@@ -9,11 +9,13 @@ export default function ReportsAdminClient({ user }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [adminProfile, setAdminProfile] = useState(null);
+  const [profileError, setProfileError] = useState('');
 
   // Fetch all reports with resident information
   useEffect(() => {
     const fetchReports = async () => {
       if (!user) {
+        setProfileError('You must be signed in to view reports.');
         setLoading(false);
         return;
       }
@@ -29,6 +31,7 @@ export default function ReportsAdminClient({ user }) {
 
         if (profileError || !profile?.municipality) {
           console.error('Could not fetch admin profile or municipality is not set.', profileError);
+          setProfileError('Your profile is missing a municipality. Update your profile to view reports.');
           setReports([]);
           setFilteredReports([]);
           setLoading(false);
@@ -37,51 +40,31 @@ export default function ReportsAdminClient({ user }) {
         setAdminProfile(profile);
         const adminMunicipality = profile.municipality;
 
-        // 2. Fetch all reports and join with profiles to filter by the admin's municipality
+        // 2. Fetch reports for the admin's municipality and join profile info in one query
         const { data: reportsData, error: reportsError } = await supabase
           .from('reports')
           .select(`
             *,
-            profile:profiles(first_name, last_name, email, municipality)
+            profile:profiles(first_name, last_name, email)
           `)
-          .eq('profile.municipality', adminMunicipality)
+          .eq('municipality', adminMunicipality) // Filter directly on the reports table
           .order('created_at', { ascending: false });
 
         if (reportsError) {
           console.error('Error fetching reports:', reportsError);
-          setReports([]); setFilteredReports([]);
+          setReports([]);
+          setFilteredReports([]);
           setLoading(false);
           return;
         }
 
-        // Get unique user IDs from reports
-        const userIds = [...new Set(reportsData.map(r => r.user_id).filter(Boolean))];
-        
-        // Fetch profiles for all users
-        const { data: profilesData, error: profilesError } = await supabase
-          .from('profiles')
-          .select('id, first_name, last_name, email')
-          .in('id', userIds);
-
-        if (profilesError) {
-          console.error('Error fetching profiles:', profilesError);
-        }
-
-        // Create a map of user_id to profile
-        const profileMap = {};
-        if (profilesData) {
-          profilesData.forEach(profile => {
-            profileMap[profile.id] = profile;
-          });
-        }
-
-        // Transform the data to include resident name
+        // Transform the data to create a residentName property
         const transformedReports = reportsData.map(report => {
-          const profile = profileMap[report.user_id];
-          const residentName = profile
-            ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || profile.email || 'Unknown User'
+          const residentProfile = report.profile;
+          const residentName = residentProfile
+            ? `${residentProfile.first_name || ''} ${residentProfile.last_name || ''}`.trim() || residentProfile.email || 'Unknown User'
             : 'Unknown User';
-          
+        
           return {
             ...report,
             residentName
@@ -92,13 +75,14 @@ export default function ReportsAdminClient({ user }) {
         setFilteredReports(transformedReports);
       } catch (error) {
         console.error('Error:', error);
+        setProfileError('Unable to load reports right now. Please try again.');
       } finally {
         setLoading(false);
       }
     };
 
     fetchReports();
-  }, []);
+  }, [user]); // Rerun if the user object changes
 
   // Filter reports based on search and status
   useEffect(() => {
@@ -224,6 +208,12 @@ export default function ReportsAdminClient({ user }) {
               </p>
             </div>
           </div>
+
+          {profileError && (
+            <div style={{marginBottom:16,padding:12,borderRadius:8,border:'1px solid #fecdd3',background:'#fff1f2',color:'#b91c1c',fontWeight:600}}>
+              {profileError}
+            </div>
+          )}
 
           {/* Search and Filter Bar */}
           <div style={{display:'flex',gap:16,marginBottom:24,alignItems:'center'}}>
